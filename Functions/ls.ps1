@@ -27,7 +27,7 @@ function ls {
         for ($c = 0; $c -lt $cols; $c++) {
             $idx = $r + ($c * $rows)
             if ($idx -lt $data.Count) {
-                $line += vPadLeft -Text $data[$idx].Text -Width $maxW
+                $line += vPadRight -Text $data[$idx].Text -Width $maxW
             }
         }
         Write-Host $line

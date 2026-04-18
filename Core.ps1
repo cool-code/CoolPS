@@ -75,7 +75,7 @@ function Get-CoolName {
         [FileSystemInfo]$Item
     )
     $color, $icon = Get-ColorAndIcon -Item $Item
-    return "$(EscapeColor $color)$icon  $($Item.Name)$(ColorReset)"
+    return "$(EscapeColor $color)" + (vPadRight $icon 3) + "$($Item.Name)$(ColorReset)"
 }
 
 function Format-CoolSize {

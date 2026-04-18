@@ -327,7 +327,7 @@ function VisualWidthPad {
 
 function vPadLeft {
     param([string]$Text, [int]$Width)
-    return VisualWidthPad -Text $Text -Width $Width -Alignment -1
+    return VisualWidthPad -Text $Text -Width $Width -Alignment 1
 }
 
 function vPadCenter {
@@ -337,7 +337,7 @@ function vPadCenter {
 
 function vPadRight {
     param([string]$Text, [int]$Width)
-    return VisualWidthPad -Text $Text -Width $Width -Alignment 1
+    return VisualWidthPad -Text $Text -Width $Width -Alignment -1
 }
 
 $Script:MergeSlashRegex = [Regex]::new('\\+(' + $Script:sgrRegex + ')*\\+', [RegexOptions]::Compiled)
