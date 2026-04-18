@@ -163,7 +163,7 @@ function Get-InitialZWJSupport {
 # Define SGR (color) regex (ends with m)
 $Script:sgrRegex = [Regex]::new("\x1B\[[0-9;]*m", [RegexOptions]::Compiled)
 # Define ANSI regex to match all ANSI escape codes, including SGR and others (like cursor movement), for proper splitting
-$Script:ansiRegex = [Regex]::new("[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[a-zA-Z\d]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))", [RegexOptions]::Compiled)
+$Script:ansiRegex = [Regex]::new("([\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[a-zA-Z\d]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~])))", [RegexOptions]::Compiled)
 # Define regex to detect full-width characters (CJK, Emoji, etc.)
 $Script:fullWidthRegex = [Regex]::new('[\u1100-\u11ff\u2e80-\ua4cf\uac00-\ud7af\uf900-\ufaff\ufe30-\ufe4f\uff00-\uffee]', [RegexOptions]::Compiled)
 # Define regex to detect Unicode 17 Emojis (for better emoji width handling)
@@ -370,17 +370,11 @@ function VisualWidthTruncate {
     $elements, $widths = Get-VisualElementsAndWidths -Text $Text
 
     $totalWidth = 0
-    for ($i = 0; $i -lt $widths.Count; $i++) {
-        $totalWidth += $widths[$i]
-    }
-
-    if ($totalWidth -eq 0) { return $Text }
+    foreach ($width in $widths) { $totalWidth += $width }
 
     # If within limit, return original (with optional slash)
-    if ($totalWidth -le $MaxWidth) { 
-        return $Text
-    }
-
+    if ($totalWidth -le $MaxWidth) { return $Text }
+ 
     # --- Mode Handling ---
     
     # File Mode: Preserve extension
