@@ -175,6 +175,11 @@ $Script:ambigWidthRegex = [Regex]::new('[\u00a1\u00a4\u00a7\u00a8\u00aa\u00ad\u0
 $Script:AmbiguousAsWide = Get-InitialAmbiguousAsWide
 $Script:ZWJ = [PSCustomObject](Get-InitialZWJSupport)
 
+Add-Type -AssemblyName System.Runtime.Caching
+if ($null -eq $Script:WidthCache) {
+    $Script:WidthCache = [System.Runtime.Caching.MemoryCache]::Default
+}
+
 function Get-VisualElementsAndWidths {
     param([string]$Text)
 
@@ -182,6 +187,13 @@ function Get-VisualElementsAndWidths {
     $widths = [List[int]]::new()
 
     if ([string]::IsNullOrEmpty($Text)) { return $elements, $widths }
+
+    $cacheKey = "E_$($Script:ZWJ.Support)_$($Script:ZWJ.Width)_$($Script:AmbiguousAsWide)_$Text"
+    $cached = $Script:WidthCache.Get($cacheKey)
+
+    if ($null -ne $cached) {
+        return $cached.elements, $cached.widths
+    }
 
     # Use regex Split to iterate, only keep ANSI codes with color features
     # Split text by all ANSI codes
@@ -252,7 +264,19 @@ function Get-VisualElementsAndWidths {
             }
         }
     }
-    return $elements, $widths
+
+    # Cache the result with a sliding expiration of 5 minutes
+    $policy = New-Object System.Runtime.Caching.CacheItemPolicy
+    $policy.SlidingExpiration = [TimeSpan]::FromMinutes(5)
+
+    $cacheEntry = @{
+        elements = $elements.ToArray()
+        widths   = $widths.ToArray()
+    }
+
+    $Script:WidthCache.Set($cacheKey, $cacheEntry, $policy)
+
+    return $cacheEntry.elements, $cacheEntry.widths
 }
 
 function Get-VisualWidth {
