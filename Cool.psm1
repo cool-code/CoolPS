@@ -23,6 +23,6 @@ Export-ModuleMember -Function Get-CoolName, Format-CoolSize
 Export-ModuleMember -Function Get-VisualWidth, Format-VisualWidthString
 
 # Import all function scripts from the Functions directory.
-Join-Path $PSScriptRoot "Functions\cool.ps1"
-Join-Path $PSScriptRoot "Functions\ls.ps1"
-Join-Path $PSScriptRoot "Functions\cd.ps1"
+. (Join-Path $PSScriptRoot "Functions\cool.ps1")
+. (Join-Path $PSScriptRoot "Functions\ls.ps1")
+. (Join-Path $PSScriptRoot "Functions\cd.ps1")
