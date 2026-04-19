@@ -1,8 +1,39 @@
 ﻿# HotKeys.ps1 - Define custom hotkeys for PSReadLine
 
-# This script sets up a custom hotkey (Alt+Delete) in PSReadLine to remove the current command from history.
+# This script sets up custom hotkeys in PSReadLine for enhanced command line editing and history management.
+
+# Set up command prediction to use history and display predictions in a list view style.
+
+if (($host.Name -eq 'ConsoleHost') -and ($PSVersionTable.PSVersion -ge [Version]"7.2")) {
+    # Enable command prediction based on history
+    Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+}
+else {
+    # For older versions, just use history for prediction
+    Set-PSReadLineOption -PredictionSource History
+}
+
+Set-PSReadLineOption -PredictionSource History
+
+# Set the prediction view style to ListView for better visibility of suggestions.
+Set-PSReadLineOption -PredictionViewStyle ListView
+
+# Configure the Tab key to trigger menu completion, which allows cycling through possible completions in a dropdown menu.
+Set-PSReadLineKeyHandler -Key "Tab" -Function MenuComplete
+
+# Configure Up and Down arrow keys to move the cursor to the end of the line when searching history, which is more intuitive for most users.
+Set-PSReadLineOption -HistorySearchCursorMovesToEnd
+
+# Set Up and Down arrow keys to search through command history based on the current input, similar to typical shell behavior.
+Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward 
+Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+
+# This script sets up a custom hotkey (Alt+Delete) in PSReadLine to delete the current command line from history.
 # It works by directly manipulating the history file and then refreshing the PSReadLine cache.
-Set-PSReadLineKeyHandler -Chord 'Alt+Delete' -ScriptBlock {
+Set-PSReadLineKeyHandler -Chord 'Alt+Delete' `
+    -BriefDescription "DeleteFromHistory" `
+    -LongDescription "Delete the current command line from history" `
+    -ScriptBlock {
     $line = $null
     $cursor = $null
     # Get the current command line and cursor position
@@ -51,4 +82,18 @@ Set-PSReadLineKeyHandler -Chord 'Alt+Delete' -ScriptBlock {
             }
         }
     }
+}
+
+Set-PSReadLineKeyHandler -Chord 'Alt+Insert' `
+    -BriefDescription "SaveInHistory" `
+    -LongDescription "Save the current command line in history but do not execute it" `
+    -ScriptBlock {
+    $line = $null
+    $cursor = $null
+    # Get the current command line and cursor position
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+    if ($null -ne $line -and -not [string]::IsNullOrWhiteSpace($line)) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory($line.Trim())
+    }
+    [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
 }
