@@ -84,7 +84,7 @@ Set-PSReadLineKeyHandler -Chord 'Alt+Delete' `
     }
 }
 
-Set-PSReadLineKeyHandler -Chord 'Alt+Insert' `
+Set-PSReadLineKeyHandler -Chord 'Alt+s' `
     -BriefDescription "SaveInHistory" `
     -LongDescription "Save the current command line in history but do not execute it" `
     -ScriptBlock {

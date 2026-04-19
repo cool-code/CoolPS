@@ -1,9 +1,4 @@
-﻿using namespace System.Collections.Generic
-using namespace System.IO
-using namespace System.Text.RegularExpressions
-using namespace System.Globalization
-
-function ConvertFrom-SourceData {
+﻿function ConvertFrom-SourceData {
     param(
         [string]$SourceFile
     )
@@ -35,8 +30,8 @@ function ConvertFrom-SourceData {
         "STICKY_OTHER_WRITABLE" = "tw"
     }
 
-    $entries = [List[string]]::new()
-    $filters = [HashSet[string]]::new()
+    $entries = [System.Collections.Generic.List[string]]::new()
+    $filters = [System.Collections.Generic.HashSet[string]]::new()
     [void]$filters.Add("TERM")
     [void]$filters.Add("COLOR")
 
@@ -90,8 +85,8 @@ function Get-CacheData {
 
 function ConvertTo-MemCache {
     param($EnvVar)
-    $hash = [Dictionary[string, string]]::new() # Store exact match and suffix match (.py, di)
-    $patterns = [List[PSCustomObject]]::new()   # Store wildcard and regex match (*.r[0-9], *README)
+    $hash = [System.Collections.Generic.Dictionary[string, string]]::new() # Store exact match and suffix match (.py, di)
+    $patterns = [System.Collections.Generic.List[PSCustomObject]]::new()   # Store wildcard and regex match (*.r[0-9], *README)
 
     if ($EnvVar) {
         $EnvVar -split ':' | ForEach-Object {
@@ -105,7 +100,7 @@ function ConvertTo-MemCache {
                         # Escape wildcard and convert to Regex format
                         # Example: .r[0-9]{0,2} -> \.r[0-9]{0,2}$
                         $regexStr = [Regex]::Escape($key).Replace('\[', '[').Replace('\{', '{').Replace('\*', '.*') + "$"
-                        $patterns.Add([PSCustomObject]@{ Regex = [Regex]::new($regexStr, [RegexOptions]::Compiled); Value = $val })
+                        $patterns.Add([PSCustomObject]@{ Regex = [Regex]::new($regexStr, [System.Text.RegularExpressions.RegexOptions]::Compiled); Value = $val })
                     }
                 }
                 $hash[$key] = $val

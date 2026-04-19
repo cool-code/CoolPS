@@ -5,7 +5,6 @@ function l {
         [string]$Path = ".",
         [switch]$All
     )
-
     $items = Get-ChildItem -LiteralPath $Path -Force:$All
     if (-not $items) { return }
 

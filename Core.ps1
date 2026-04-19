@@ -5,7 +5,7 @@
 
 function Get-ColorAndIcon {
     param(
-        [FileSystemInfo]$Item,
+        [System.IO.FileSystemInfo]$Item,
         [int]$Depth = 0 # Prevent infinite loop caused by circular links
     )
     Initialize-MemCache
@@ -14,18 +14,18 @@ function Get-ColorAndIcon {
     $name = $Item.Name
     $ext = $Item.Extension.ToLower()
     $attr = "fi" 
-    $isLink = $Item.Attributes.HasFlag([FileAttributes]::ReparsePoint)
+    $isLink = $Item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)
 
     if ($isLink) {
         if (-not (Test-Path $Item.LinkTarget)) { $attr = "or" } else { $attr = "ln" }
     }
-    elseif ($Item -is [DirectoryInfo]) {
-        $attr = if ($Item.Attributes.HasFlag([FileAttributes]::Hidden)) { "hd" } else { "di" }
+    elseif ($Item -is [System.IO.DirectoryInfo]) {
+        $attr = if ($Item.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)) { "hd" } else { "di" }
     }
     elseif ($ext -match '\.(com|exe|bat|cmd|ps1)$') {
         $attr = "ex"
     }
-    elseif ($Item.Attributes.HasFlag([FileAttributes]::Hidden)) {
+    elseif ($Item.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)) {
         $attr = "hi"
     }
 
@@ -67,7 +67,7 @@ function Get-ColorAndIcon {
 
 function Get-CoolName {
     param(
-        [FileSystemInfo]$Item
+        [System.IO.FileSystemInfo]$Item
     )
     $color, $icon = Get-ColorAndIcon -Item $Item
     return "$(EscapeColor $color)" + (vPadRight $icon 3) + "$($Item.Name)$(ColorReset)"
@@ -110,3 +110,5 @@ function Format-CoolSize {
     # Combine: Value(7) + Space(1) + Unit(2) = 10 chars
     return "${ValueColor}${formattedValue} ${unitColor}$unit$(ColorReset)"
 }
+
+Export-ModuleMember -Function Get-CoolName, Format-CoolSize

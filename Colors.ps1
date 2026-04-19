@@ -16,18 +16,19 @@ function Get-Colors {
     return Get-CacheData $Script:COLORS_SOURCE $Script:COLORS_CACHE
 }
 
-if (-not $Env:LS_COLORS) {
-    $Env:LS_COLORS = Get-Colors
-}
-
-$Script:ColorsMemCache = [PSCustomObject]@{
-    Hash     = [Dictionary[string, string]]::new()
-    Patterns = [List[PSCustomObject]]::new()
-    IsInit   = $false
+if ($null -eq $Script:ColorsMemCache) {
+    $Script:ColorsMemCache = [PSCustomObject]@{
+        Hash     = [System.Collections.Generic.Dictionary[string, string]]::new()
+        Patterns = [System.Collections.Generic.List[PSCustomObject]]::new()
+        IsInit   = $false
+    }
 }
 
 function Initialize-ColorsMemCache {
     if (-not $Script:ColorsMemCache.IsInit) {
+        if (-not $Env:LS_COLORS) {
+            $Env:LS_COLORS = Get-Colors
+        }
         $Script:ColorsMemCache.Hash, $Script:ColorsMemCache.Patterns = ConvertTo-MemCache $Env:LS_COLORS
         $Script:ColorsMemCache.IsInit = $true
     }

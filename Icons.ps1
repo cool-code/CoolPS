@@ -16,18 +16,19 @@ function Get-Icons {
     return Get-CacheData $Script:ICONS_SOURCE $Script:ICONS_CACHE
 }
 
-if (-not $Env:LS_ICONS) {
-    $Env:LS_ICONS = Get-Icons
-}
-
-$Script:IconsMemCache = [PSCustomObject]@{
-    Hash     = [Dictionary[string, string]]::new()
-    Patterns = [List[PSCustomObject]]::new()
-    IsInit   = $false
+if ($null -eq $Script:IconsMemCache) {
+    $Script:IconsMemCache = [PSCustomObject]@{
+        Hash     = [System.Collections.Generic.Dictionary[string, string]]::new()
+        Patterns = [System.Collections.Generic.List[PSCustomObject]]::new()
+        IsInit   = $false
+    }
 }
 
 function Initialize-IconsMemCache {
     if (-not $Script:IconsMemCache.IsInit) {
+        if (-not $Env:LS_ICONS) {
+            $Env:LS_ICONS = Get-Icons
+        }
         $Script:IconsMemCache.Hash, $Script:IconsMemCache.Patterns = ConvertTo-MemCache $Env:LS_ICONS
         $Script:IconsMemCache.IsInit = $true
     }
