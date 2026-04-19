@@ -7,7 +7,7 @@
     RootModule        = 'Cool.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.1'
+    ModuleVersion     = '0.0.2'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -65,7 +65,74 @@
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport = @(
-        'cool', 'Get-CoolName', 'Format-CoolSize', 'Get-VisualWidth', 'Format-VisualWidthString', 'ls'
+        'cool'
+        'Get-CoolName'
+        'Format-CoolSize'
+        'Get-VisualWidth'
+        'Format-VisualWidthString'
+        'Set-CurrentDirectory'
+        '~'
+        '..'
+        '...'
+        '....'
+        '.....'
+        '......'
+        '.......'
+        '........'
+        '.........'
+        '..........'
+        '...........'
+        '............'
+        '.............'
+        '..............'
+        '...............'
+        '................'
+        '.................'
+        '..................'
+        '...................'
+        '....................'
+        '.....................'
+        '/'
+        '//'
+        '///'
+        '////'
+        '/////'
+        '//////'
+        '///////'
+        '////////'
+        '/////////'
+        '//////////'
+        '///////////'
+        '////////////'
+        '/////////////'
+        '//////////////'
+        '///////////////'
+        '////////////////'
+        '/////////////////'
+        '//////////////////'
+        '///////////////////'
+        '////////////////////'
+        '\'
+        '\\'
+        '\\\'
+        '\\\\'
+        '\\\\\'
+        '\\\\\\'
+        '\\\\\\\'
+        '\\\\\\\\'
+        '\\\\\\\\\'
+        '\\\\\\\\\\'
+        '\\\\\\\\\\\'
+        '\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\\\\\'
+        'l'
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -75,7 +142,7 @@
     VariablesToExport = ''
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @('vpad', 'vtrunc')
+    AliasesToExport   = @('cd', 'ls')
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -84,7 +151,24 @@
     # ModuleList = @()
 
     # List of all files packaged with this module
-    # FileList          = @()
+    FileList          = @(
+        'Cool.psd1'
+        'Cool.psm1'
+        'Cache.ps1'
+        'Colors.ps1'
+        'Core.ps1'
+        'Hotkeys.ps1'
+        'Icons.ps1'
+        'Localization.ps1'
+        'Profile.ps1'
+        'VisualWidth.ps1'
+        'LICENSE'
+        'Functions/cd.ps1'
+        'Functions/cool.ps1'
+        'Functions/ls.ps1'
+        'Data/LS_COLORS'
+        'Data/LS_ICONS'
+    )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
     PrivateData       = @{
@@ -101,7 +185,7 @@
             ProjectUri = 'https://github.com/cool-code/CoolPS'
 
             # A URL to an icon representing this module.
-            # IconUri = ''
+            IconUri    = 'https://avatars.githubusercontent.com/u/23434088'
 
             # ReleaseNotes of this module
             # ReleaseNotes = ''

@@ -1,6 +1,6 @@
 ﻿# Functions\ls.ps1
 
-function ls {
+function l {
     param(
         [string]$Path = ".",
         [switch]$All
@@ -33,3 +33,6 @@ function ls {
         Write-Host $line
     }
 }
+
+Set-Alias -Name ls -Value l -Option AllScope -Force -Scope Global
+Export-ModuleMember -Function l -Alias ls

@@ -340,30 +340,30 @@ function vPadRight {
     return VisualWidthPad -Text $Text -Width $Width -Alignment -1
 }
 
-$Script:MergeSlashRegex = [Regex]::new('\\+(' + $Script:sgrRegex + ')*\\+', [RegexOptions]::Compiled)
-$Script:TrailingSlashRegex = [Regex]::new('\\(' + $Script:sgrRegex + ')*$', [RegexOptions]::Compiled)
+$Script:MergeSlashRegex = [Regex]::new('\/+((' + $Script:sgrRegex + ')*\/+)+', [RegexOptions]::Compiled)
+$Script:TrailingSlashRegex = [Regex]::new('\/(' + $Script:sgrRegex + ')*$', [RegexOptions]::Compiled)
 $Script:TrailingColorRegex = [Regex]::new('(.*)(' + $Script:sgrRegex + ')$', [RegexOptions]::Compiled -bor [RegexOptions]::Singleline)
 
 function Format-DirName {
     param ([string]$Text)
-    if ([string]::IsNullOrEmpty($Text)) { return "\" }
+    if ([string]::IsNullOrEmpty($Text)) { return "/" }
 
-    # 1. Path normalization: replace slashes with backslashes, merge consecutive backslashes
-    $Text = $Text.Replace('/', '\')
-    # 2. Merge consecutive backslashes, also merge if color codes are between backslashes
-    $Text = $Script:MergeSlashRegex.Replace($Text, '\')
-    # 3. Ensure there is a trailing backslash, or a backslash before trailing color code
+    # 1. Path normalization: replace backslashes with slashes, merge consecutive slashes
+    $Text = $Text.Replace('\', '/')
+    # 2. Merge consecutive slashes, also merge if color codes are between slashes (e.g., "///", "/\e[31m/\e[0m/")
+    $Text = $Script:MergeSlashRegex.Replace($Text, '/')
+    # 3. Ensure there is a trailing slash, or a slash before trailing color code
     if ($Script:TrailingSlashRegex.IsMatch($Text)) {
         return $Text
     }
 
-    # 4. If there is a trailing color code but no backslash, add a backslash before the color code
+    # 4. If there is a trailing color code but no slash, add a slash before the color code
     $match = $Script:TrailingColorRegex.Match($Text)
     if ($match.Success) {
-        return $match.Groups[1].Value + "\" + $match.Groups[2].Value
+        return $match.Groups[1].Value + "/" + $match.Groups[2].Value
     }
-    # 5. Otherwise, just add a backslash
-    return $Text + "\"
+    # 5. Otherwise, just add a slash
+    return $Text + "/"
 }
 
 function VisualWidthTruncate {
@@ -377,7 +377,7 @@ function VisualWidthTruncate {
         The maximum visual width (ASCII = 1, CJK/Emoji = 2).
     .PARAMETER Mode
         0: File mode (Preserve extension).
-        1: Directory mode (Add trailing backslash).
+        1: Directory mode (Add trailing slash).
         2: Raw mode (Internal use for recursive base name truncation).
         3: Force truncate (Ignore extension).
     #>
@@ -417,9 +417,9 @@ function VisualWidthTruncate {
     }
 
     # --- Truncation Logic ---
-    # Reserve space for dots: Mode 1 (dir) needs at least 2 dots + '\', Mode 2 (internal) needs 1 dot, others 2 dots
+    # Reserve space for dots: Mode 1 (dir) needs at least 2 dots + '/', Mode 2 (internal) needs 1 dot, others 2 dots
     $reserve = switch ($Mode) {
-        1 { 3 } # "..\"
+        1 { 3 } # "../"
         2 { 1 } # "."
         default { 2 } # ".."
     }
@@ -444,7 +444,7 @@ function VisualWidthTruncate {
     # --- Precision Padding with Dots ---
     $dotCount = $MaxWidth - $currentWidth
     if ($Mode -eq 1) {
-        $result += ("." * ($dotCount - 1)) + "\"
+        $result += ("." * ($dotCount - 1)) + "/"
     }
     else {
         $result += ("." * $dotCount)

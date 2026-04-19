@@ -2,39 +2,54 @@
 
 $Script:Translations = @{
     'en-US' = @{
-        'LSColorsCacheUpdated'  = 'LS_COLORS cache updated!'
-        'LSIconsCacheUpdated'   = 'LS_ICONS cache updated!'
-        'CoolUsage'             = 'Usage: cool update [colors|icons]'
-        'UnknownCoolSubcommand' = 'Unknown subcommand: {0}. Available: [colors|icons]'
-        'UnknownCoolCommand'    = 'Unknown command: {0}. Available commands: update [colors|icons]'
+        'LSColorsCacheUpdated'         = 'LS_COLORS cache updated!'
+        'LSIconsCacheUpdated'          = 'LS_ICONS cache updated!'
+        'CoolUsage'                    = "Usage:`r`n  cool init`r`n  cool update [colors|icons]"
+        'UnknownCoolUpdateSubcommand'  = 'Unknown subcommand: {0}. Available: [colors|icons]'
+        'UnknownCoolCommand'           = 'Unknown command: {0}.'
+        'CoolProfileCreated'           = 'Created new {0} profile file.'
+        'CoolProfileUpdated'           = 'Updated {0} profile file with Cool import.'
+        'CoolProfileAlreadyConfigured' = 'Your {0} profile is already configured for Cool.'
     }
     'zh-CN' = @{
-        'LSColorsCacheUpdated'  = 'LS_COLORS 缓存已更新！'
-        'LSIconsCacheUpdated'   = 'LS_ICONS 缓存已更新！'
-        'CoolUsage'             = '用法: cool update [colors|icons]'
-        'UnknownCoolSubcommand' = '未知子命令: {0}. 可用子命令: [colors|icons]'
-        'UnknownCoolCommand'    = '未知命令: {0}. 可用命令: update [colors|icons]'
+        'LSColorsCacheUpdated'         = 'LS_COLORS 缓存已更新！'
+        'LSIconsCacheUpdated'          = 'LS_ICONS 缓存已更新！'
+        'CoolUsage'                    = "用法:`r`n  cool init`r`n  cool update [colors|icons]"
+        'UnknownCoolUpdateSubcommand'  = '未知子命令: {0}. 可用子命令: [colors|icons]'
+        'UnknownCoolCommand'           = '未知命令: {0}.'
+        'CoolProfileCreated'           = '已创建新的 {0} Profile 文件。'
+        'CoolProfileUpdated'           = '已将 Cool 导入语句添加到 {0} Profile 文件。'
+        'CoolProfileAlreadyConfigured' = '您的 {0} Profile 已经配置过了，无需重复操作。'
     }
     'zh-TW' = @{
-        'LSColorsCacheUpdated'  = 'LS_COLORS 快取已更新！'
-        'LSIconsCacheUpdated'   = 'LS_ICONS 快取已更新！'
-        'CoolUsage'             = '用法: cool update [colors|icons]'
-        'UnknownCoolSubcommand' = '未知子命令: {0}. 可用子命令: [colors|icons]'
-        'UnknownCoolCommand'    = '未知命令: {0}. 可用命令: update [colors|icons]'
+        'LSColorsCacheUpdated'         = 'LS_COLORS 快取已更新！'
+        'LSIconsCacheUpdated'          = 'LS_ICONS 快取已更新！'
+        'CoolUsage'                    = "用法:`r`n  cool init`r`n  cool update [colors|icons]"
+        'UnknownCoolUpdateSubcommand'  = '未知子命令: {0}. 可用子命令: [colors|icons]'
+        'UnknownCoolCommand'           = '未知命令: {0}.'
+        'CoolProfileCreated'           = '已創建新的 {0} Profile 文件。'
+        'CoolProfileUpdated'           = '已將 Cool 導入語句添加到 {0} Profile 文件。'
+        'CoolProfileAlreadyConfigured' = '您的 {0} Profile 已經配置過了，無需重複操作。'
     }
     'ja-JP' = @{
-        'LSColorsCacheUpdated'  = 'LS_COLORS キャッシュを更新しました！'
-        'LSIconsCacheUpdated'   = 'LS_ICONS キャッシュを更新しました！'
-        'CoolUsage'             = '使い方: cool update [colors|icons]'
-        'UnknownCoolSubcommand' = '不明なサブコマンド: {0}. 使用可能: [colors|icons]'
-        'UnknownCoolCommand'    = '不明なコマンド: {0}. 使用可能なコマンド: update [colors|icons]'
+        'LSColorsCacheUpdated'         = 'LS_COLORS キャッシュを更新しました！'
+        'LSIconsCacheUpdated'          = 'LS_ICONS キャッシュを更新しました！'
+        'CoolUsage'                    = "使い方:`r`n  cool init`r`n  cool update [colors|icons]"
+        'UnknownCoolUpdateSubcommand'  = '不明なサブコマンド: {0}. 使用可能: [colors|icons]'
+        'UnknownCoolCommand'           = '不明なコマンド: {0}.'
+        'CoolProfileCreated'           = '新しい {0} プロファイルファイルを作成しました。'
+        'CoolProfileUpdated'           = '{0} プロファイルファイルに Cool のインポート文を追加しました。'
+        'CoolProfileAlreadyConfigured' = '{0} プロファイルはすでに Cool 用に設定されています。'
     }
     'ko-KR' = @{
-        'LSColorsCacheUpdated'  = 'LS_COLORS 캐시가 업데이트되었습니다!'
-        'LSIconsCacheUpdated'   = 'LS_ICONS 캐시가 업데이트되었습니다!'
-        'CoolUsage'             = '사용법: cool update [colors|icons]'
-        'UnknownCoolSubcommand' = '알 수 없는 하위 명령: {0}. 사용 가능: [colors|icons]'
-        'UnknownCoolCommand'    = '알 수 없는 명령: {0}. 사용 가능한 명령: update [colors|icons]'
+        'LSColorsCacheUpdated'         = 'LS_COLORS 캐시가 업데이트되었습니다!'
+        'LSIconsCacheUpdated'          = 'LS_ICONS 캐시가 업데이트되었습니다!'
+        'CoolUsage'                    = "사용법:`r`n  cool init`r`n  cool update [colors|icons]"
+        'UnknownCoolUpdateSubcommand'  = '알 수 없는 하위 명령: {0}. 사용 가능: [colors|icons]'
+        'UnknownCoolCommand'           = '알 수 없는 명령: {0}.'
+        'CoolProfileCreated'           = '새 {0} 프로파일 파일을 생성했습니다.'
+        'CoolProfileUpdated'           = '{0} 프로파일 파일에 Cool의 가져오기 문을 추가했습니다.'
+        'CoolProfileAlreadyConfigured' = '{0} 프로파일은 이미 Cool용으로 설정되어 있습니다.'
     }
 }
 

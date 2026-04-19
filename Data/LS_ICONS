@@ -1,0 +1,1300 @@
+# This file probably contain some characters, which aren't defined in the
+# Unicode standard. Maybe we can show them by installing Nerd
+#.Fonts(https //www.nerdfonts.com/).
+#
+# CODING CONVERSATIONS
+# - Prefer a '*.extension' format, not a '.extension' one.
+#
+#   '.extension' is the same as '*.extension'. The latter is a little bit more
+#   expressive than the former. We can unify all extension pattern formats by
+#   this and probably improve readability. By the way, the former is considered
+#   obsolete according to 'man 5 dir_colors'.
+#
+###############################################################################
+#.NOTE  LS_ICONS doesn't need any ANSI compatible terminals, so it should be
+# accepted by all TERM type.
+TERM *
+###############################################################################
+FILE 
+DIR  
+OTHER_WRITABLE 
+LINK 
+FIFO 󰟥
+SOCK 󰆨
+DOOR 󰠚
+BLK 
+CHR 
+ORPHAN 
+###############################################################################
+
+Contacts  󰛋 
+Desktop 󰟀 
+Documents   
+Downloads  󰉍
+Favorites  󰚝 
+Links      
+Music       󰌳 
+OneDrive  󰏊
+Pictures   󰉏 
+Videos   󰎁 
+
+a                          # Default = 
+api  󰒍                      # Default = 󰒍
+.asoundrc                  # Default = 
+.atom                      # Default = 
+.ash                       # Default = 
+.ash_history               # Default = 
+authorized_keys            # Default = 
+assets                     # Default = 
+.android                   # Default = 
+.audacity                  # Default = 
+backups  󰁯                  # Default = 󰁯
+.bash_history  󱆃            # Default = 󱆃
+.bash_logout  󱆃             # Default = 󱆃
+.bash_profile  󱆃            # Default = 󱆃
+.bashrc  󱆃                  # Default = 󱆃
+bin                        # Default = 
+.bpython_history           # Default = 
+build                      # Default = 
+bspwmrc                    # Default = 
+build                      # Default = 
+.cache  󰃨                   # Default = 󰃨
+cache  󰃨                    # Default = 󰃨
+cargo                      # Default = 
+cargo                      # Default = 
+.cargo                     # Default = 
+.ccls  󰃨                    # Default = 󰃨
+changelog                  # Default = 
+.clang                     # Default = 
+composer                   # Default = 
+composer                   # Default = 
+conf                       # Default = 
+config                     # Default = 
+config                     # Default = 
+config                     # Default = 
+.config                    # Default = 
+config                     # Default = 
+configure                  # Default = 
+containerfile              # Default = 
+content                    # Default = 
+contributing               # Default = 
+copyright                  # Default = 
+cron                       # Default = 
+cron                       # Default = 
+cron                       # Default = 
+cron                       # Default = 
+cron                       # Default = 
+crontab                    # Default = 
+cron                       # Default = 
+crypttab                   # Default = 
+.cshrc  󱆃                   # Default = 󱆃
+csh  󱆃                      # Default = 󱆃
+csh  󱆃                      # Default = 󱆃
+csh  󱆃                      # Default = 󱆃
+css                        # Default = 
+custom                     # Default = 
+.dbus                      # Default = 
+Desktop                    # Default = 
+docker                     # Default = 
+dockerfile                 # Default = 
+doc                        # Default = 
+dist                       # Default = 
+Documents                  # Default = 
+.doom                      # Default = 
+Downloads  󰉍                # Default = 󰉍
+.ds_store                  # Default = 
+.editorconfig              # Default = 
+.electron                  # Default = 
+.emacs                     # Default = 
+.env                       # Default = 
+environment                # Default = 
+.eslintrc                  # Default = 
+.eslintrc                  # Default = 
+.eslintrc                  # Default = 
+etc                        # Default = 
+favicon                    # Default = 
+favicons                   # Default = 
+.fennelrc                  # Default = 
+fstab                      # Default = 
+.fastboot                  # Default = 
+.gitattributes               # Default = 
+.gitconfig                 # Default = 
+.gitcredentials              # Default = 
+.github                      # Default = 
+gitignore_global           # Default = 
+.gitignore                   # Default = 
+.gitlab                      # Default = 
+.gitmodules                  # Default = 
+.git                         # Default = 
+.gnupg  󰢬                   # Default = 󰢬
+go                         # Default = 
+go                         # Default = 
+go                         # Default = 
+gradle                     # Default = 
+gradle                     # Default = 
+gradlew                    # Default = 
+gradlew                    # Default = 
+group                      # Default = 
+gruntfile                  # Default = 
+gruntfile                  # Default = 
+gruntfile                  # Default = 
+gshadow                    # Default = 
+gulpfile                   # Default = 
+gulpfile                   # Default = 
+gulpfile                   # Default = 
+heroku                     # Default = 
+home                       # Default = 
+hostname                   # Default = 
+hosts  󰀂                    # Default = 󰀂
+.htaccess                  # Default = 
+htoprc                     # Default = 
+.htpasswd                  # Default = 
+.icons                     # Default = 
+icons                      # Default = 
+id_dsa  󰷖                   # Default = 󰷖
+id_ecdsa  󰷖                 # Default = 󰷖
+id_rsa  󰷖                   # Default = 󰷖
+.idlerc                    # Default = 
+img                        # Default = 
+include                    # Default = 
+init                       # Default = 
+.inputrc                   # Default = 
+inputrc                    # Default = 
+.java                      # Default = 
+jenkinsfile                # Default = 
+js                         # Default = 
+jule                       # Default = 
+.jupyter                   # Default = 
+kbuild                     # Default = 
+kconfig                    # Default = 
+kdeglobals                 # Default = 
+kdenliverc                 # Default = 
+known_hosts                # Default = 
+.kshrc                     # Default = 
+libexec                    # Default = 
+lib32                      # Default = 
+lib64                      # Default = 
+lib                        # Default = 
+license                    # Default = 
+licenses                   # Default = 
+license                    # Default = 
+license                    # Default = 
+localized                  # Default = 
+lsb                        # Default = 
+.lynxrc                    # Default = 
+.mailcap  󰇰                 # Default = 󰇰
+mail  󰇰                     # Default = 󰇰
+magic                      # Default = 
+maintainers                # Default = 
+makefile                   # Default = 
+makefile                   # Default = 
+manifest                   # Default = 
+md5sum  󰕥                   # Default = 󰕥
+meson                      # Default = 
+metadata                   # Default = 
+metadata                   # Default = 
+media                      # Default = 
+.mime  󰙅                    # Default = 󰙅
+mime  󰙅                     # Default = 󰙅
+module                     # Default = 
+.mozilla                   # Default = 
+Music  󱍙                    # Default = 󱍙
+muttrc                     # Default = 
+.muttrc                    # Default = 
+.mutt                      # Default = 
+.mypy_cache  󰃨              # Default = 󰃨
+neomuttrc                  # Default = 
+.neomuttrc                 # Default = 
+netlify                    # Default = 
+.nix                       # Default = 
+.nix                       # Default = 
+.node                      # Default = 
+node_modules               # Default = 
+.node_repl_history         # Default = 
+npmignore                  # Default = 
+.npm                       # Default = 
+nvim                       # Default = 
+obj                        # Default = 
+os                         # Default = 
+package                    # Default = 
+package                    # Default = 
+packages                   # Default = 
+pam  󰢬                      # Default = 󰢬
+passwd                     # Default = 
+Pictures  󰉏                 # Default = 󰉏
+pkgbuild                   # Default = 
+.pki                       # Default = 
+portage                    # Default = 
+profile                    # Default = 
+.profile                   # Default = 
+public                     # Default = 
+__pycache__                # Default = 
+pyproject                  # Default = 
+.python_history            # Default = 
+.pypirc                    # Default = 
+rc                         # Default = 
+readme                     # Default = 
+.release                   # Default = 
+requirements  󰌠             # Default = 󰌠
+robots  󰚩                   # Default = 󰚩
+root  󰉐                     # Default = 󰉐
+rubydoc                    # Default = 
+runtime  󰌠                  # Default = 󰌠
+.rustup                    # Default = 
+rustfmt                    # Default = 
+.rvm                       # Default = 
+sass                       # Default = 
+sbin                       # Default = 
+scripts                    # Default = 
+scss                       # Default = 
+sha256sum  󰕥                # Default = 󰕥
+shadow                     # Default = 
+share                      # Default = 
+.shellcheckrc              # Default = 
+shells                     # Default = 
+.spacemacs                 # Default = 
+.sqlite_history            # Default = 
+src  󱧼                      # Default = 󱧼
+source  󱧼                   # Default = 󱧼
+.ssh  󰢬                     # Default = 󰢬
+static                     # Default = 
+std  󰅱                      # Default = 󰅱
+styles                     # Default = 
+subgid                     # Default = 
+subuid                     # Default = 
+sudoers                    # Default = 
+sxhkdrc                    # Default = 
+template                   # Default = 
+tests  󰙨                    # Default = 󰙨
+test  󰙨                     # Default = 󰙨
+tigrc                      # Default = 
+timezone                   # Default = 
+tox                        # Default = 
+.trash                     # Default = 
+ts                         # Default = 
+.tox                       # Default = 
+unlicense                  # Default = 
+url                        # Default = 
+user                       # Default = 
+vagrantfile                # Default = 
+vendor  󰫦                   # Default = 󰫦
+venv  󰌠                     # Default = 󰌠
+Videos                     # Default = 
+.viminfo                   # Default = 
+.vimrc                     # Default = 
+vimrc                      # Default = 
+.vim                       # Default = 
+vim                        # Default = 
+.vscode                    # Default = 
+webpack  󰜫                  # Default = 󰜫
+.wgetrc                    # Default = 
+wgetrc                     # Default = 
+.xauthority                # Default = 
+.Xauthority                # Default = 
+xbps                       # Default = 
+xbps                       # Default = 
+.xinitrc                   # Default = 
+.xmodmap                   # Default = 
+.Xmodmap                   # Default = 
+xmonad                     # Default = 
+xorg                       # Default = 
+.xprofile                  # Default = 
+.Xprofile                  # Default = 
+.xresources                # Default = 
+.yarnrc                    # Default = 
+yarn                       # Default = 
+zathurarc                  # Default = 
+.zcompdump                 # Default = 
+.zlogin  󱆃                  # Default = 󱆃
+.zlogout  󱆃                 # Default = 󱆃
+.zprofile  󱆃                # Default = 󱆃
+.zsh_history  󱆃             # Default = 󱆃
+.zshrc  󱆃                   # Default = 󱆃
+
+
+.1  
+.2  
+.3  
+.4  
+.5  
+.6  
+.7  
+.7z  
+.8  
+.890  󰅞
+.a  
+.ai  
+.ape  
+.apk  
+.apng  
+.ar  
+.asc  󰦝
+.asm  
+.asp  
+.avi  
+.avif  
+.avro  
+.awk  
+.bak  󰁯
+.bash_history  
+.bash_profile  
+.bashrc  
+.bash  
+.bat  
+.bin  
+.bio  󰐑
+.blend  󰂫
+.blend1  󰂫
+.bmp  
+.bz2  
+.cc  
+.cfg  
+.cip  󰅞
+.cjs  
+.class  
+.cljs  
+.clj  
+.cls  
+.cl  󰅲
+.cmd  
+.coffee  
+.conf  
+.cpp  
+.cp  
+.cshtml  
+.csh  
+.csproj  󰌛
+.css  
+.cs  󰌛
+.csv  
+.csx  󰌛
+.cts  
+.c  
+.c  
+.cue  
+.cxx  
+.cypher  
+.dart  
+.dat  
+.db  
+.deb  
+.desktop  
+.diff  
+.dll  
+.dockerfile  
+.doc  
+.docx  
+.download  
+.ds_store  
+.dump  
+.ebook  
+.ebuild  
+.eclass  
+.editorconfig  
+.egg  
+.ejs  
+.elc  󰅲
+.elf  
+.elm  
+.el  󰅲
+.env  
+.eot  
+.epub  
+.erb  
+.erl  
+.exe  
+.exs  
+.ex  
+.fish  
+.flac  
+.flv  
+.fnl  
+.font  
+.fpl  󰐑
+.fsi  
+.fs  
+.fsx  
+.gdoc  
+.gemfile  
+.gemspec  
+.gform  
+.gif  
+.git  
+.go  
+.gpg  󰦝
+.gradle  
+.gsheet  
+.gslides  
+.guardfile  
+.gv  󱁉
+.gz  
+.hbs  
+.heic  
+.heif  
+.heix  
+.hh  
+.hpp  
+.hs  
+.html  
+.htm  
+.h  
+.hxx  
+.ico  
+.image  
+.img  
+.iml  
+.info  
+.in  
+.ini  
+.ipynb  
+.iso  
+.j2  
+.jar  
+.java  
+.jinja  
+.jl  
+.jpeg  
+.jpg  
+.jsonc  
+.json  
+.js  
+.jsx  
+.jule  
+.key  󰌆
+.ksh  
+.kt  
+.kts  
+.kusto  
+.ldb  
+.ld  
+.less  
+.lhs  
+.license  
+.lisp  󰅲
+.list  
+.localized  
+.lock  
+.log  
+.lss  
+.lua  
+.lz  
+.mgc  
+.m3u8  󰐑
+.m3u  󰐑
+.m4  
+.m4a  
+.m4v  
+.magnet  
+.make  
+.makefile  
+.malloy  
+.man  
+.markdown  
+.md  
+.mjs  
+.mkd  
+.mk  
+.mkv  
+.ml  
+.mli  
+.mll  
+.mly  
+.mobi  
+.mov  
+.mp3  
+.mp4  
+.msi  
+.mts  
+.mustache  
+.nim  
+.nimble  
+.nix  
+.npmignore  
+.odp  
+.ods  
+.odt  
+.ogg  
+.ogv  
+.old  󰁯
+.opus  
+.orig  󰁯
+.org  
+.otf  
+.o  
+.part  
+.patch  
+.pdb  󰪪
+.pdf  
+.pem  󰌆
+.phar  
+.php  
+.pkg  
+.pl  
+.plist  
+.pls  󰐑
+.plx  
+.pm  
+.png  
+.pod  
+.pp  
+.ppt  
+.pptx  
+.procfile  
+.properties  
+.prql  
+.ps1  
+.psd  
+.pub  󰌆
+.pug  
+.sbv  󰅞
+.scc  󰅞
+.slt  󰈡
+.smi  󰅞
+.pxm  
+.pyc  
+.py  
+.rakefile  
+.rar  
+.razor  
+.rb  
+.rdata  󰟔
+.rdb  
+.rdoc  
+.rds  󰟔
+.readme  
+.rlib  
+.rl  
+.rmd  
+.rmeta  
+.rpm  
+.rproj  󰗆
+.rq  
+.rspec_parallel  
+.rspec_status  
+.rspec  
+.rss  
+.rs  
+.rtf  
+.rubydoc  
+.r  󰟔
+.ru  
+.sass  
+.scala  
+.scpt  
+.scss  
+.shell  
+.sh  
+.sig  
+.slim  
+.sln  
+.so  
+.sqlite3  
+.sql  
+.srt  󰨖
+.styl  
+.stylus  
+.sublime  
+.sublime  
+.sublime  
+.sublime  
+.sub  󰨖
+.s  
+.svg  
+.svelte  
+.swift  
+.swp  
+.sym  
+.tar  
+.taz  
+.tbz  
+.tbz2  
+.tex  
+.tgz  
+.tiff  
+.timestamp  
+.toml  
+.torrent  󰒍
+.trash  
+.ts  
+.tsx  
+.ttc  
+.ttf  
+.t  
+.twig  
+.txt  
+.unity  
+.unity32  
+.video  
+.vim  
+.vlc  󰐑
+.vtt  󰅞
+.vue  󰡄
+.wav  
+.webm  
+.webp  
+.whl  
+.windows  
+.wma  
+.wmv  
+.woff2  
+.woff  
+.wpl  󰐑
+.xbps  
+.xcf  
+.xls  
+.xlsx  
+.xml  
+.xul  
+.xz  
+.yaml  
+.yml  
+.zip  
+.zig  
+.zon  
+.zshrc  
+.zsh  
+.zsh  
+.zst  
+
+## Misc
+.config          
+webpack.config.* 
+
+## Full Matches
+README         
+.DS_Store      
+.Dockerfile    
+.gitlab-ci.yml 
+
+## Extension Associations
+*.git     
+*.edn     
+*.pdf     
+*.db      
+*.hs      
+*.vim     
+*.org     
+*.frm     
+*.myd     
+*.myi     
+*.mkd     
+*.ddf     
+*.sqlite  
+*.bib     
+*.part    
+*.torrent 
+*.url     
+*.link    
+*.ass     
+*.srt     
+*.nfo     
+*.psb     
+*.psd     
+*.xlsx    
+
+## Languages
+*.c      
+*.cpp    
+*.cc     
+*.h      
+*.hh     
+*.hpp    
+*.css    
+*.scss   
+*.el     
+*.clj    
+*.py     
+*.rb     
+*.go     
+*.html   
+*.java   
+*.md     
+*.json   
+*.sc     
+*.scala  
+*.php    
+*.rs     
+*.js     
+*.ts     
+*.kts    
+*.gradle 
+*.rss    參
+
+## Shells and Command Interpreters
+*.bash 
+*.cmd  
+*.fish 
+*.ps1  
+*.sh   
+*.zsh  
+
+## Archives
+*.7z   
+*.ace  
+*.alz  
+*.arc  
+*.arj  
+*.bz2  
+*.bz   
+*.cab  
+*.cpio 
+*.deb  
+*.dwm  
+*.dz   
+*.ear  
+*.esd  
+*.gz   
+*.jar  
+*.lha  
+*.lrz  
+*.lz4  
+*.lz   
+*.lzh  
+*.lzma 
+*.lzo  
+*.rar  
+*.rpm  
+*.rz   
+*.sar  
+*.swm  
+*.t7z  
+*.tar  
+*.taz  
+*.tbz2 
+*.tbz  
+*.tgz  
+*.tlz  
+*.txz  
+*.tz   
+*.tzo  
+*.tzst 
+*.war  
+*.wim  
+*.xz   
+*.z    
+*.zip  
+*.zoo  
+*.zst  
+
+## Image
+*.asf   
+*.au    
+*.bmp   
+*.cgm   
+*.dl    
+*.emf   
+*.flc   
+*.fli   
+*.flv   
+*.gif   
+*.gl    
+*.jpeg  
+*.jpg   
+*.mjpeg 
+*.mjpg  
+*.mng   
+*.mpc   
+*.mpeg  
+*.mpg   
+*.nuv   
+*.oga   
+*.ogg   
+*.ogm   
+*.ogv   
+*.ogx   
+*.opus  
+*.pbm   
+*.pcx   
+*.pgm   
+*.png   
+*.ppm   
+*.qt    
+*.ra    
+*.rm    
+*.rmvb  
+*.spx   
+*.svg   
+*.svgz  
+*.tga   
+*.tif   
+*.tiff  
+*.vob   
+*.wmv   
+*.xbm   
+*.xcf   
+*.xpm   
+*.xspf  
+*.xwd   
+*.yuv   
+
+## Directories
+.git           
+.github        
+.config        
+node_modules   
+games          
+steam          
+
+# brew
+*Brewfile 󰂘
+
+# build
+*Makefile 
+*.in 
+*.ac 
+*.scan 
+*.m4 
+*.status 
+*CMakeLists.txt 
+*.cmake 
+*.build 
+*BUILD 
+*.ninja 
+*.gradle 
+*configure 
+*PKGBUILD 
+*.deb 
+*.ebuild 
+*.rpm 
+
+# c
+*.c 
+*.h 
+
+# cpp
+*.cpp 󰙲
+*.hpp 󰙲
+
+# clojure
+*.clj 
+*.cljc 
+*.cljs 
+*.cljx 
+
+# cmd
+*.bat 
+*.cmd 
+
+# config
+*.conf 
+*.cfg 
+*config 
+*.json 󰘦
+*.yml 
+*.yaml 
+*.toml 
+*.ini 
+*.xml 󰗀
+*.dirs 
+*.locale 
+
+# c sharp
+*.cs 󰌛
+
+# coffeescript
+*.coffee 
+
+# css
+*.css 
+
+# d
+*.d 
+
+# dart
+*.dart 
+*.drt 
+
+# dircolors
+*dircolors 
+*DIRCOLORS 
+*dir_colors 
+*DIR_COLORS 
+*lscolors 
+*LSCOLORS 
+*ls_colors 
+*LS_COLORS 
+
+# docker
+*Dockerfile 
+*Containerfile 
+*.dockerignore 
+*.docker 
+
+# elixir
+*.exs 
+
+# elm
+*.elm 
+
+# erlang
+*.erl 
+
+# Excel
+*.xls 
+*.xlsx 
+
+# f sharp
+*.fs 
+*.fsi 
+*.fsx 
+*.fsscript 
+
+# groovy
+*.groovy 
+
+# git
+*.git 
+*.gitattributes 
+*.gitconfig 
+*.gitignore 
+*.gitmodules 
+
+# go
+*.go 
+*go.mod 
+*go.sum 
+
+# haskell
+*.hs 
+*.lhs 
+*.cabal 
+*cabal.project 
+*cabal.project.local 
+*cabal.project.freeze 󰌾
+*.ghc 
+*.ghcup 
+*.cabal 
+*dist 
+*dist-newstyle 
+
+# history
+*history 
+*.lesshst 
+*.netrwhist 
+
+# html
+*.html 
+*.xhtml 
+*.xht 
+
+# java
+*.java 
+*.jav 
+
+# javascript
+*.js 
+*.jsx 
+*.javascript 
+*.es 
+*.mjs 
+*.cjs 
+
+# julia
+*.jl 
+
+# less
+*.less 
+
+# lua
+*.lua 
+
+# markdown
+*.md 
+*.markdown 
+*.mdown 
+*.mkd 
+*.mkdn 
+*.mkwn 
+
+# nix
+*.nix 
+
+# nodejs
+*.node_modules 
+*.npm 
+*.npmrc 
+
+# perl
+*.pl 
+*.pm 
+*.pl6 
+*.p6 
+*.pm6 
+*.raku 
+*.rakumod 
+
+*latexmkrc 
+*LatexMk 
+
+# php
+*.php 
+
+# Powerpoint
+*.ppt 
+*.pptx 
+
+# powershell
+*.ps1 
+
+# prolog
+# .pl  # Conflict to a perl's one.
+*.pro 
+*.swi 
+
+# python
+*.py 
+*.pyw 
+*.pythonstartup 
+*.pythonrc 
+*Pipfile 
+
+# R
+*.R 󰟔
+
+# ruby
+*.rb 
+*.rbw 
+*.gemspec 
+*.rbs 
+*.ebs 
+*.ru 
+*Gemfile 
+*Rakefile 
+*.rake 
+*.bundle 
+
+# rust
+*.rs 
+*.cargo 
+*.rustup 
+
+# sass
+*.scss 
+*.sass 
+
+# scala
+*.scala 
+
+# stylus
+*.styl 
+*.stylus 
+
+# swift
+*.swift 
+
+# typescript
+*.ts 
+*.tsx 
+
+# shell
+*.sh 
+*profile 
+*.bash 
+*bashrc 
+*bash_profile 
+*bash_logout 
+*.zsh 
+*zshenv 
+*zprofile 
+*zshrc 
+*zlogin 
+*zlogout 
+*.csh 
+*cshrc 
+*.tcsh 
+*tcshrc 
+*.ksh 
+*kshrc 
+*suid_profile 
+*.shinit 
+*.shrc 
+
+# ctags
+*.ctags 
+*tags 
+
+# vim
+*.vim 
+*vimrc 
+*gvimrc 
+*.viminfo 
+
+# vue
+*.vue 󰡄
+
+# Word
+*.doc 
+*.docx 
+
+# X11
+*xinitrc 
+*xserverrc 
+*.Xdefaults 
+*.Xresources 
+
+# archives or compressed
+*.tar 
+*.tgz 
+*.arc 
+*.arj 
+*.taz 
+*.lha 
+*.lz4 
+*.lzh 
+*.lzma 
+*.tlz 
+*.txz 
+*.tzo 
+*.t7z 
+*.zip 
+*.z 
+*.dz 
+*.gz 
+*.lrz 
+*.lz 
+*.lzo 
+*.xz 
+*.zst 
+*.tzst 
+*.bz2 
+*.bz 
+*.tbz 
+*.tbz2 
+*.tz 
+*.deb 
+*.rpm 
+*.jar 
+*.war 
+*.ear 
+*.sar 
+*.rar 
+*.alz 
+*.ace 
+*.zoo 
+*.cpio 
+*.7z 
+*.rz 
+*.cab 
+*.wim 
+*.swm 
+*.dwm 
+*.esd 
+*.zstd 
+# image formats
+*.jpg 
+*.jpeg 
+*.mjpg 
+*.mjpeg 
+*.gif 
+*.bmp 
+*.pbm 
+*.pgm 
+*.ppm 
+*.tga 
+*.xbm 
+*.xpm 
+*.tif 
+*.tiff 
+*.png 
+*.svg 
+*.svgz 
+*.mng 
+*.pcx 
+
+*.mov 
+*.mpg 
+*.mpeg 
+*.m2v 
+*.mkv 
+*.webm 
+*.webp 
+*.ogm 
+*.mp4 
+*.m4v 
+*.mp4v 
+*.vob 
+*.qt 
+*.nuv 
+*.wmv 
+*.asf 
+*.rm 
+*.rmvb 
+*.flc 
+*.avi 
+*.fli 
+*.flv 
+*.gl 
+*.dl 
+*.xcf 
+*.xwd 
+*.yuv 
+*.cgm 
+*.emf 
+*.ogv 
+*.ogx 
+
+# audio formats
+*.aac 
+*.au 
+*.flac 
+*.m4a 
+*.mid 
+*.midi 
+*.mka 
+*.mp3 
+*.mpc 
+*.ogg 
+*.ra 
+*.wav 
+*.oga 
+*.opus 
+*.spx 
+*.xspf 
+
+# misc
+*.exe 
+*.txt 
+*.csv 
+*.tsv 
+*.rst 
+*.lock 󰌾
+*.pdf 
+*.log 
+*.key 󰌋
+*.gnupg 󰌋
+*.password-store 󰌋
+*.pki 󰌋
+*LICENSE 
+*COPYRIGHT 
+*COPYING 
+*README 
+*CHANGES 
+*.editorconfig 
+*tigrc 
+*shellcheckrc 
+*.ripgreprc 
+*.inputrc 
+*.aliases 
+*.pacnew 
+*.diff 
+*.patch 
+*.DS_Store 
+*.goldplate 󰘦
+*.github 
+*.vscode 
+*.mozilla 
+*.terminfo 
+*.urxvt 
+*.zwc 
+*.zcompdump 
+*.gitignore-boilerplates 
+*diricons 
+*DIRICONS 
+*dir_icons 
+*DIR_ICONS 
+*lsicons 
+*LSICONS 
+*ls_icons 
+*LS_ICONS 
+###############################################################################
+#.vim .set filetype=dircolors  

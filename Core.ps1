@@ -3,6 +3,8 @@
 . (Join-Path $PSScriptRoot "Colors.ps1")
 . (Join-Path $PSScriptRoot "Icons.ps1")
 . (Join-Path $PSScriptRoot "VisualWidth.ps1")
+. (Join-Path $PSScriptRoot "HotKey.ps1")
+. (Join-Path $PSScriptRoot "Profile.ps1")
 
 function Initialize-MemCache {
     Initialize-ColorsMemCache

@@ -1,4 +1,5 @@
-﻿function cool {
+﻿
+function cool {
     param (
         [string]$Command
     )
@@ -8,6 +9,9 @@
         return
     }
     switch ($Command) {
+        "init" {
+            Initialize-CoolProfile
+        }
         "update" {
             if ($args.Count -eq 0) {
                 Update-ColorsCache
@@ -19,7 +23,7 @@
                         "colors" { Update-ColorsCache }
                         "icons" { Update-IconsCache }
                         default {
-                            $msg = Get-LocalizedString 'UnknownCoolSubcommand' $cmd
+                            $msg = Get-LocalizedString 'UnknownCoolUpdateSubcommand' $cmd
                             Write-Host $msg -ForegroundColor Yellow
                         }
                     }
@@ -29,6 +33,9 @@
         default {
             $msg = Get-LocalizedString 'UnknownCoolCommand' $Command
             Write-Host $msg -ForegroundColor Yellow
+            cool
         }
     }
 }
+
+Export-ModuleMember -Function cool
