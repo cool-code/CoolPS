@@ -38,7 +38,8 @@ function Update-IconsCache {
     $Env:LS_ICONS = Get-Icons
     $Script:IconsMemCache.IsInit = $false # Force reinitialize icon cache
     Initialize-IconsMemCache
-    Write-Host "LS_ICONS cache updated!" -ForegroundColor Green
+    $msg = Get-LocalizedString 'LSIconsCacheUpdated'
+    Write-Host $msg -ForegroundColor Green
 }
 
 function Get-Icon {

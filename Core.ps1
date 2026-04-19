@@ -1,4 +1,5 @@
-﻿. (Join-Path $PSScriptRoot "Cache.ps1")
+﻿. (Join-Path $PSScriptRoot "Localization.ps1")
+. (Join-Path $PSScriptRoot "Cache.ps1")
 . (Join-Path $PSScriptRoot "Colors.ps1")
 . (Join-Path $PSScriptRoot "Icons.ps1")
 . (Join-Path $PSScriptRoot "VisualWidth.ps1")

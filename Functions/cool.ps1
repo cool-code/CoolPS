@@ -2,6 +2,11 @@
     param (
         [string]$Command
     )
+    if (-not $Command) {
+        $msg = Get-LocalizedString 'CoolUsage'
+        Write-Host $msg -ForegroundColor Cyan
+        return
+    }
     switch ($Command) {
         "update" {
             if ($args.Count -eq 0) {
@@ -10,14 +15,20 @@
             }
             else {
                 foreach ($cmd in $args) {
-                    switch ($cmd.ToLower()) {
+                    switch ($cmd) {
                         "colors" { Update-ColorsCache }
                         "icons" { Update-IconsCache }
-                        default { Write-Host "未知子命令: $cmd. 可用子命令: colors, icons" -ForegroundColor Yellow }
+                        default {
+                            $msg = Get-LocalizedString 'UnknownCoolSubcommand' $cmd
+                            Write-Host $msg -ForegroundColor Yellow
+                        }
                     }
                 }
             }
         }
-        default { Write-Host "未知命令: $Command. 可用命令: update colors, update icons" -ForegroundColor Yellow }    
+        default {
+            $msg = Get-LocalizedString 'UnknownCoolCommand' $Command
+            Write-Host $msg -ForegroundColor Yellow
+        }
     }
 }

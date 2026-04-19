@@ -82,7 +82,6 @@ function Get-CacheData {
         if ($cached) { return $cached }
     }
     $result = (ConvertFrom-SourceData $SourceFile)
-    Write-Host "Converted $SourceFile to cache format: $result" -ForegroundColor Green
     if ($result) {
         $result | Out-File -FilePath $CacheFile -Encoding utf8 -NoNewline
     }

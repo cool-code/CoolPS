@@ -38,7 +38,8 @@ function Update-ColorsCache {
     $Env:LS_COLORS = Get-Colors
     $Script:ColorsMemCache.IsInit = $false # Force reinitialize color cache
     Initialize-ColorsMemCache
-    Write-Host "LS_COLORS cache updated!" -ForegroundColor Green
+    $msg = Get-LocalizedString 'LSColorsCacheUpdated'
+    Write-Host $msg -ForegroundColor Green
 }
 
 function Get-Color {
