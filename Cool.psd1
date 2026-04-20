@@ -7,7 +7,7 @@
     RootModule        = 'Cool.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.6'
+    ModuleVersion     = '0.0.7'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -61,20 +61,77 @@
     # FormatsToProcess = @()
 
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    # NestedModules     = @()
+    NestedModules     = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport = @(
         'cool'
-        'Get-CoolName'
+        'Format-CoolName'
         'Format-CoolSize'
         'Get-VisualWidth'
         'Format-VisualWidthString'
         'Set-CurrentDirectory'
         '~'
-        '.*'
-        '/*'
-        '\*'
+        '..'
+        '...'
+        '....'
+        '.....'
+        '......'
+        '.......'
+        '........'
+        '.........'
+        '..........'
+        '...........'
+        '............'
+        '.............'
+        '..............'
+        '...............'
+        '................'
+        '.................'
+        '..................'
+        '...................'
+        '....................'
+        '.....................'
+        '/'
+        '//'
+        '///'
+        '////'
+        '/////'
+        '//////'
+        '///////'
+        '////////'
+        '/////////'
+        '//////////'
+        '///////////'
+        '////////////'
+        '/////////////'
+        '//////////////'
+        '///////////////'
+        '////////////////'
+        '/////////////////'
+        '//////////////////'
+        '///////////////////'
+        '////////////////////'
+        '\'
+        '\\'
+        '\\\'
+        '\\\\'
+        '\\\\\'
+        '\\\\\\'
+        '\\\\\\\'
+        '\\\\\\\\'
+        '\\\\\\\\\'
+        '\\\\\\\\\\'
+        '\\\\\\\\\\\'
+        '\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\\\\'
+        '\\\\\\\\\\\\\\\\\\\\'
         'l'
     )
 
@@ -91,20 +148,19 @@
     # DscResourcesToExport = @()
 
     # List of all modules packaged with this module
-    # ModuleList = @()
+    ModuleList        = @('Cool')
 
     # List of all files packaged with this module
     FileList          = @(
         'Cool.psd1'
         'Cool.psm1'
-        'Cache.ps1'
-        'Colors.ps1'
-        'Core.ps1'
-        'Hotkeys.ps1'
-        'Icons.ps1'
-        'Localization.ps1'
-        'Profile.ps1'
-        'VisualWidth.ps1'
+        'HotKeys.ps1'
+        'Private/Localization.ps1'
+        'Private/Profile.ps1'
+        'Private/Cache.ps1'
+        'Private/ColorAndIcon.ps1'
+        'Private/VisualWidth.ps1'
+        'Private/Core.ps1'
         'LICENSE'
         'Functions/cd.ps1'
         'Functions/cool.ps1'

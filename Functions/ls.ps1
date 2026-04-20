@@ -1,6 +1,6 @@
 ﻿# Functions\ls.ps1
 
-function l {
+function global:l {
     param(
         [string]$Path = ".",
         [switch]$All
@@ -9,7 +9,7 @@ function l {
     if (-not $items) { return }
 
     $data = foreach ($item in $items) {
-        $styled = Get-CoolName -Item $item
+        $styled = Format-CoolName -Item $item
         [PSCustomObject]@{
             Text  = $styled
             Width = Get-VisualWidth -Text $styled
@@ -33,5 +33,4 @@ function l {
     }
 }
 
-Set-Alias -Name ls -Value l -Option AllScope -Force -Scope Global
-Export-ModuleMember -Function l -Alias ls
+Export-ModuleMember -Function l

@@ -1,7 +1,7 @@
 ﻿# Cool Profile Initialization Script
 # This script checks if the current user's PowerShell profile is configured to import the Cool module.
 
-function Initialize-CoolProfile {
+function script:Initialize-CoolProfile {
     # Get the path to the current user's PowerShell profile
     $path = $PROFILE.CurrentUserAllHosts
     $name = if ($path -match "WindowsPowerShell") { "WindowsPowerShell" } else { "PowerShell" }

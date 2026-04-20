@@ -1,4 +1,4 @@
-﻿function ConvertFrom-SourceData {
+﻿function script:ConvertFrom-SourceData {
     param(
         [string]$SourceFile
     )
@@ -32,8 +32,8 @@
 
     $entries = [System.Collections.Generic.List[string]]::new()
     $filters = [System.Collections.Generic.HashSet[string]]::new()
-    [void]$filters.Add("TERM")
-    [void]$filters.Add("COLOR")
+    $null = $filters.Add("TERM")
+    $null = $filters.Add("COLOR")
 
     foreach ($line in Get-Content $SourceFile) {
         $line = $line -replace '#.*$', ''
@@ -59,15 +59,15 @@
             if ($filters.Contains($finalKey)) {
                 continue
             }
-            [void]$entries.Add("$finalKey=$val")
-            [void]$filters.Add($key)
-            [void]$filters.Add($finalKey)
+            $null = $entries.Add("$finalKey=$val")
+            $null = $filters.Add($key)
+            $null = $filters.Add($finalKey)
         }
     }
     return [string]::Join(":", $entries)
 }
 
-function Get-CacheData {
+function script:Get-CacheData {
     param(
         [string]$SourceFile,
         [string]$CacheFile
@@ -83,7 +83,7 @@ function Get-CacheData {
     return $result
 }
 
-function ConvertTo-MemCache {
+function script:ConvertTo-MemCache {
     param($EnvVar)
     $hash = [System.Collections.Generic.Dictionary[string, string]]::new() # Store exact match and suffix match (.py, di)
     $patterns = [System.Collections.Generic.List[PSCustomObject]]::new()   # Store wildcard and regex match (*.r[0-9], *README)
@@ -111,7 +111,7 @@ function ConvertTo-MemCache {
     return $hash, $patterns
 }
 
-function Lookup {
+function script:Lookup {
     param($DefaultHash, $Hash, $Patterns, $Name, $Ext, $Attr)
     if ($null -ne $Name -and $Hash.ContainsKey($Name)) {
         return $Hash[$Name]

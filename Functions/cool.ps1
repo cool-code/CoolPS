@@ -1,5 +1,5 @@
 ﻿
-function cool {
+function global:cool {
     param (
         [string]$Command
     )

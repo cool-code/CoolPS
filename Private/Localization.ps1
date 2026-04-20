@@ -1,6 +1,6 @@
 ﻿# Cool localization helper
 
-$Script:Translations = @{
+$script:Translations = @{
     'en-US' = @{
         'LSColorsCacheUpdated'         = 'LS_COLORS cache updated!'
         'LSIconsCacheUpdated'          = 'LS_ICONS cache updated!'
@@ -53,8 +53,8 @@ $Script:Translations = @{
     }
 }
 
-function Get-CoolLocale {
-    $locale = if ($Env:LANG) { $Env:LANG } else { (Get-Culture).Name }
+function script:Get-CoolLocale {
+    $locale = if ($env:LANG) { $env:LANG } else { (Get-Culture).Name }
     switch -Regex ($locale) {
         '^zh[-_]?(TW|HK)' { return 'zh-TW' }
         '^zh' { return 'zh-CN' }
@@ -65,13 +65,13 @@ function Get-CoolLocale {
     }
 }
 
-function Get-LocalizedString {
+function script:Get-LocalizedString {
     param(
         [Parameter(Mandatory = $true)][string]$Key,
         [Parameter(ValueFromRemainingArguments = $true)][object[]]$Args
     )
     $locale = Get-CoolLocale
-    if (-not $Script:Translations.ContainsKey($locale)) {
+    if (-not $script:Translations.ContainsKey($locale)) {
         $base = $locale.Split('-')[0]
         $locale = switch ($base) {
             'zh' { 'zh-CN' }
@@ -80,7 +80,7 @@ function Get-LocalizedString {
             _ { 'en-US' }
         }
     }
-    $map = $Script:Translations[$locale]
+    $map = $script:Translations[$locale]
     if (-not $map) { return $Key }
     $value = $map[$Key]
     if (-not $value) { return $Key }
