@@ -85,7 +85,7 @@ function script:Get-CacheData {
 
 function script:ConvertTo-MemCache {
     param($EnvVar)
-    $hash = [System.Collections.Generic.Dictionary[string, string]]::new() # Store exact match and suffix match (.py, di)
+    $hash = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase) # Store exact match and suffix match (.py, di)
     $patterns = [System.Collections.Generic.List[PSCustomObject]]::new()   # Store wildcard and regex match (*.r[0-9], *README)
 
     if ($EnvVar) {

@@ -7,7 +7,7 @@
     RootModule        = 'Cool.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.8'
+    ModuleVersion     = '0.0.9'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
