@@ -89,14 +89,14 @@ function script:ConvertTo-MemCache {
     $patterns = [System.Collections.Generic.List[PSCustomObject]]::new()   # Store wildcard and regex match (*.r[0-9], *README)
 
     if ($EnvVar) {
-        $EnvVar -split ':' | ForEach-Object {
-            $kv = $_ -split '='
+        foreach ($item in ($EnvVar -split ':')) {
+            $kv = $item -split '='
             if ($kv.Count -eq 2) {
                 $key = $kv[0]
                 $val = $kv[1]
                 if ($key.StartsWith('*')) {
                     $key = $key.Substring(1)
-                    if ($key -match '\*|\[|\{' -or -not $key.StartsWith('.')) {
+                    if (-not $key.StartsWith('.') -or $key -match '\*|\[|\{') {
                         # Escape wildcard and convert to Regex format
                         # Example: .r[0-9]{0,2} -> \.r[0-9]{0,2}$
                         $regexStr = [Regex]::Escape($key).Replace('\[', '[').Replace('\{', '{').Replace('\*', '.*') + "$"
