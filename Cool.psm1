@@ -16,13 +16,22 @@ Set-Alias -Name 'ls' -Value 'l' -Option AllScope -Force -Scope Global
 Set-Alias -Name 'cd' -Value 'Set-CurrentDirectory' -Option AllScope -Force -Scope Global
 Export-ModuleMember -Alias 'ls', 'cd'
 
-# backup the existing CommandNotFoundAction to allow for chaining with other modules or default behavior if needed.
-$script:OldCommandNotFoundAction = $ExecutionContext.InvokeCommand.CommandNotFoundAction
 # Initialize a variable to track whether the module has been fully loaded. 
 # This can be used to prevent certain actions from being performed before the module is ready.
 $script:Cool_IsLoaded = $false
 $script:Cool_LoadLock = [object]::new()
 $script:ExportedMap = @{}
+
+# To ensure that the module's command not found handler is properly chained with any existing handlers,
+# we store the original CommandNotFoundAction and set up a cleanup action to restore it when the module is removed.
+if (-not $global:Cool_Module_IsImported) {
+    $global:Cool_OriginalCommandNotFoundAction = $ExecutionContext.InvokeCommand.CommandNotFoundAction
+    $global:Cool_Module_IsImported = $true
+    $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
+        $ExecutionContext.InvokeCommand.CommandNotFoundAction = $global:Cool_OriginalCommandNotFoundAction
+        $global:Cool_Module_IsImported = $false
+    }
+}
 
 $ExecutionContext.InvokeCommand.CommandNotFoundAction = {
     param($commandName, $commandEventArgs)
@@ -58,22 +67,28 @@ $ExecutionContext.InvokeCommand.CommandNotFoundAction = {
             [System.Threading.Monitor]::Exit($script:Cool_LoadLock)
         }
     }
+
+    $fullInput = Get-InputFromPSReadLine
+    # Check if the command matches an exported function or alias from this module.
+    # If it does, we create a script block to invoke that command and set it as the action for this event,
+    # effectively handling the command not found scenario for commands that are actually part of this module.
     if ($script:ExportedMap.ContainsKey($commandName)) {
-        $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("& '$commandName' @args")
+        $commandEventArgs.CommandScriptBlock = [scriptblock]::Create($fullInput)
         $commandEventArgs.StopSearch = $true
     }
     # Check if the command name corresponds to an existing directory. If it does, change to that directory.
-    elseif (Test-Path -LiteralPath $commandName -PathType Container) {
-        $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("Set-CurrentDirectory -Path '$commandName'")
+    elseif (Test-Path -LiteralPath $fullInput -PathType Container) {
+        $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("Set-CurrentDirectory -LiteralPath '$fullInput'")
         $commandEventArgs.StopSearch = $true
     }
-    # If the command is not a directory, but there was a previous CommandNotFoundAction defined,
-    # invoke it to allow other modules or the default PowerShell behavior to handle the command.
-    elseif ($null -ne $script:OldCommandNotFoundAction) {
-        &$script:OldCommandNotFoundAction $commandName $commandEventArgs
+    elseif ($null -ne $global:Cool_OriginalCommandNotFoundAction -and -not $commandEventArgs.PSObject.Properties['Cool_Handled']) {
+        # If the command was not handled by Cool Module, and there is an original CommandNotFoundAction
+        # from another module or default, we call it to allow for chaining of command not found handlers.
+        # We also add a check to prevent infinite loops in case the original handler tries to invoke a 
+        # command that also triggers Cool Module's handler.
+        # By marking the event args with a custom property, we can detect if we've already handled this
+        # event and avoid calling the original handler again.
+        $commandEventArgs | Add-Member -NotePropertyName "Cool_Handled" -NotePropertyValue $true
+        $global:Cool_OriginalCommandNotFoundAction.Invoke($commandName, $commandEventArgs)
     }
-}
-
-$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
-    $ExecutionContext.InvokeCommand.CommandNotFoundAction = $script:OldCommandNotFoundAction
 }

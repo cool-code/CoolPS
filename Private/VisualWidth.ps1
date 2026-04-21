@@ -57,13 +57,25 @@ function script:Test-AmbiguousAsWide {
 }
 
 function script:Get-WTAmbiguousAsWide {
-    # 1. Define possible config file paths (stable and preview)
-    $localAppData = $env:LOCALAPPDATA
+    # 1. Define possible config file paths (stable and preview)    
     $paths = @(
-        "$localAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json",
-        "$localAppData\Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json"
+        if ($IsWindows) {
+            $localAppData = $env:LOCALAPPDATA
+            "$localAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+            "$localAppData\Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json"
+            "$env:USERPROFILE\AppData\Local\Microsoft\Windows Terminal\settings.json"
+        }
+        elseif ($IsLinux -and $env:WSL_DISTRO_NAME) {
+            $winUser = /mnt/c/Windows/System32/cmd.exe /c "echo %USERNAME%" 2>$null | Out-String
+            if ($winUser) {
+                $winUser = $winUser.Trim()
+                "/mnt/c/Users/$winUser/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
+                "/mnt/c/Users/$winUser/AppData/Local/Packages/Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe/LocalState/settings.json"
+                "/mnt/c/Users/$winUser/AppData/Local/Microsoft/Windows Terminal/settings.json"
+            }
+        }
     )
-
+ 
     foreach ($path in $paths) {
         if (Test-Path $path) {
             try {
@@ -75,7 +87,7 @@ function script:Get-WTAmbiguousAsWide {
                 $widthSetting = $null
                 if ($null -ne $settings.profiles.defaults.ambiguousUnicodeWidth) {
                     $widthSetting = $settings.profiles.defaults.ambiguousUnicodeWidth
-                }                
+                }
                 # If found, return boolean value
                 if ($widthSetting -eq "wide") { return $true }
                 if ($widthSetting -eq "narrow") { return $false }
@@ -376,6 +388,7 @@ function script:VisualWidthTruncate {
     )
     
     if ($Mode -eq 1) { $Text = Format-DirName -Text $Text }
+    elseif ($Mode -eq 0) { $Text = $Text.Replace('\', '/') }
 
     if ($MaxWidth -lt 0) { return $Text }
 
@@ -390,10 +403,18 @@ function script:VisualWidthTruncate {
     # --- Mode Handling ---
     
     # File Mode: Preserve extension
-    if ($Mode -eq 0) {
-        $ext = [System.IO.Path]::GetExtension($Text)
-        $base = [System.IO.Path]::GetFileNameWithoutExtension($Text)
-        
+    if ($Mode -eq 0) {        
+        $lastDotIndex = $Text.LastIndexOf('.')
+        $lastSlashIndex = $Text.LastIndexOf('/')
+        if ($lastDotIndex -gt $lastSlashIndex) {
+            $base = $Text.Substring(0, $lastDotIndex)
+            $ext = $Text.Substring($lastDotIndex)
+        }
+        else {
+            $base = $Text
+            $ext = ""
+        }
+
         # If extension itself is too long, fallback to force truncate
         $limitForBase = $MaxWidth - (Get-VisualWidth -Text $ext)
         if ($limitForBase -lt 3) {

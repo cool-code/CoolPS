@@ -115,9 +115,6 @@ Export-ModuleMember -Function Set-CurrentDirectory
 # as well as functions for going up multiple directories
 # and navigating history with repeated slashes and backslashes.
 
-Set-Alias -Name cd -Value Set-CurrentDirectory -Option AllScope -Force -Scope Global
-Export-ModuleMember -Function Set-CurrentDirectory -Alias cd
-
 # go home
 function ~ { Set-CurrentDirectory $HOME }
 

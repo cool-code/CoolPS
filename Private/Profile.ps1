@@ -27,5 +27,4 @@ function script:Initialize-CoolProfile {
         $msg = Get-LocalizedString 'CoolProfileAlreadyConfigured' $name
         Write-Host $msg -ForegroundColor Gray
     }
-    # }
 }

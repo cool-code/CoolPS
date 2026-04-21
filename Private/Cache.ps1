@@ -29,42 +29,42 @@
         "STICKY"                = "st"
         "STICKY_OTHER_WRITABLE" = "tw"
     }
-
-    $entries = [System.Collections.Generic.List[string]]::new()
     $filters = [System.Collections.Generic.HashSet[string]]::new()
     $null = $filters.Add("TERM")
     $null = $filters.Add("COLOR")
-
-    foreach ($line in Get-Content $SourceFile) {
-        $line = $line -replace '#.*$', ''
-        if ($line -match '^\s*(\S+)\s+(\S+)') {
-            $key = $Matches[1]
-            $val = $Matches[2]
-            # Skip already processed items and special filter items to avoid polluting environment variables
-            if ($filters.Contains($key) -or $val -eq "*" -or $val -eq "") {
-                continue
-            }
-            $finalKey = if ($translate.ContainsKey($key)) {
-                $translate[$key] # Convert to short key first
-            }
-            elseif ($key.StartsWith('*.')) {
-                $key.ToLower() # Keep suffix match as is, but lowercase
-            }
-            elseif ($key.StartsWith('.')) {
-                "*" + $key.ToLower()  # File extension match with * prefix, and lowercase
-            }
-            else {
-                $key  # Otherwise use the original key
-            }
-            if ($filters.Contains($finalKey)) {
-                continue
-            }
-            $null = $entries.Add("$finalKey=$val")
-            $null = $filters.Add($key)
-            $null = $filters.Add($finalKey)
-        }
-    }
-    return [string]::Join(":", $entries)
+    $lines = [System.IO.File]::ReadAllLines($SourceFile)
+    if ($lines.Count -eq 0) { return $null }
+    return @(
+        foreach ($line in $lines) {
+            $line = $line -replace '#.*$', ''
+            if ($line -match '^\s*(\S+)\s+(\S+)') {
+                $key = $Matches[1]
+                $val = $Matches[2]
+                # Skip already processed items and special filter items to avoid polluting environment variables
+                if ($filters.Contains($key) -or $val -eq "*" -or $val -eq "") {
+                    continue
+                }
+                $finalKey = if ($translate.ContainsKey($key)) {
+                    $translate[$key] # Convert to short key first
+                }
+                elseif ($key.StartsWith('*.')) {
+                    $key.ToLower() # Keep suffix match as is, but lowercase
+                }
+                elseif ($key.StartsWith('.')) {
+                    "*" + $key.ToLower()  # File extension match with * prefix, and lowercase
+                }
+                else {
+                    $key  # Otherwise use the original key
+                }
+                if ($filters.Contains($finalKey)) {
+                    continue
+                }
+                $null = $filters.Add($key)
+                $null = $filters.Add($finalKey)
+                @($finalKey, $val) -join '='
+            } 
+        } 
+    ) -join ':'
 }
 
 function script:Get-CacheData {
@@ -73,12 +73,12 @@ function script:Get-CacheData {
         [string]$CacheFile
     )
     if (Test-Path $CacheFile) {
-        $cached = Get-Content $CacheFile -Raw -Encoding utf8 -ErrorAction SilentlyContinue
+        $cached = [System.IO.File]::ReadAllText($CacheFile, [System.Text.Encoding]::UTF8)
         if ($cached) { return $cached }
     }
     $result = (ConvertFrom-SourceData $SourceFile)
     if ($result) {
-        $result | Out-File -FilePath $CacheFile -Encoding utf8 -NoNewline
+        [System.IO.File]::WriteAllText($CacheFile, $result, [System.Text.Encoding]::UTF8)
     }
     return $result
 }
