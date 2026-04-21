@@ -10,14 +10,14 @@
 }
 
 $script:DefaultIcons = @{
-    "fi" = "" # File default file icon
-    "di" = "" # Directory default folder icon
+    "fi" = "" # File default file icon
+    "di" = "" # Directory default folder icon
     "ow" = "" # Writable directory default open folder icon
     "ln" = "" # Link default link icon
     "or" = "" # Orphan default broken link icon
-    "ex" = "󰞷" # Executable file default program icon
-    "hi" = "󰘓" # Hidden file default hidden icon
-    "hd" = "󱞞" # Hidden folder default hidden icon
+    "ex" = "" # Executable file default program icon
+    "hi" = "" # Hidden file default hidden icon
+    "hd" = "" # Hidden folder default hidden icon
 }
 
 $script:COLORS_SOURCE = Join-Path $PSScriptRoot "../Data/LS_COLORS"
