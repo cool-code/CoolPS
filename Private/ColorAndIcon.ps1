@@ -35,17 +35,15 @@ function script:Get-Icons {
 
 if ($null -eq $script:ColorsMemCache) {
     $script:ColorsMemCache = [PSCustomObject]@{
-        Hash     = [System.Collections.Generic.Dictionary[string, string]]::new()
-        Patterns = [System.Collections.Generic.List[PSCustomObject]]::new()
-        IsInit   = $false
+        Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
+        IsInit = $false
     }
 }
 
 if ($null -eq $script:IconsMemCache) {
     $script:IconsMemCache = [PSCustomObject]@{
-        Hash     = [System.Collections.Generic.Dictionary[string, string]]::new()
-        Patterns = [System.Collections.Generic.List[PSCustomObject]]::new()
-        IsInit   = $false
+        Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
+        IsInit = $false
     }
 }
 
@@ -54,7 +52,7 @@ function script:Initialize-ColorsMemCache {
         if (-not $env:LS_COLORS) {
             $env:LS_COLORS = Get-Colors
         }
-        $script:ColorsMemCache.Hash, $script:ColorsMemCache.Patterns = ConvertTo-MemCache $env:LS_COLORS
+        $script:ColorsMemCache.Hash = ConvertTo-MemCache $env:LS_COLORS
         $script:ColorsMemCache.IsInit = $true
     }
 }
@@ -64,7 +62,7 @@ function script:Initialize-IconsMemCache {
         if (-not $env:LS_ICONS) {
             $env:LS_ICONS = Get-Icons
         }
-        $script:IconsMemCache.Hash, $script:IconsMemCache.Patterns = ConvertTo-MemCache $env:LS_ICONS
+        $script:IconsMemCache.Hash = ConvertTo-MemCache $env:LS_ICONS
         $script:IconsMemCache.IsInit = $true
     }
 }
@@ -92,12 +90,12 @@ function script:Update-IconsCache {
 
 function script:Get-Color {
     param($Name, $Ext, $Attr)
-    return Lookup $script:DefaultColors $script:ColorsMemCache.Hash $script:ColorsMemCache.Patterns $Name $Ext $Attr
+    return Lookup $script:DefaultColors $script:ColorsMemCache.Hash $Name $Ext $Attr
 }
 
 function script:Get-Icon {
     param($Name, $Ext, $Attr)
-    return Lookup $script:DefaultIcons $script:IconsMemCache.Hash $script:IconsMemCache.Patterns $Name $Ext $Attr
+    return Lookup $script:DefaultIcons $script:IconsMemCache.Hash $Name $Ext $Attr
 }
 
 function script:Get-DefaultColor {
