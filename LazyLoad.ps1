@@ -62,13 +62,26 @@
     if ($script:ExportedSet.Contains($commandName)) {
         $commandEventArgs.CommandScriptBlock = [scriptblock]::Create($fullInput)
         $commandEventArgs.StopSearch = $true
+        return
     }
+
+    if ($fullInput -and $fullInput -match '\.{3,}') {
+        $fullInput = [Regex]::Replace($fullInput, '\.{3,}', {
+                param($m)
+                $parts = @('..') * ($m.Value.Length - 1)
+                return $parts -join '/'
+            })
+    }
+    $absolutePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($fullInput)
+
     # Check if the command name corresponds to an existing directory. If it does, change to that directory.
-    elseif ([System.IO.Directory]::Exists($fullInput)) {
-        $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("Set-CurrentDirectory -LiteralPath '$fullInput'")
+    if ([System.IO.Directory]::Exists($absolutePath)) {
+        $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("Set-CurrentDirectory -LiteralPath '$absolutePath'")
         $commandEventArgs.StopSearch = $true
+        return
     }
-    elseif ($null -ne $global:Cool_OriginalCommandNotFoundAction) {
+    
+    if ($null -ne $global:Cool_OriginalCommandNotFoundAction) {
         # If the command was not handled by Cool Module, and there is an original CommandNotFoundAction
         # from another module or default, we call it to allow for chaining of command not found handlers.
         # We also add a check to prevent infinite loops in case the original handler tries to invoke a 
