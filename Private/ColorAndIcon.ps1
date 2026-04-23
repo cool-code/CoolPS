@@ -1,12 +1,14 @@
 ﻿$script:DefaultColors = @{
-    "fi" = "0"     # Default file no color
-    "di" = "34;1" # Directory default blue bold
-    "ow" = "36;1" # Writable directory default cyan bold
-    "ln" = "35;1" # Link default purple bold
-    "or" = "31;1" # Orphan default red bold
-    "ex" = "32"   # Executable file default green
-    "hi" = "90"   # Hidden file default gray
-    "hd" = "90;1" # Hidden folder default gray bold
+    "fi" = "0"                   # Default file no color
+    "di" = "38;5;30"             # Directory default blue
+    "ow" = "38;5;220;1"          # Writable directory default yellow bold
+    "ln" = "38;5;35;1"           # Link default cyan bold
+    "or" = "48;5;196;38;5;232;1" # Orphan default white on red bold
+    "ex" = "38;5;208;1"          # Executable file default orange bold
+    "hi" = "38;5;90"             # Hidden file default gray
+    "hd" = "38;5;90;1"           # Hidden directory default gray bold
+    "pi" = "38;5;126"            # FIFO default purple
+    "so" = "38;5;197"            # Socket default pink
 }
 
 $script:DefaultIcons = @{
@@ -18,6 +20,8 @@ $script:DefaultIcons = @{
     "ex" = "" # Executable file default program icon
     "hi" = "" # Hidden file default hidden icon
     "hd" = "" # Hidden folder default hidden icon
+    "pi" = "" # FIFO default pipe icon
+    "so" = "" # Socket default socket icon
 }
 
 $script:COLORS_SOURCE = Join-Path $PSScriptRoot "../Data/LS_COLORS"
@@ -113,23 +117,31 @@ function script:Get-ColorAndIcon {
         [System.IO.FileSystemInfo]$Item,
         [int]$Depth = 0 # Prevent infinite loop caused by circular links
     )
-    # Get basic attributes
+    # Get basic attrs
     $name = $Item.Name
     $ext = $Item.Extension.ToLower()
-    $attr = "fi" 
-    $isLink = $Item.Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint)
+    $attrs = $Item.Attributes
+    $fa = [System.IO.FileAttributes]
+    $attr = "fi"
+    $isLink = $attrs.HasFlag($fa::ReparsePoint)
 
     if ($isLink) {
         if (-not (Test-Path $Item.LinkTarget)) { $attr = "or" } else { $attr = "ln" }
     }
     elseif ($Item -is [System.IO.DirectoryInfo]) {
-        $attr = if ($Item.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)) { "hd" } else { "di" }
+        $attr = if ($attrs.HasFlag($fa::Hidden)) { "hd" } else { "di" }
     }
-    elseif ($ext -match '\.(com|exe|bat|cmd|ps1)$') {
-        $attr = "ex"
-    }
-    elseif ($Item.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)) {
+    elseif ($attrs.HasFlag($fa::Hidden)) {
         $attr = "hi"
+    }
+    elseif ($attrs.HasFlag($fa::SparseFile)) {
+        $attr = "pi"
+    }
+    elseif ($ext -eq ".sock" -or $ext -eq ".socket") {
+        $attr = "so"
+    }
+    elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') {
+        $attr = "ex"
     }
 
     # Get initial color and icon

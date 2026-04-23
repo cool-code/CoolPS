@@ -213,8 +213,8 @@ function script:Get-VisualElementsAndWidths {
         if ($script:ansiRegex.IsMatch($part)) {
             # Only keep SGR (color/bold) codes as 0-width elements, discard others
             if ($script:sgrRegex.IsMatch($part)) {
-                $null = $elements.Add($part)
-                $null = $widths.Add(0)
+                $elements.Add($part)
+                $widths.Add(0)
             }
             continue
         }
@@ -236,37 +236,37 @@ function script:Get-VisualElementsAndWidths {
                         $widths[$elements.Count - 1] += $script:ZWJ.Width
                     }
                     else {
-                        $null = $elements.Add($emojiParts[$i]) # Add the emoji part as a new element
-                        $null = $widths.Add(2) # Emoji parts are treated as width 2 regardless of ZWJ support, to avoid breaking layouts (best effort)
+                        $elements.Add($emojiParts[$i]) # Add the emoji part as a new element
+                        $widths.Add(2) # Emoji parts are treated as width 2 regardless of ZWJ support, to avoid breaking layouts (best effort)
                     }
                 }
             }
             else {
-                $null = $elements.Add($char)
+                $elements.Add($char)
                 if ($script:fullWidthRegex.IsMatch($char)) {
                     # Full-width characters (CJK, Emoji, etc.) treated as width 2
-                    $null = $widths.Add(2)
+                    $widths.Add(2)
                 }
                 elseif ($char.Contains([char]0xFE0F)) {
                     # Emoji variation selector (ZWJ sequence) treated as width 2
-                    $null = $widths.Add(2)
+                    $widths.Add(2)
                 }
                 elseif ($char.Contains([char]0xFE0E)) {
                     # Text variation selector treated as width 1
-                    $null = $widths.Add(1)
+                    $widths.Add(1)
                 }
                 elseif ($script:AmbiguousAsWide -and $script:ambigWidthRegex.IsMatch($char)) {
                     # Ambiguous width characters (e.g., Greek, Cyrillic) treated as width 2 if global flag is set
-                    $null = $widths.Add(2)
+                    $widths.Add(2)
                 }
                 elseif ($script:emojiRegex.IsMatch($char)) {
                     # Emoji characters treated as width 2
-                    $null = $widths.Add(2)
+                    $widths.Add(2)
                 }
                 else {
                     # Normal ASCII and combining marks
                     # Combining marks may have .Length > 1, but visually follow the previous character, width is 1
-                    $null = $widths.Add(1)
+                    $widths.Add(1)
                 }
             }
         }

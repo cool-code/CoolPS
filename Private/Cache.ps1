@@ -1,27 +1,27 @@
 ﻿function script:Get-Translate {
     $translate = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-    $null = $translate.Add("BLK", "bd")
-    $null = $translate.Add("CAPABILITY", "ca")
-    $null = $translate.Add("CHR", "cd")
-    $null = $translate.Add("DIR", "di")
-    $null = $translate.Add("DOOR", "do")
-    $null = $translate.Add("EXEC", "ex")
-    $null = $translate.Add("FIFO", "pi")
-    $null = $translate.Add("FILE", "fi")
-    $null = $translate.Add("HIDDEN", "hi")
-    $null = $translate.Add("HIDDEN_DIR", "hd")
-    $null = $translate.Add("LINK", "ln")
-    $null = $translate.Add("MISSING", "mi")
-    $null = $translate.Add("MULTIHARDLINK", "mh")
-    $null = $translate.Add("NORMAL", "no")
-    $null = $translate.Add("ORPHAN", "or")
-    $null = $translate.Add("OTHER_WRITABLE", "ow")
-    $null = $translate.Add("RESET", "rs")
-    $null = $translate.Add("SETGID", "sg")
-    $null = $translate.Add("SETUID", "su")
-    $null = $translate.Add("SOCK", "so")
-    $null = $translate.Add("STICKY", "st")
-    $null = $translate.Add("STICKY_OTHER_WRITABLE", "tw")
+    $translate.Add("BLK", "bd")
+    $translate.Add("CAPABILITY", "ca")
+    $translate.Add("CHR", "cd")
+    $translate.Add("DIR", "di")
+    $translate.Add("DOOR", "do")
+    $translate.Add("EXEC", "ex")
+    $translate.Add("FIFO", "pi")
+    $translate.Add("FILE", "fi")
+    $translate.Add("HIDDEN", "hi")
+    $translate.Add("HIDDEN_DIR", "hd")
+    $translate.Add("LINK", "ln")
+    $translate.Add("MISSING", "mi")
+    $translate.Add("MULTIHARDLINK", "mh")
+    $translate.Add("NORMAL", "no")
+    $translate.Add("ORPHAN", "or")
+    $translate.Add("OTHER_WRITABLE", "ow")
+    $translate.Add("RESET", "rs")
+    $translate.Add("SETGID", "sg")
+    $translate.Add("SETUID", "su")
+    $translate.Add("SOCK", "so")
+    $translate.Add("STICKY", "st")
+    $translate.Add("STICKY_OTHER_WRITABLE", "tw")
     return $translate    
 }
 
@@ -34,7 +34,7 @@ function script:ConvertFrom-SourceData {
 
     if (-not [System.IO.File]::Exists($SourceFile)) { return $null }
 
-    $filters = [System.Collections.Generic.HashSet[string]]::new(16384)
+    $filters = [System.Collections.Generic.HashSet[string]]::new(2048)
     $null = $filters.Add("TERM")
     $null = $filters.Add("COLOR")
     $null = $filters.Add("*")
@@ -42,7 +42,7 @@ function script:ConvertFrom-SourceData {
     $lines = [System.IO.File]::ReadAllLines($SourceFile)
     if ($lines.Count -eq 0) { return $null }
 
-    $result = [System.Text.StringBuilder]::new()
+    $result = [System.Text.StringBuilder]::new(16384)
 
     foreach ($line in $lines) {
         $commentIdx = $line.IndexOf('#')

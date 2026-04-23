@@ -154,7 +154,8 @@
     FileList          = @(
         'Cool.psd1'
         'Cool.psm1'
-        'HotKeys.ps1'
+        'PSReadLine.ps1'
+        'LazyLoad.ps1'
         'Private/Localization.ps1'
         'Private/Profile.ps1'
         'Private/Cache.ps1'

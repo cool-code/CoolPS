@@ -1,7 +1,7 @@
 ﻿
 # initializing navigation history (if not already initialized)
 $script:Cool_NavHistory = [System.Collections.Generic.List[string]]::new()
-$null = $script:Cool_NavHistory.Add((Get-Location).Path)
+$script:Cool_NavHistory.Add((Get-Location).Path)
 $script:Cool_NavIndex = 0
 
 # This function replaces the built-in Set-Location (cd) to add enhanced navigation features:
@@ -83,18 +83,18 @@ function global:Set-CurrentDirectory {
             # If the jump is successful, update the history.
             # If we jump to a new directory in the middle of the history, we should cut off the "forward" history.
             while ($script:Cool_NavIndex -lt ($script:Cool_NavHistory.Count - 1)) {
-                $null = $script:Cool_NavHistory.RemoveAt($script:Cool_NavHistory.Count - 1)
+                $script:Cool_NavHistory.RemoveAt($script:Cool_NavHistory.Count - 1)
             }
 
             # Only record the new path if it is different from the current path in history.
             if ($newActualPath -ne $script:Cool_NavHistory[$script:Cool_NavIndex]) {
-                $null = $script:Cool_NavHistory.Add($newActualPath)
+                $script:Cool_NavHistory.Add($newActualPath)
                 $script:Cool_NavIndex++
             }
             
             # Limit history length to 20, consistent with system behavior.
             if ($script:Cool_NavHistory.Count -gt 20) {
-                $null = $script:Cool_NavHistory.RemoveAt(0)
+                $script:Cool_NavHistory.RemoveAt(0)
                 $script:Cool_NavIndex--
             }
 
@@ -123,20 +123,20 @@ Export-ModuleMember -Function '~'
 # Generate shorthand functions for going up directories, and navigating history.
 $maxDepth = 20
 $commands = @(
-    for ($i = 1; $i -le $maxDepth; $i++) {
+    foreach ($i in 1..$maxDepth) {
         # upward directory: .., ..., etc. (goes up in directory)
-        $dots = "." * ($i + 1)
+        $dots = '.' * ($i + 1)
         $upPath = (@('..') * $i) -join '/'
         "function global:$dots { Set-CurrentDirectory -Path '$upPath' }"
 
         # previous history entry: /, //, ///, etc. (goes back in history)
-        $slashes = "/" * $i
-        $cmdBack = "try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path - -ErrorAction Stop } } catch {}"
+        $slashes = '/' * $i
+        $cmdBack = 'try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path - -ErrorAction Stop } } catch {}'
         "function global:$slashes { $cmdBack }"
 
         # next history entry: \, \\, \\\, etc. (goes forward in history)
-        $backslashes = "\" * $i
-        $cmdForward = "try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path + -ErrorAction Stop } } catch {}"
+        $backslashes = '\' * $i
+        $cmdForward = 'try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path + -ErrorAction Stop } } catch {}'
         "function global:$backslashes { $cmdForward }"
     }
 ) -join "`n"
@@ -144,8 +144,8 @@ $commands = @(
 Invoke-Expression $commands
 
 $functions = foreach ($i in 1..$maxDepth) {
-    "." * ($i + 1)
-    "/" * $i
-    "\" * $i
+    '.' * ($i + 1)
+    '/' * $i
+    '\' * $i
 }
 Export-ModuleMember -Function $functions

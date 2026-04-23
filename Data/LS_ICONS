@@ -235,7 +235,7 @@ yarn            
 zathurarc       
 
 # =========================
-# Other / general directories
+# Other / general directories/files
 # =========================
 composer        
 favicon         
@@ -250,6 +250,7 @@ nvim            
 public          
 licenses        
 license         
+readme          
 localized       
 init            
 dbus            
@@ -267,8 +268,8 @@ content         
 .readme         
 .org            
 .rtf            
-.log            
-.csv            
+.log            
+.csv            
 .ini            
 .conf           
 .cfg            
@@ -450,16 +451,17 @@ content         
 .class          
 .jar            
 
-# C / C++
-.c              
-.cpp            
-.cc             
-.cxx            
-.cp             
-.h              
+# C / C++ / Objective-C
+.c              
+.cpp            
+.cc             
+.cxx            
+.cp             
+.h              
 .hpp            
 .hh             
 .hxx            
+.objc           
 
 # Go
 .go             
@@ -507,9 +509,9 @@ content         
 
 
 # C#
-.cs             
-.csproj         
-.csx            
+.cs             
+.csproj         
+.csx            
 .cshtml         
 .razor          
 .sln            
@@ -779,26 +781,26 @@ content         
 
 # Ebook / document files
 .pdf            
-.doc            
-.docx           
+.doc            
+.docx           
 .odt            
-.epub           
-.mobi           
-.ebook          
-.azw            
-.azw3           
-.fb2            
-.djvu           
-.lit            
-.prc            
-.cbr            
-.cbz            
-.snb            
+.epub           
+.mobi           
+.ebook          
+.azw            
+.azw3           
+.fb2            
+.djvu           
+.lit            
+.prc            
+.cbr            
+.cbz            
+.snb            
 .ppt            
 .pptx           
 .odp            
-.xls            
-.xlsx           
+.xls            
+.xlsx           
 .ods            
 .gdoc           
 .gsheet         
@@ -837,7 +839,7 @@ content         
 .bak            
 .orig           
 .lock           
-.sig            
+.sig            
 .pem            
 .key            
 .pub            
