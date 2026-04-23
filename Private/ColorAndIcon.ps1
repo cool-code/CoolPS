@@ -118,12 +118,8 @@ function script:Get-ColorAndIcon {
     $isLink = $attrs.HasFlag($fa::ReparsePoint)
 
     if ($isLink) {
-        $attr = if ([System.IO.Directory]::Exists($target) -or [System.IO.File]::Exists($target)) {
-            "ln" # Valid link
-        }
-        else {
-            "or" # Orphan link
-        }
+        $target = $Item.LinkTarget
+        $attr = if ([System.IO.Directory]::Exists($target) -or [System.IO.File]::Exists($target)) { "ln" } else { "or" }
     }
     elseif ($attrs.HasFlag($fa::Hidden)) {
         $attr = "hi"
