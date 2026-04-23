@@ -8,13 +8,15 @@ function global:l {
     $items = Get-ChildItem -LiteralPath $Path -Force:$All
     if (-not $items) { return }
 
-    $data = foreach ($item in $items) {
-        $styled = Format-CoolName -Item $item
-        [PSCustomObject]@{
-            Text  = $styled
-            Width = Get-VisualWidth -Text $styled
+    $data = @(
+        foreach ($item in $items) {
+            $text = Format-CoolName -Item $item
+            [PSCustomObject]@{
+                Text  = $text
+                Width = Get-VisualWidth -Text $text
+            }
         }
-    }
+    )
 
     $termWidth = $Host.UI.RawUI.WindowSize.Width - 2
     $maxW = ($data | Measure-Object -Property Width -Maximum).Maximum + 3
