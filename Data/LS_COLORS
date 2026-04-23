@@ -207,7 +207,7 @@ STICKY_OTHER_WRITABLE 48;5;235;38;5;139;3 # core
 .awk                  38;5;172            # Code (shell)
 .bash                 38;5;172            # Code (shell)
 .bat                  38;5;172            # Code (shell)
-.BAT                  38;5;172            # Code (shell)
+.cmd                  38;5;172            # Code (shell)
 .sed                  38;5;172            # Code (shell)
 .sh                   38;5;172            # Code (shell)
 .zsh                  38;5;172            # Code (shell)
@@ -710,6 +710,9 @@ STICKY_OTHER_WRITABLE 48;5;235;38;5;139;3 # core
 .vcard                38;5;7              # contact information
 .vcf                  38;5;7              # contact information
 .xln                  38;5;7
+.ps1                  38;5;75             # PowerShell
+.psd1                 38;5;75             # PowerShell
+.psm1                 38;5;75             # PowerShell
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # termcap

@@ -9,7 +9,6 @@
     $translate.Add("FIFO", "pi")
     $translate.Add("FILE", "fi")
     $translate.Add("HIDDEN", "hi")
-    $translate.Add("HIDDEN_DIR", "hd")
     $translate.Add("LINK", "ln")
     $translate.Add("MISSING", "mi")
     $translate.Add("MULTIHARDLINK", "mh")

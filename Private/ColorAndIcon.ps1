@@ -1,27 +1,23 @@
 ﻿$script:DefaultColors = @{
     "fi" = "0"                   # Default file no color
     "di" = "38;5;30"             # Directory default blue
-    "ow" = "38;5;220;1"          # Writable directory default yellow bold
     "ln" = "38;5;35;1"           # Link default cyan bold
     "or" = "48;5;196;38;5;232;1" # Orphan default white on red bold
     "ex" = "38;5;208;1"          # Executable file default orange bold
     "hi" = "38;5;90"             # Hidden file default gray
-    "hd" = "38;5;90;1"           # Hidden directory default gray bold
     "pi" = "38;5;126"            # FIFO default purple
     "so" = "38;5;197"            # Socket default pink
 }
 
 $script:DefaultIcons = @{
-    "fi" = "" # File default file icon
-    "di" = "" # Directory default folder icon
-    "ow" = "" # Writable directory default open folder icon
-    "ln" = "" # Link default link icon
-    "or" = "" # Orphan default broken link icon
-    "ex" = "" # Executable file default program icon
-    "hi" = "" # Hidden file default hidden icon
-    "hd" = "" # Hidden folder default hidden icon
-    "pi" = "" # FIFO default pipe icon
-    "so" = "" # Socket default socket icon
+    "fi" = "" # File default file icon
+    "di" = "" # Directory default folder icon
+    "ln" = "" # Link default link icon
+    "or" = "" # Orphan default broken link icon
+    "ex" = "" # Executable file default program icon
+    "hi" = "" # Hidden file default hidden icon
+    "pi" = "" # FIFO default pipe icon
+    "so" = "" # Socket default socket icon
 }
 
 $script:COLORS_SOURCE = Join-Path $PSScriptRoot "../Data/LS_COLORS"
@@ -129,11 +125,11 @@ function script:Get-ColorAndIcon {
             "or" # Orphan link
         }
     }
-    elseif ($Item -is [System.IO.DirectoryInfo]) {
-        $attr = if ($attrs.HasFlag($fa::Hidden)) { "hd" } else { "di" }
-    }
     elseif ($attrs.HasFlag($fa::Hidden)) {
         $attr = "hi"
+    }
+    elseif ($Item -is [System.IO.DirectoryInfo]) {
+        $attr = "di"
     }
     elseif ($attrs.HasFlag($fa::SparseFile)) {
         $attr = "pi"
