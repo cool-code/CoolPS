@@ -77,10 +77,10 @@ function script:Get-WTAmbiguousAsWide {
     )
  
     foreach ($path in $paths) {
-        if (Test-Path $path) {
+        if ([System.IO.File]::Exists($path)) {
             try {
                 # 2. Read and parse JSON
-                $settings = Get-Content $path -Raw -ErrorAction Stop | ConvertFrom-Json --ErrorAction Stop
+                $settings = [System.IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8) | ConvertFrom-Json --ErrorAction Stop
                 if ($null -eq $settings) { continue }
                 # 3. Priority: Specific Profile -> Global Defaults -> Default False
                 # Note: In WT, the property is "ambiguousUnicodeWidth", value is "wide" or "narrow"

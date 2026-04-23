@@ -122,7 +122,12 @@ function script:Get-ColorAndIcon {
     $isLink = $attrs.HasFlag($fa::ReparsePoint)
 
     if ($isLink) {
-        if (-not (Test-Path $Item.LinkTarget)) { $attr = "or" } else { $attr = "ln" }
+        $attr = if ([System.IO.Directory]::Exists($target) -or [System.IO.File]::Exists($target)) {
+            "ln" # Valid link
+        }
+        else {
+            "or" # Orphan link
+        }
     }
     elseif ($Item -is [System.IO.DirectoryInfo]) {
         $attr = if ($attrs.HasFlag($fa::Hidden)) { "hd" } else { "di" }

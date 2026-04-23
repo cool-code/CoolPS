@@ -55,7 +55,7 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
             # Only proceed if there is a non-empty command line
             if ($null -ne $target) {
                 $historyPath = $options.HistorySavePath
-                if (Test-Path $historyPath) {
+                if ([System.IO.File]::Exists($historyPath)) {
                     # remove the target command from history content
                     $newContent = [System.IO.File]::ReadAllLines($historyPath) | Where-Object { $_ -ne $target }
             

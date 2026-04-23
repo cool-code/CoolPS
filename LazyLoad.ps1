@@ -64,7 +64,7 @@
         $commandEventArgs.StopSearch = $true
     }
     # Check if the command name corresponds to an existing directory. If it does, change to that directory.
-    elseif (Test-Path -LiteralPath $fullInput -PathType Container) {
+    elseif ([System.IO.Directory]::Exists($fullInput)) {
         $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("Set-CurrentDirectory -LiteralPath '$fullInput'")
         $commandEventArgs.StopSearch = $true
     }

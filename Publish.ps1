@@ -26,7 +26,7 @@ foreach ($file in $fileList) {
     
     # Ensure the source file exists before copying
     $parentDir = Split-Path $destFile
-    if (!(Test-Path $parentDir)) { New-Item $parentDir -Type Directory -Force | Out-Null }
+    if (-not ([System.IO.Directory]::Exists($parentDir))) { New-Item $parentDir -Type Directory -Force | Out-Null }
     
     Copy-Item $srcFile $destFile -Force
 }

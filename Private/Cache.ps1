@@ -88,7 +88,7 @@ function script:Get-CacheData {
         [string]$SourceFile,
         [string]$CacheFile
     )
-    if (Test-Path $CacheFile) {
+    if ([System.IO.File]::Exists($CacheFile)) {
         $cached = [System.IO.File]::ReadAllText($CacheFile, [System.Text.Encoding]::UTF8)
         if ($cached) { return $cached }
     }
