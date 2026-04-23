@@ -131,12 +131,12 @@ $commands = @(
 
         # previous history entry: /, //, ///, etc. (goes back in history)
         $slashes = '/' * $i
-        $cmdBack = 'try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path - -ErrorAction Stop } } catch {}'
+        $cmdBack = "try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path - -ErrorAction Stop } } catch {}"
         "function global:$slashes { $cmdBack }"
 
         # next history entry: \, \\, \\\, etc. (goes forward in history)
         $backslashes = '\' * $i
-        $cmdForward = 'try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path + -ErrorAction Stop } } catch {}'
+        $cmdForward = "try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path + -ErrorAction Stop } } catch {}"
         "function global:$backslashes { $cmdForward }"
     }
 ) -join "`n"
