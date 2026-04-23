@@ -21,9 +21,9 @@ $script:DefaultIcons = @{
 }
 
 $script:COLORS_SOURCE = Join-Path $PSScriptRoot "../Data/LS_COLORS"
-$script:COLORS_CACHE = Join-Path $PSScriptRoot "../Data/.LS_COLORS_CACHE"
+$script:COLORS_CACHE = Join-Path $HOME ".LS_COLORS_CACHE"
 $script:ICONS_SOURCE = Join-Path $PSScriptRoot "../Data/LS_ICONS"
-$script:ICONS_CACHE = Join-Path $PSScriptRoot "../Data/.LS_ICONS_CACHE"
+$script:ICONS_CACHE = Join-Path $HOME ".LS_ICONS_CACHE"
 
 function script:Get-Colors {
     return Get-CacheData $script:COLORS_SOURCE $script:COLORS_CACHE
