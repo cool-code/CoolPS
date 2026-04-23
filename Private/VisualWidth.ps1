@@ -173,10 +173,9 @@ function script:Get-InitialZWJSupport {
 $script:AmbiguousAsWide = Get-InitialAmbiguousAsWide
 $script:ZWJ = [PSCustomObject](Get-InitialZWJSupport)
 
-if ($null -eq $script:WidthCache) {
-    Add-Type -AssemblyName System.Runtime.Caching
-    $script:WidthCache = [System.Runtime.Caching.MemoryCache]::Default
-}
+Add-Type -AssemblyName System.Runtime.Caching
+$script:WidthCache = [System.Runtime.Caching.MemoryCache]::Default
+
 # # Define SGR (color) regex (ends with m)
 $script:sgrRegex = [Regex]::new("\x1B\[[0-9;]*m", [System.Text.RegularExpressions.RegexOptions]::Compiled)
 # Define ANSI regex to match all ANSI escape codes, including SGR and others (like cursor movement), for proper splitting

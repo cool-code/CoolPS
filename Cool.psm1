@@ -1,6 +1,6 @@
 ﻿# Cool.psm1
 # This is the main module file for the Cool PowerShell module.
-Set-StrictMode -Version 2.0
+Set-StrictMode -Version Latest
 
 # set UTF-8 encoding for input and output to ensure proper handling of Unicode characters,
 # which is essential for the color and icon features of the module.
@@ -29,7 +29,7 @@ $Script:ExportedMap = [System.Collections.Generic.Dictionary[string, string]]::n
 
 # To ensure that the module's command not found handler is properly chained with any existing handlers,
 # we store the original CommandNotFoundAction and set up a cleanup action to restore it when the module is removed.
-if (-not $global:Cool_Module_IsImported) {
+if (-not (Get-Variable -Name "Cool_Module_IsImported" -Scope Global -ErrorAction SilentlyContinue)) {
     $global:Cool_OriginalCommandNotFoundAction = $ExecutionContext.InvokeCommand.CommandNotFoundAction
     $global:Cool_Module_IsImported = $true
     $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {

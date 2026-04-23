@@ -37,18 +37,14 @@ function script:Get-Icons {
     return Get-CacheData $script:ICONS_SOURCE $script:ICONS_CACHE
 }
 
-if ($null -eq $script:ColorsMemCache) {
-    $script:ColorsMemCache = [PSCustomObject]@{
-        Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
-        IsInit = $false
-    }
+$script:ColorsMemCache = [PSCustomObject]@{
+    Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
+    IsInit = $false
 }
 
-if ($null -eq $script:IconsMemCache) {
-    $script:IconsMemCache = [PSCustomObject]@{
-        Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
-        IsInit = $false
-    }
+$script:IconsMemCache = [PSCustomObject]@{
+    Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
+    IsInit = $false
 }
 
 function script:Initialize-ColorsMemCache {
