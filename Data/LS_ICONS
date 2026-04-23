@@ -122,6 +122,7 @@ Contacts        
 Favorites       
 Links           
 OneDrive        
+Searches        
 
 # =========================
 # Source code / development related directories
@@ -227,6 +228,8 @@ xmonad          
 xorg            
 yarn            
 zathurarc       
+.copilot        
+.local          
 
 # =========================
 # Other / general directories/files
