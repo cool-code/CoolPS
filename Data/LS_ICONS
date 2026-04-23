@@ -849,3 +849,174 @@ content         
 .favicons       
 .magic          
 .mgc            
+
+# Nintendo Game ROM files
+.gb             
+.gbc            
+.gba            
+.nes            
+.fc             
+.snes           
+.sfc            
+.n64            
+.nds            
+.3ds            
+.cci            
+.cia            
+.fds            
+.nwc            
+.nch            
+.np             
+.np2            
+.npz            
+.nsf            
+.nst            
+.unf            
+.unif           
+.v64            
+.z64            
+.usf            
+.gcm            
+.gcz            
+.wbfs           
+.rvz            
+.3dz            
+.sav            
+.srm            
+.wux            
+.wud            
+.rpx            
+.nsp            
+.xci            
+.nsz            
+.xcz            
+
+# PlayStation ROM files
+.pbp            
+.psx            
+.ps             
+.ccd            
+.chd            
+.cso            
+.sub            
+.nrg            
+.sbi            
+.ecm            
+.z              
+.znx            
+.vpk            
+
+# Other handheld and console ROM files
+
+# Sega
+.sms            
+.gg             
+.md             
+.smd            
+.gen            
+.bin            
+.32x            
+.sg             
+.cue            
+.iso            
+.chd            
+.gdi            
+.cdi            
+.ssf            
+.dsf            
+
+# Sega Dreamcast
+.cdi            
+.gdi            
+.chd            
+
+# Atari
+.a26            
+.a52            
+.a78            
+.atx            
+.xex            
+.atr            
+.bas            
+
+# Atari Lynx
+.lnx            
+
+# Neo Geo
+.neo            
+.ngp            
+.ngc            
+.ngpc           
+
+# PC Engine / TurboGrafx
+.pce            
+.hes            
+.sgx            
+
+# Wonderswan
+.ws             
+.wsc            
+
+# Virtual Boy
+.vb             
+
+# MSX
+.rom            
+.mx1            
+.mx2            
+.dsk            
+
+# Commodore
+.d64            
+.t64            
+.prg            
+.tap            
+.g64            
+.d81            
+
+# Amiga
+.adf            
+.dms            
+.hdf            
+
+# Xbox
+.xbe            
+
+# Xbox 360
+.xex            
+
+# Philips CD-i
+.cdi            
+
+# Fairchild Channel F
+.fcz            
+.fcm            
+
+# Intellivision
+.int            
+.rom            
+
+# ColecoVision
+.col            
+.rom            
+
+# Vectrex
+.vec            
+
+# Apple II
+.dsk            
+.po             
+.nib            
+
+# ZX Spectrum
+.tap            
+.z80            
+.sna            
+.tzx            
+
+# TI-99/4A
+.ti             
+.rpk            
+
+# Arcade (MAME)
+.chd            
