@@ -8,9 +8,8 @@ function Get-InputFromPSReadLine {
     $cursor = $null
     # Get the current command line and cursor position
     $script:PSRL::GetBufferState([ref]$line, [ref]$cursor)
-    if ($null -ne $line -and -not [string]::IsNullOrWhiteSpace($line)) {
-        $target = $line.Trim()
-        return $target
+    if (-not [string]::IsNullOrWhiteSpace($line)) {
+        return $line
     }
     return $null
 }
@@ -51,9 +50,10 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
             $options = $script:PSRL::GetOptions()
             $isPredictorOn = ($options.PredictionSource -ne 'None')
     
-            $target = Get-InputFromPSReadLine
+            $line = Get-InputFromPSReadLine
             # Only proceed if there is a non-empty command line
-            if ($null -ne $target) {
+            if ($null -ne $line) {
+                $target = $line.Trim()
                 $historyPath = $options.HistorySavePath
                 if ([System.IO.File]::Exists($historyPath)) {
                     # remove the target command from history content
@@ -95,9 +95,10 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
             -BriefDescription "SaveInHistory" `
             -LongDescription "Save the current command line in history but do not execute it" `
             -ScriptBlock {
-            $target = Get-InputFromPSReadLine
+            $line = Get-InputFromPSReadLine
             # Only proceed if there is a non-empty command line
-            if ($null -ne $target) {
+            if ($null -ne $line) {
+                $target = $line.Trim()
                 $script:PSRL::AddToHistory($target)
             }
             $script:PSRL::RevertLine()
@@ -107,4 +108,60 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
         # If PSReadLine is not available or any error occurs,
         # we can safely ignore it as these hotkeys are optional enhancements.
     }
+}
+
+# check input from PSReadLine to see if it matches a directory path,
+# and if so, change to that directory instead of executing it as a command.
+Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
+    $line = Get-InputFromPSReadLine
+    if ($null -eq $line) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+        return
+    }
+
+    # Parse the input line to analyze its structure.
+    # We will check if it's a simple string that can be treated as a directory path for quick navigation.
+    $errors = $null
+    $tokens = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseInput($line, [ref]$tokens, [ref]$errors)
+
+    if (-not $errors) {
+        $pipeline = $ast.EndBlock.Statements
+        if ($pipeline.Count -eq 1 -and $pipeline[0] -is [System.Management.Automation.Language.PipelineAst]) {
+            $command = $pipeline[0].PipelineElements
+            if ($command.Count -eq 1 -and $command[0] -is [System.Management.Automation.Language.CommandExpressionAst]) {
+                $expression = $command[0].Expression
+                $potentialPath = $null
+                if ($expression -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+                    $potentialPath = $expression.Value
+                }
+                elseif ($expression -is [System.Management.Automation.Language.ExpandableStringExpressionAst]) {
+                    try {
+                        $potentialPath = $ExecutionContext.InvokeCommand.ExpandString($expression.Value)
+                    }
+                    catch {
+                        $potentialPath = $null
+                    }
+                }
+                if ($null -ne $potentialPath) {
+                    try {
+                        if ($potentialPath -match '\.{3,}') {
+                            $potentialPath = [Regex]::Replace($potentialPath, '\.{3,}', {
+                                    param($m)
+                                    $parts = @('..') * ($m.Value.Length - 1)
+                                    return $parts -join '/'
+                                })
+                        }
+                        $absPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($potentialPath)
+                        if ([System.IO.Directory]::Exists($absPath)) {
+                            [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, $absPath)
+                        }
+                    }
+                    catch {}
+                }
+            }
+        }
+    }
+
+    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
 }
