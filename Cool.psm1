@@ -26,6 +26,9 @@ $script:Cool_IsLoaded = $false
 $script:Cool_LoadLock = [object]::new()
 $script:ExportedSet = [System.Collections.Generic.HashSet[string]]::new(2048, [System.StringComparer]::OrdinalIgnoreCase)
 $Script:ExportedMap = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$script:LastCommandOffset = 0
+$script:LastHistoryId = -1
+$script:LastFullInput = ''
 
 # To ensure that the module's command not found handler is properly chained with any existing handlers,
 # we store the original CommandNotFoundAction and set up a cleanup action to restore it when the module is removed.
@@ -42,6 +45,8 @@ $ExecutionContext.InvokeCommand.CommandNotFoundAction = {
     param($commandName, $commandEventArgs)
     # Load the main components of the Cool module in a lazy manner,
     # ensuring that they are only loaded when needed.
-    . (Join-Path $PSScriptRoot "LazyLoad.ps1")
+    if (-not $script:Cool_IsLoaded) {
+        . (Join-Path $PSScriptRoot "LazyLoad.ps1")
+    }
     Invoke-CommandNotFoundAction $commandName $commandEventArgs
 }

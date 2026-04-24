@@ -110,12 +110,29 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
     }
 }
 
+function Convert-MultiDots {
+    param([string]$InputString)
+    if ([string]::IsNullOrWhiteSpace($InputString)) { return $InputString }
+    # Regex logic:
+    # (?<=^|[\\/])  : Preceded by start of string or a slash
+    # \.{3,}        : Match three or more dots
+    # (?=[\\/]|$)   : Followed by a slash or end of string
+    return [Regex]::Replace($InputString, '(?<=^|[\\/])\.{3,}(?=[\\/]|$)', {
+            param($m)
+            $dotsCount = $m.Value.Length
+            # Default slash style: use \ if the path contains backslashes, otherwise use /
+            $sep = if ($InputString -match '\\') { '\' } else { '/' }
+            $ups = @('..') * ($dotsCount - 1)
+            return $ups -join $sep
+        })
+}
+
 # check input from PSReadLine to see if it matches a directory path,
 # and if so, change to that directory instead of executing it as a command.
 Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
     $line = Get-InputFromPSReadLine
     if ($null -eq $line) {
-        [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+        $script:PSRL::AcceptLine()
         return
     }
 
@@ -145,16 +162,10 @@ Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
                 }
                 if ($null -ne $potentialPath) {
                     try {
-                        if ($potentialPath -match '\.{3,}') {
-                            $potentialPath = [Regex]::Replace($potentialPath, '\.{3,}', {
-                                    param($m)
-                                    $parts = @('..') * ($m.Value.Length - 1)
-                                    return $parts -join '/'
-                                })
-                        }
+                        $potentialPath = Convert-MultiDots $potentialPath
                         $absPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($potentialPath)
                         if ([System.IO.Directory]::Exists($absPath)) {
-                            [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, $absPath)
+                            $script:PSRL::Replace(0, $line.Length, $absPath)
                         }
                     }
                     catch {}
@@ -163,5 +174,35 @@ Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
         }
     }
 
-    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+    $script:PSRL::AcceptLine()
+}
+
+Set-PSReadLineKeyHandler -Key Tab -ScriptBlock {
+    $line = $null
+    $cursor = $null
+    # We get the current buffer state to determine the word at the cursor position
+    # for potential multi-dot conversion before triggering completion.
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+
+    # 1. Find the start position of the "word" at the cursor
+    # We consider space, semicolon, and quotes as word delimiters for simplicity,
+    # which covers most cases for file paths and commands.
+    $firstHalf = $line.SubString(0, $cursor)
+    $lastSpaceIndex = $firstHalf.LastIndexOfAny(@(' ', ';', '"', "'"))
+    $startIndex = $lastSpaceIndex + 1
+    $currentWord = $firstHalf.SubString($startIndex)
+
+    # 2. Only perform multi-dot conversion on the current "word"
+    # under the cursor to avoid unintended changes to the entire line.
+    $converted = Convert-MultiDots $currentWord
+
+    # 3. If there is a change, only replace the current word in the buffer,
+    # preserving the rest of the line and cursor position.
+    if ($converted -ne $currentWord) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::Replace($startIndex, $currentWord.Length, $converted)
+    }
+
+    # 4. Execute system completion after potential conversion,
+    # which will now work with the updated word under the cursor.
+    [Microsoft.PowerShell.PSConsoleReadLine]::MenuComplete()
 }

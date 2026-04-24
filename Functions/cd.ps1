@@ -25,86 +25,85 @@ function global:Set-CurrentDirectory {
 
         [switch]$PassThru
     )
-    process {
+    try {
+        $null = $PSBoundParameters.Remove('ErrorAction')
         # --- 0. Handle stack switching (StackName) with highest priority ---
         # If the user provided StackName, it indicates a system-level stack operation, so we forward it directly and exit
         if ($PSBoundParameters.ContainsKey('StackName')) {
-            return Microsoft.PowerShell.Management\Set-Location @PSBoundParameters
+            return Microsoft.PowerShell.Management\Set-Location @PSBoundParameters -ErrorAction Stop
         }
     
         $targetParam = if ($PSCmdlet.ParameterSetName -eq 'LiteralPath') { 'LiteralPath' } else { 'Path' }
         $originalPath = if ($targetParam -eq 'LiteralPath') { $LiteralPath } else { $Path }
 
-        # --- 1. Handle cd - (go back) ---
-        if ($originalPath -eq '-') {
+        # Handle 'cd' with no arguments to go to the home directory
+        if ($null -eq $originalPath -or [string]::IsNullOrWhiteSpace($originalPath)) {
+            $PSBoundParameters['Path'] = '~'
+        }
+        # Handle 'cd -' for going back in history
+        elseif ($originalPath -eq '-') {
             if ($script:Cool_NavIndex -gt 0) {
                 $script:Cool_NavIndex--
                 $targetPath = $script:Cool_NavHistory[$script:Cool_NavIndex]
                 # We use Set-Location instead of Push-Location/Pop-Location to maintain our own history stack and support forward navigation with cd +
                 # Using -LiteralPath to prevent issues with special characters in paths
-                return Microsoft.PowerShell.Management\Set-Location -LiteralPath $targetPath -ErrorAction Stop
+                $null = $PSBoundParameters.Remove($targetParam)
+                return Microsoft.PowerShell.Management\Set-Location -LiteralPath $targetPath @PSBoundParameters -ErrorAction Stop
             }
             throw "There is no location history left to navigate backwards."
         }
-
-        # --- 2. Handle cd + (go forward) ---
-        if ($originalPath -eq '+') {
+        # Handle 'cd +' for going forward in history
+        elseif ($originalPath -eq '+') {
             if ($script:Cool_NavIndex -lt ($script:Cool_NavHistory.Count - 1)) {
                 $script:Cool_NavIndex++
                 $targetPath = $script:Cool_NavHistory[$script:Cool_NavIndex]
-                return Microsoft.PowerShell.Management\Set-Location -LiteralPath $targetPath -ErrorAction Stop
+                $null = $PSBoundParameters.Remove($targetParam)
+                return Microsoft.PowerShell.Management\Set-Location -LiteralPath $targetPath @PSBoundParameters -ErrorAction Stop
             }
             throw "There is no location history left to navigate forwards."
         }
-
-        # --- 3. Handle ... (enhanced logic) ---
-        if ($originalPath -and $originalPath -match '\.{3,}') {
-            $newPath = [Regex]::Replace($originalPath, '\.{3,}', {
-                    param($m)
-                    $parts = @('..') * ($m.Value.Length - 1)
-                    return $parts -join '/'
-                })
-            $PSBoundParameters[$targetParam] = $newPath
+        # Handle 'cd ...' for going up multiple directories
+        else {
+            $PSBoundParameters[$targetParam] = Convert-MultiDots $originalPath
         }
 
-        # --- 4. Handle the case where cd is entered without parameters to go to ~ ---
-        if ($null -eq $originalPath -or [string]::IsNullOrWhiteSpace($originalPath)) {
-            $PSBoundParameters['Path'] = '~'
-        }
-
-        # --- 5. Execute the jump and update history ---
+        # Execute the jump and update history
         try {
             $null = $PSBoundParameters.Remove('PassThru')
 
             # First, execute the jump.
-            $result = Microsoft.PowerShell.Management\Set-Location @PSBoundParameters -PassThru
-            $newActualPath = $result.Path
+            $result = Microsoft.PowerShell.Management\Set-Location @PSBoundParameters -PassThru -ErrorAction Stop
+            if ($null -ne $result) {
+                $newActualPath = $result.Path
 
-            # If the jump is successful, update the history.
-            # If we jump to a new directory in the middle of the history, we should cut off the "forward" history.
-            while ($script:Cool_NavIndex -lt ($script:Cool_NavHistory.Count - 1)) {
-                $script:Cool_NavHistory.RemoveAt($script:Cool_NavHistory.Count - 1)
-            }
+                # If the jump is successful, update the history.
+                # If we jump to a new directory in the middle of the history, we should cut off the "forward" history.
+                while ($script:Cool_NavIndex -lt ($script:Cool_NavHistory.Count - 1)) {
+                    $script:Cool_NavHistory.RemoveAt($script:Cool_NavHistory.Count - 1)
+                }
 
-            # Only record the new path if it is different from the current path in history.
-            if ($newActualPath -ne $script:Cool_NavHistory[$script:Cool_NavIndex]) {
-                $script:Cool_NavHistory.Add($newActualPath)
-                $script:Cool_NavIndex++
-            }
+                # Only record the new path if it is different from the current path in history.
+                if ($newActualPath -ne $script:Cool_NavHistory[$script:Cool_NavIndex]) {
+                    $script:Cool_NavHistory.Add($newActualPath)
+                    $script:Cool_NavIndex++
+                }
             
-            # Limit history length to 20, consistent with system behavior.
-            if ($script:Cool_NavHistory.Count -gt 20) {
-                $script:Cool_NavHistory.RemoveAt(0)
-                $script:Cool_NavIndex--
+                # Limit history length to 20, consistent with system behavior.
+                if ($script:Cool_NavHistory.Count -gt 20) {
+                    $script:Cool_NavHistory.RemoveAt(0)
+                    $script:Cool_NavIndex--
+                }
             }
-
             if ($PassThru) {
                 return $result
-            }            
+            }
         }
         catch {
             throw $_
         }
+    }
+    catch {
+        $PSCmdlet.WriteError($_)
     }
 }
 
@@ -122,26 +121,23 @@ Export-ModuleMember -Function '~'
 
 # Generate shorthand functions for going up directories, and navigating history.
 $maxDepth = 20
-$commands = @(
-    foreach ($i in 1..$maxDepth) {
-        # upward directory: .., ..., etc. (goes up in directory)
-        $dots = '.' * ($i + 1)
-        $upPath = (@('..') * $i) -join '/'
-        "function global:$dots { Set-CurrentDirectory -Path '$upPath' }"
 
-        # previous history entry: /, //, ///, etc. (goes back in history)
-        $slashes = '/' * $i
-        $cmdBack = "try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path - -ErrorAction Stop } } catch {}"
-        "function global:$slashes { $cmdBack }"
+$commands = [System.Text.StringBuilder]::new(10240)
+foreach ($i in 1..$maxDepth) {
+    # upward directory: .., ..., etc. (goes up in directory)
+    $null = $commands.Append('function global:').Append('.' * ($i + 1))
+    $null = $commands.Append(' { param([switch]$PassThru) Set-CurrentDirectory -Path ').Append((@('..') * $i) -join '/').Append(' @PSBoundParameters }').AppendLine()
 
-        # next history entry: \, \\, \\\, etc. (goes forward in history)
-        $backslashes = '\' * $i
-        $cmdForward = "try { 1..$i | ForEach-Object { Set-CurrentDirectory -Path + -ErrorAction Stop } } catch {}"
-        "function global:$backslashes { $cmdForward }"
-    }
-) -join "`n"
+    # previous history entry: /, //, ///, etc. (goes back in history)
+    $null = $commands.Append('function global:').Append('/' * $i)
+    $null = $commands.Append(' { param([switch]$PassThru) try { 1..').Append($i).Append(' | ForEach-Object { Set-CurrentDirectory -LiteralPath - @PSBoundParameters } } catch { } }').AppendLine()
 
-Invoke-Expression $commands
+    # next history entry: \, \\, \\\, etc. (goes forward in history)
+    $null = $commands.Append('function global:').Append('\' * $i)
+    $null = $commands.Append(' { param([switch]$PassThru) try { 1..').Append($i).Append(' | ForEach-Object { Set-CurrentDirectory -LiteralPath + @PSBoundParameters } } catch { } }').AppendLine()
+}
+
+Invoke-Expression $commands.ToString()
 
 $functions = foreach ($i in 1..$maxDepth) {
     '.' * ($i + 1)
