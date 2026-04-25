@@ -174,9 +174,13 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
             $script:PSRL::RevertLine()
         } -ErrorAction Stop
 
-        # check input from PSReadLine to see if it matches a directory path,
-        # and if so, change to that directory instead of executing it as a command.
-        Set-PSReadLineKeyHandler -Key Enter -ScriptBlock {
+        # This script sets up a custom hotkey (Enter) in PSReadLine to implement smart directory navigation.
+        # It intercepts the Enter key, checks if the input is a simple path-like string, and if so,
+        # it attempts to resolve it as a directory and change to that directory instead of executing it as a command.
+        Set-PSReadLineKeyHandler -Key Enter `
+            -BriefDescription "SmartDirectoryNavigation" `
+            -LongDescription "Navigate to the directory if the input is a valid path, otherwise execute the command" `
+            -ScriptBlock {
             $line = Get-InputFromPSReadLine
             if ($null -eq $line) {
                 $script:PSRL::AcceptLine()
@@ -227,7 +231,10 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
         # This script sets up a custom hotkey (Tab) in PSReadLine to trigger menu completion with enhanced formatting for filesystem paths.
         # It intercepts the Tab key, checks if the current word under the cursor is a potential filesystem path, applies multi-dot conversion if needed,
         # and then triggers the menu completion to show suggestions with colors and icons.
-        Set-PSReadLineKeyHandler -Key Tab -ScriptBlock {
+        Set-PSReadLineKeyHandler -Key Tab `
+            -BriefDescription "EnhancedMenuComplete" `
+            -LongDescription "Trigger menu completion with enhanced formatting for filesystem paths" `
+            -ScriptBlock {
             $line = $null
             $cursor = $null
             # We get the current buffer state to determine the word at the cursor position
