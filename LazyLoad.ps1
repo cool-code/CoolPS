@@ -25,7 +25,6 @@ function script:Invoke-CommandNotFoundAction {
                 .  (Join-Path $PSScriptRoot 'Private/Localization.ps1')
                 .  (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1')
                 .  (Join-Path $PSScriptRoot 'Private/VisualWidth.ps1')
-                .  (Join-Path $PSScriptRoot 'Private/PSReadLine.ps1')
                 # Mark the module as fully loaded to prevent reinitialization.
                 $manifestPath = Join-Path $PSScriptRoot 'Cool.psd1'
                 $manifest = Import-PowerShellDataFile -Path $manifestPath
