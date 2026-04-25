@@ -129,6 +129,12 @@ function script:Get-ColorAndIcon {
         $icon = Get-DefaultIcon $attr
     }
 
+    if ($attrs.HasFlag($fa::System)) {
+        $color += ";2" # Dim system files
+    }
+    if ($attrs.HasFlag($fa::ReadOnly)) {
+        $color += ";4" # Underline read-only files
+    }
     return $color, $icon
 }
 

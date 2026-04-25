@@ -11,7 +11,7 @@
         [System.IO.FileSystemInfo]$Item
     )
     $color, $icon = Get-ColorAndIcon -Item $Item
-    return "$(EscapeColor $color)" + (vPadRight $icon 3) + "$($Item.Name)$(ColorReset)"
+    return "$(EscapeColor $color)$(vPadRight $icon 3)$($Item.Name)$(ColorReset)"
 }
 
 function global:Format-CoolSize {
