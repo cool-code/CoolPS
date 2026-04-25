@@ -275,6 +275,21 @@ function script:Get-VisualElementsAndWidths {
     return $cacheEntry.elements, $cacheEntry.widths
 }
 
+function global:Get-VisualWidth {
+    <#
+    .SYNOPSIS
+        Calculates the visual width of a string.
+    .PARAMETER Text
+        The string for which to calculate the visual width.
+    .OUTPUT
+        An integer representing the visual width of the string.
+    #>
+    param([string]$Text)
+    $elements, $widths = Get-VisualElementsAndWidths -Text $Text
+    $totalWidth = 0
+    foreach ($w in $widths) { $totalWidth += $w }
+    return $totalWidth
+}
 
 function script:VisualWidthPad {
     <#
@@ -456,3 +471,39 @@ function script:VisualWidthTruncate {
     return $result
 }
 
+function global:Format-VisualWidthString {
+    <#
+    .SYNOPSIS
+        Unified entry point for visual width operations.
+    .PARAMETER Text
+        The string to format.
+    .PARAMETER VisualWidth
+        The target visual width for the output string.
+    .PARAMETER Mode
+        Available: PadLeft, PadCenter, PadRight, TruncateFile, TruncateDir
+    .OUTPUT
+        A string that has been padded or truncated to fit the specified visual width, according to the selected mode.
+    .EXAMPLE
+        Format-VisualWidthString -Text "👨‍👩‍👧‍👦中国家庭.txt" -VisualWidth 20 -Mode PadRight
+        Output: "👨‍👩‍👧‍👦中国家庭.txt      " on support ZWJ term (treating 👨‍👩‍👧‍👦 as width 2)
+        Output: "👨‍👩‍👧‍👦中国家庭.txt" on non-support ZWJ term (treating 👨‍👩‍👧‍👦 as width 8 or 11)
+    #>
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+        
+        [Parameter(Mandatory = $true)]
+        [int]$VisualWidth,
+        
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("PadLeft", "PadCenter", "PadRight", "TruncateFile", "TruncateDir")]
+        [string]$Mode
+    )
+    switch ($Mode) {
+        "PadLeft" { return VisualWidthPad -Text $Text -Width $VisualWidth -Alignment -1 }
+        "PadCenter" { return VisualWidthPad -Text $Text -Width $VisualWidth -Alignment 0 }
+        "PadRight" { return VisualWidthPad -Text $Text -Width $VisualWidth -Alignment 1 }
+        "TruncateFile" { return VisualWidthTruncate -Text $Text -MaxWidth $VisualWidth -Mode 0 }
+        "TruncateDir" { return VisualWidthTruncate -Text $Text -MaxWidth $VisualWidth -Mode 1 }
+    }
+}

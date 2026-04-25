@@ -1,4 +1,105 @@
-﻿$script:DefaultColors = @{
+﻿function script:Get-Translate {
+    $translate = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $translate.Add("BLK", "bd")
+    $translate.Add("CAPABILITY", "ca")
+    $translate.Add("CHR", "cd")
+    $translate.Add("DIR", "di")
+    $translate.Add("DOOR", "do")
+    $translate.Add("EXEC", "ex")
+    $translate.Add("FIFO", "pi")
+    $translate.Add("FILE", "fi")
+    $translate.Add("HIDDEN", "hi")
+    $translate.Add("LINK", "ln")
+    $translate.Add("MISSING", "mi")
+    $translate.Add("MULTIHARDLINK", "mh")
+    $translate.Add("NORMAL", "no")
+    $translate.Add("ORPHAN", "or")
+    $translate.Add("OTHER_WRITABLE", "ow")
+    $translate.Add("RESET", "rs")
+    $translate.Add("SETGID", "sg")
+    $translate.Add("SETUID", "su")
+    $translate.Add("SOCK", "so")
+    $translate.Add("STICKY", "st")
+    $translate.Add("STICKY_OTHER_WRITABLE", "tw")
+    return $translate    
+}
+
+$script:TranslateCache = Get-Translate
+
+function script:ConvertFrom-SourceData {
+    param(
+        [string]$SourceFile
+    )
+
+    if (-not [System.IO.File]::Exists($SourceFile)) { return $null }
+
+    $filters = [System.Collections.Generic.HashSet[string]]::new(2048)
+    $null = $filters.Add("TERM")
+    $null = $filters.Add("COLOR")
+    $null = $filters.Add("*")
+
+    $lines = [System.IO.File]::ReadAllLines($SourceFile)
+    if ($lines.Count -eq 0) { return $null }
+
+    $result = [System.Text.StringBuilder]::new(16384)
+
+    foreach ($line in $lines) {
+        # remove comments and trim whitespace
+        $cleanLine = $line.Split('#')[0].Trim()
+        if (-not $cleanLine) { continue }
+
+        # use regex to split by the last occurrence of whitespace, to allow keys with spaces (like "Saved Games")
+        $parts = [regex]::Split($cleanLine, '\s+(?=\S+$)')
+
+        if ($parts.Count -lt 2) { continue }
+
+        $key = $parts[0]
+        $val = $parts[1]
+
+        if ($val -eq "*" -or $val -eq "" -or $filters.Contains($key)) { continue }
+
+        $finalKey = $null
+        if ($script:TranslateCache.TryGetValue($key, [ref]$finalKey)) {
+            # Found a translation, use it
+        }
+        elseif ($key.StartsWith('*.')) {
+            $finalKey = $key.ToLower()
+        }
+        elseif ($key.StartsWith('.')) {
+            $finalKey = "*" + $key.ToLower()
+        }
+        else {
+            $finalKey = $key
+        }
+
+        if ($filters.Contains($finalKey)) { continue }
+        
+        $null = $filters.Add($key)
+        $null = $filters.Add($finalKey)
+        if ($result.Length -gt 0) { $null = $result.Append(':') }
+        $null = $result.Append($finalKey).Append('=').Append($val)
+    }
+
+    return $result.ToString()
+}
+
+function script:Get-CacheData {
+    param(
+        [string]$SourceFile,
+        [string]$CacheFile
+    )
+    if ([System.IO.File]::Exists($CacheFile)) {
+        $cached = [System.IO.File]::ReadAllText($CacheFile, [System.Text.Encoding]::UTF8)
+        if ($cached) { return $cached }
+    }
+    $result = (ConvertFrom-SourceData $SourceFile)
+    if ($result) {
+        [System.IO.File]::WriteAllText($CacheFile, $result, [System.Text.Encoding]::UTF8)
+    }
+    return $result
+}
+
+$script:DefaultColors = @{
     "fi" = "0"                   # Default file no color
     "di" = "38;5;30"             # Directory default blue-green
     "ln" = "38;5;81;1"           # Link default cyan bold
@@ -43,6 +144,43 @@ $script:IconsMemCache = [PSCustomObject]@{
     IsInit = $false
 }
 
+function script:ConvertTo-MemCache {
+    param($EnvVar)
+    $hash = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase) # Store exact match and suffix match (.py, di)
+
+    foreach ($item in ($EnvVar -split ':')) {
+        $kv = $item -split '='
+        if ($kv.Count -ne 2) { continue }
+        $key = $kv[0]
+        $val = $kv[1]
+        if ($key -match '^(.*)\[0-9\]\{0,(\d+)\}$') {
+            $prefix = $Matches[1].TrimStart('*')
+            $maxLen = [int]$Matches[2]
+            # To prevent generating too many entries,
+            # we can limit the maxLen to a reasonable number, say 3.
+            # This means we will generate entries for up to 999 suffixes.
+            if ($maxLen -gt 3) { $maxLen = 3 }
+            $hash[$prefix] = $val
+            $maxN = [math]::Pow(10, $maxLen) - 1
+            foreach ($i in 0..$maxN) {
+                $n = "$i"
+                foreach ($j in $n.Length..$maxLen) {
+                    $fmt = $n.PadLeft($j, '0')
+                    $hash[$prefix + $fmt] = $val
+                }
+            }
+        }
+        elseif ($key.StartsWith('*')) {
+            $hash[$key.TrimStart('*')] = $val
+        }
+        else {
+            $hash[$key] = $val
+        }
+    }
+
+    return $hash
+}
+
 function script:Initialize-ColorsMemCache {
     if (-not $script:ColorsMemCache.IsInit) {
         if (-not $env:LS_COLORS) {
@@ -65,6 +203,23 @@ function script:Initialize-IconsMemCache {
 
 Initialize-ColorsMemCache
 Initialize-IconsMemCache
+
+function script:Lookup {
+    param($DefaultHash, $Hash, $Name, $Ext, $Attr)
+    if ($null -ne $Name -and $Hash.ContainsKey($Name)) {
+        return $Hash[$Name]
+    }
+    if ($null -ne $Ext -and $Hash.ContainsKey($Ext)) {
+        return $Hash[$Ext] 
+    }
+    if ($null -eq $Attr) {
+        return $null
+    }
+    if ($Hash.ContainsKey($Attr)) {
+        return $Hash[$Attr]
+    }
+    return $DefaultHash[$Attr]
+}
 
 function script:Get-Color {
     param($Name, $Ext, $Attr)
@@ -194,3 +349,67 @@ function script:ColorSilver {
 function script:ColorWhite {
     return $script:Colors[9]
 }
+
+function global:Format-CoolName {
+    <#
+    .SYNOPSIS
+        Formats the input filesystem object as a string with color and icon.
+    .PARAMETER Item
+        A FileSystemInfo object representing a file or directory.
+    .OUTPUT
+        A string with ANSI color codes and an icon, visually representing the file or directory.
+    #>
+    param(
+        [System.IO.FileSystemInfo]$Item
+    )
+    $color, $icon = Get-ColorAndIcon -Item $Item
+    return "$(EscapeColor $color)$(vPadRight $icon 3)$($Item.Name)$(ColorReset)"
+}
+
+function global:Format-CoolSize {
+    <#
+    .SYNOPSIS
+        Formats bytes into a colorful, human-readable string (B, KB, MB, GB, TB, PB, EB).
+        The digital part is 7 chars wide, total output is 10 chars wide.
+    .PARAMETER Bytes
+        The size in bytes to format.
+    .PARAMETER ValueColor
+        Optional color for the numeric part.
+    .OUTPUT
+        A string with ANSI color codes, where the numeric part is right-aligned to 7 characters,
+        followed by a space and a 2-character unit, for a total width of 10 characters.
+    .EXAMPLE
+        Format-CoolSize -Bytes 123456789 -ValueColor (ColorRed)
+        Output: " 117.74 MB" with "117.74" in red and "MB" in the color corresponding to its unit.
+    #>
+    param(
+        [double]$Bytes,
+        [string]$ValueColor = "" # Optional color for the numeric part
+    )
+    $units = ' B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'
+    
+    # Handle zero or negative values
+    if ($Bytes -le 0) {
+        return "$(ColorGray)      0  B$(ColorReset)"
+    }
+
+    $index = 0
+    $value = $Bytes
+
+    # Calculate unit level
+    while ($value -ge 1024 -and $index -lt ($units.Count - 1)) {
+        $value /= 1024
+        $index++
+    }
+
+    # Format numeric part (PadLeft 7)
+    $formattedValue = ("{0:N2}" -f $value).PadLeft(7)
+    $unit = $units[$index]
+    
+    # Get colors
+    $unitColor = Color $index
+
+    # Combine: Value(7) + Space(1) + Unit(2) = 10 chars
+    return "${ValueColor}${formattedValue} ${unitColor}$unit$(ColorReset)"
+}
+

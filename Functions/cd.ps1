@@ -107,8 +107,6 @@ function global:Set-CurrentDirectory {
     }
 }
 
-Export-ModuleMember -Function Set-CurrentDirectory
-
 # The function is exported as an alias 'cd' for easy use,
 # and it also defines a shorthand function '~' for going to the home directory,
 # as well as functions for going up multiple directories
@@ -116,8 +114,6 @@ Export-ModuleMember -Function Set-CurrentDirectory
 
 # go home
 function global:~ { Set-CurrentDirectory $HOME }
-
-Export-ModuleMember -Function '~'
 
 # Generate shorthand functions for going up directories, and navigating history.
 $maxDepth = 20
@@ -138,10 +134,3 @@ foreach ($i in 1..$maxDepth) {
 }
 
 Invoke-Expression $commands.ToString()
-
-$functions = foreach ($i in 1..$maxDepth) {
-    '.' * ($i + 1)
-    '/' * $i
-    '\' * $i
-}
-Export-ModuleMember -Function $functions

@@ -1,9 +1,172 @@
-﻿# HotKeys.ps1 - Define custom hotkeys for PSReadLine
+﻿# PSReadLine.ps1 - Define custom key handlers for PSReadLine to enhance command line editing and history management.
+# This script is imported by Cool.psm1 to set up the necessary key handlers and options in PSReadLine for the Cool module.
+
+function Convert-MultiDots {
+    param([string]$InputString)
+    if ([string]::IsNullOrWhiteSpace($InputString)) { return $InputString }
+    # Regex logic:
+    # (?<=^|[\\/])  : Preceded by start of string or a slash
+    # \.{3,}        : Match three or more dots
+    # (?=[\\/]|$)   : Followed by a slash or end of string
+    return [Regex]::Replace($InputString, '(?<=^|[\\/])\.{3,}(?=[\\/]|$)', {
+            param($m)
+            $dotsCount = $m.Value.Length
+            # Default slash style: use \ if the path contains backslashes, otherwise use /
+            $sep = if ($InputString -match '\\') { '\' } else { '/' }
+            $ups = @('..') * ($dotsCount - 1)
+            return $ups -join $sep
+        })
+}
+
+$script:PSRL = [Microsoft.PowerShell.PSConsoleReadLine]
+
+function Get-InputFromPSReadLine {
+    $line = $null
+    $cursor = $null
+    # Get the current command line and cursor position
+    $script:PSRL::GetBufferState([ref]$line, [ref]$cursor)
+    if (-not [string]::IsNullOrWhiteSpace($line)) {
+        return $line
+    }
+    return $null
+}
+
+function DeleteFromHistory {
+    # Yes, this is a hack, but PSReadLine does not provide a direct API to check dropdown visibility
+    $options = $script:PSRL::GetOptions()
+    $isPredictorOn = ($options.PredictionSource -ne 'None')
+    
+    $line = Get-InputFromPSReadLine
+    # Only proceed if there is a non-empty command line
+    if ($null -ne $line) {
+        $target = $line.Trim()
+        $historyPath = $options.HistorySavePath
+        if ([System.IO.File]::Exists($historyPath)) {
+            # remove the target command from history content
+            $newContent = [System.IO.File]::ReadAllLines($historyPath) | Where-Object { $_ -ne $target }
+            
+            # move original history file to a backup location to prevent conflicts during clearing
+            Move-Item $historyPath "$historyPath.bak" -Force -ErrorAction SilentlyContinue
+            
+            # Clear history using PSReadLine API
+            $script:PSRL::RevertLine()
+            try {
+                $script:PSRL::ClearHistory()
+                
+                # Rebuild history file and memory cache using AddToHistory
+                if ($null -ne $newContent) {
+                    foreach ($h in $newContent) { 
+                        $script:PSRL::AddToHistory($h) 
+                    }
+                }
+                # Cleanup backup file
+                Remove-Item "$historyPath.bak" -ErrorAction SilentlyContinue
+            }
+            catch {
+                # In case of any error, restore the original history file to prevent data loss
+                Move-Item "$historyPath.bak" $historyPath -Force -ErrorAction SilentlyContinue
+            }
+
+            # If predictor is on, we need to trigger it to refresh its cache after history change
+            if ($isPredictorOn) {
+                # Trigger a dummy input to refresh predictor cache
+                $script:PSRL::Insert(' ')
+                $script:PSRL::BackwardDeleteChar()
+            }
+        }
+    }
+}
+
+function SaveInHistory {
+    $line = Get-InputFromPSReadLine
+    # Only proceed if there is a non-empty command line
+    if ($null -ne $line) {
+        $target = $line.Trim()
+        $script:PSRL::AddToHistory($target)
+    }
+    $script:PSRL::RevertLine()
+}
+
+function SmartDirectoryNavigation {
+    $line = Get-InputFromPSReadLine
+    if ($null -eq $line) {
+        $script:PSRL::AcceptLine()
+        return
+    }
+
+    # Parse the input line to analyze its structure.
+    # We will check if it's a simple string that can be treated as a directory path for quick navigation.
+    $errors = $null
+    $tokens = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseInput($line, [ref]$tokens, [ref]$errors)
+
+    if (-not $errors) {
+        $pipeline = $ast.EndBlock.Statements
+        if ($pipeline.Count -eq 1 -and $pipeline[0] -is [System.Management.Automation.Language.PipelineAst]) {
+            $command = $pipeline[0].PipelineElements
+            if ($command.Count -eq 1 -and $command[0] -is [System.Management.Automation.Language.CommandExpressionAst]) {
+                $expression = $command[0].Expression
+                $potentialPath = $null
+                if ($expression -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
+                    $potentialPath = $expression.Value
+                }
+                elseif ($expression -is [System.Management.Automation.Language.ExpandableStringExpressionAst]) {
+                    try {
+                        $potentialPath = $ExecutionContext.InvokeCommand.ExpandString($expression.Value)
+                    }
+                    catch {
+                        $potentialPath = $null
+                    }
+                }
+                if ($null -ne $potentialPath) {
+                    try {
+                        $potentialPath = Convert-MultiDots $potentialPath
+                        $absPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($potentialPath)
+                        if ([System.IO.Directory]::Exists($absPath)) {
+                            $script:PSRL::Replace(0, $line.Length, $absPath)
+                        }
+                    }
+                    catch {}
+                }
+            }
+        }
+    }
+    $script:PSRL::AcceptLine()
+}
+
+function EnhancedMenuComplete {
+    $line = $null
+    $cursor = $null
+    # We get the current buffer state to determine the word at the cursor position
+    # for potential multi-dot conversion before triggering completion.
+    $script:PSRL::GetBufferState([ref]$line, [ref]$cursor)
+
+    # 1. Find the start position of the "word" at the cursor
+    # We consider space, semicolon, and quotes as word delimiters for simplicity,
+    # which covers most cases for file paths and commands.
+    $firstHalf = $line.SubString(0, $cursor)
+    $lastSpaceIndex = $firstHalf.LastIndexOfAny(@(' ', ';', '"', "'"))
+    $startIndex = $lastSpaceIndex + 1
+    $currentWord = $firstHalf.SubString($startIndex)
+
+    # 2. Only perform multi-dot conversion on the current "word"
+    # under the cursor to avoid unintended changes to the entire line.
+    $converted = Convert-MultiDots $currentWord
+
+    # 3. If there is a change, only replace the current word in the buffer,
+    # preserving the rest of the line and cursor position.
+    if ($converted -ne $currentWord) {
+        $script:PSRL::Replace($startIndex, $currentWord.Length, $converted)
+    }
+
+    # 4. Execute system completion after potential conversion,
+    # which will now work with the updated word under the cursor.
+    $script:PSRL::MenuComplete()
+}
 
 function TabExpansion2 {
     [CmdletBinding()]
     param([string]$inputScript, [int]$cursorColumn, $hashtable)
-
     # 1. Get the original completion results from the system
     $ret = [System.Management.Automation.CommandCompletion]::CompleteInput($inputScript, $cursorColumn, $hashtable)
     
@@ -51,37 +214,6 @@ function TabExpansion2 {
     )
 }
 
-# Create a shortcut variable for easier access to PSReadLine methods in hotkey script blocks.
-$script:PSRL = [Microsoft.PowerShell.PSConsoleReadLine]
-
-function Get-InputFromPSReadLine {
-    $line = $null
-    $cursor = $null
-    # Get the current command line and cursor position
-    $script:PSRL::GetBufferState([ref]$line, [ref]$cursor)
-    if (-not [string]::IsNullOrWhiteSpace($line)) {
-        return $line
-    }
-    return $null
-}
-
-function Convert-MultiDots {
-    param([string]$InputString)
-    if ([string]::IsNullOrWhiteSpace($InputString)) { return $InputString }
-    # Regex logic:
-    # (?<=^|[\\/])  : Preceded by start of string or a slash
-    # \.{3,}        : Match three or more dots
-    # (?=[\\/]|$)   : Followed by a slash or end of string
-    return [Regex]::Replace($InputString, '(?<=^|[\\/])\.{3,}(?=[\\/]|$)', {
-            param($m)
-            $dotsCount = $m.Value.Length
-            # Default slash style: use \ if the path contains backslashes, otherwise use /
-            $sep = if ($InputString -match '\\') { '\' } else { '/' }
-            $ups = @('..') * ($dotsCount - 1)
-            return $ups -join $sep
-        })
-}
-
 # This script sets up custom hotkeys in PSReadLine for enhanced command line editing and history management.
 # Set up command prediction to use history and display predictions in a list view style.
 if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
@@ -113,66 +245,16 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
         Set-PSReadLineKeyHandler -Chord 'Alt+Delete' `
             -BriefDescription "DeleteFromHistory" `
             -LongDescription "Delete the current command line from history" `
-            -ScriptBlock {
-            # Yes, this is a hack, but PSReadLine does not provide a direct API to check dropdown visibility
-            $options = $script:PSRL::GetOptions()
-            $isPredictorOn = ($options.PredictionSource -ne 'None')
-    
-            $line = Get-InputFromPSReadLine
-            # Only proceed if there is a non-empty command line
-            if ($null -ne $line) {
-                $target = $line.Trim()
-                $historyPath = $options.HistorySavePath
-                if ([System.IO.File]::Exists($historyPath)) {
-                    # remove the target command from history content
-                    $newContent = [System.IO.File]::ReadAllLines($historyPath) | Where-Object { $_ -ne $target }
-            
-                    # move original history file to a backup location to prevent conflicts during clearing
-                    Move-Item $historyPath "$historyPath.bak" -Force -ErrorAction SilentlyContinue
-            
-                    # Clear history using PSReadLine API
-                    $script:PSRL::RevertLine()
-                    try {
-                        $script:PSRL::ClearHistory()
-                
-                        # Rebuild history file and memory cache using AddToHistory
-                        if ($null -ne $newContent) {
-                            foreach ($h in $newContent) { 
-                                $script:PSRL::AddToHistory($h) 
-                            }
-                        }
-                        # Cleanup backup file
-                        Remove-Item "$historyPath.bak" -ErrorAction SilentlyContinue
-                    }
-                    catch {
-                        # In case of any error, restore the original history file to prevent data loss
-                        Move-Item "$historyPath.bak" $historyPath -Force -ErrorAction SilentlyContinue
-                    }
-
-                    # If predictor is on, we need to trigger it to refresh its cache after history change
-                    if ($isPredictorOn) {
-                        # Trigger a dummy input to refresh predictor cache
-                        $script:PSRL::Insert(' ')
-                        $script:PSRL::BackwardDeleteChar()
-                    }
-                }
-            }
-        } -ErrorAction Stop
+            -ScriptBlock { try { DeleteFromHistory } catch { } } `
+            -ErrorAction Stop
 
         # This script sets up a custom hotkey (Alt+s) in PSReadLine to save the current command line to history without executing it.
         # It retrieves the current command line, adds it to history, and then reverts the line to allow the user to continue editing or executing it as they wish.
         Set-PSReadLineKeyHandler -Chord 'Alt+s' `
             -BriefDescription "SaveInHistory" `
             -LongDescription "Save the current command line in history but do not execute it" `
-            -ScriptBlock {
-            $line = Get-InputFromPSReadLine
-            # Only proceed if there is a non-empty command line
-            if ($null -ne $line) {
-                $target = $line.Trim()
-                $script:PSRL::AddToHistory($target)
-            }
-            $script:PSRL::RevertLine()
-        } -ErrorAction Stop
+            -ScriptBlock { try { SaveInHistory } catch { } } `
+            -ErrorAction Stop
 
         # This script sets up a custom hotkey (Enter) in PSReadLine to implement smart directory navigation.
         # It intercepts the Enter key, checks if the input is a simple path-like string, and if so,
@@ -180,53 +262,8 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
         Set-PSReadLineKeyHandler -Key Enter `
             -BriefDescription "SmartDirectoryNavigation" `
             -LongDescription "Navigate to the directory if the input is a valid path, otherwise execute the command" `
-            -ScriptBlock {
-            $line = Get-InputFromPSReadLine
-            if ($null -eq $line) {
-                $script:PSRL::AcceptLine()
-                return
-            }
-
-            # Parse the input line to analyze its structure.
-            # We will check if it's a simple string that can be treated as a directory path for quick navigation.
-            $errors = $null
-            $tokens = $null
-            $ast = [System.Management.Automation.Language.Parser]::ParseInput($line, [ref]$tokens, [ref]$errors)
-
-            if (-not $errors) {
-                $pipeline = $ast.EndBlock.Statements
-                if ($pipeline.Count -eq 1 -and $pipeline[0] -is [System.Management.Automation.Language.PipelineAst]) {
-                    $command = $pipeline[0].PipelineElements
-                    if ($command.Count -eq 1 -and $command[0] -is [System.Management.Automation.Language.CommandExpressionAst]) {
-                        $expression = $command[0].Expression
-                        $potentialPath = $null
-                        if ($expression -is [System.Management.Automation.Language.StringConstantExpressionAst]) {
-                            $potentialPath = $expression.Value
-                        }
-                        elseif ($expression -is [System.Management.Automation.Language.ExpandableStringExpressionAst]) {
-                            try {
-                                $potentialPath = $ExecutionContext.InvokeCommand.ExpandString($expression.Value)
-                            }
-                            catch {
-                                $potentialPath = $null
-                            }
-                        }
-                        if ($null -ne $potentialPath) {
-                            try {
-                                $potentialPath = Convert-MultiDots $potentialPath
-                                $absPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($potentialPath)
-                                if ([System.IO.Directory]::Exists($absPath)) {
-                                    $script:PSRL::Replace(0, $line.Length, $absPath)
-                                }
-                            }
-                            catch {}
-                        }
-                    }
-                }
-            }
-
-            $script:PSRL::AcceptLine()
-        }
+            -ScriptBlock { try { SmartDirectoryNavigation } catch { } } `
+            -ErrorAction Stop
 
         # This script sets up a custom hotkey (Tab) in PSReadLine to trigger menu completion with enhanced formatting for filesystem paths.
         # It intercepts the Tab key, checks if the current word under the cursor is a potential filesystem path, applies multi-dot conversion if needed,
@@ -234,35 +271,8 @@ if ($host.Name -eq 'ConsoleHost' -and $Host.UI.SupportsVirtualTerminal) {
         Set-PSReadLineKeyHandler -Key Tab `
             -BriefDescription "EnhancedMenuComplete" `
             -LongDescription "Trigger menu completion with enhanced formatting for filesystem paths" `
-            -ScriptBlock {
-            $line = $null
-            $cursor = $null
-            # We get the current buffer state to determine the word at the cursor position
-            # for potential multi-dot conversion before triggering completion.
-            [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
-
-            # 1. Find the start position of the "word" at the cursor
-            # We consider space, semicolon, and quotes as word delimiters for simplicity,
-            # which covers most cases for file paths and commands.
-            $firstHalf = $line.SubString(0, $cursor)
-            $lastSpaceIndex = $firstHalf.LastIndexOfAny(@(' ', ';', '"', "'"))
-            $startIndex = $lastSpaceIndex + 1
-            $currentWord = $firstHalf.SubString($startIndex)
-
-            # 2. Only perform multi-dot conversion on the current "word"
-            # under the cursor to avoid unintended changes to the entire line.
-            $converted = Convert-MultiDots $currentWord
-
-            # 3. If there is a change, only replace the current word in the buffer,
-            # preserving the rest of the line and cursor position.
-            if ($converted -ne $currentWord) {
-                [Microsoft.PowerShell.PSConsoleReadLine]::Replace($startIndex, $currentWord.Length, $converted)
-            }
-
-            # 4. Execute system completion after potential conversion,
-            # which will now work with the updated word under the cursor.
-            [Microsoft.PowerShell.PSConsoleReadLine]::MenuComplete()
-        }
+            -ScriptBlock { try { EnhancedMenuComplete } catch { } } `
+            -ErrorAction Stop
     }
     catch {
         # If PSReadLine is not available or any error occurs,

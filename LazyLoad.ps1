@@ -22,19 +22,26 @@ function script:Invoke-CommandNotFoundAction {
         try {
             if (-not $script:Cool_IsLoaded) {
                 # Load all necessary components of the Cool module.
-                .  (Join-Path $PSScriptRoot 'Private/Cache.ps1')
+                .  (Join-Path $PSScriptRoot 'Private/Localization.ps1')
                 .  (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1')
                 .  (Join-Path $PSScriptRoot 'Private/VisualWidth.ps1')
-                .  (Join-Path $PSScriptRoot 'Private/Core.ps1')
-                .  (Join-Path $PSScriptRoot 'Private/Localization.ps1')
+                .  (Join-Path $PSScriptRoot 'Private/PSReadLine.ps1')
                 # Mark the module as fully loaded to prevent reinitialization.
                 $manifestPath = Join-Path $PSScriptRoot 'Cool.psd1'
                 $manifest = Import-PowerShellDataFile -Path $manifestPath
-                foreach ($name in ($manifest.FunctionsToExport + $manifest.AliasesToExport)) {
+                foreach ($name in $manifest.FunctionsToExport) {
                     if ($name -and $name -ne '*') {
                         $null = $script:ExportedSet.Add($name)
+                        Export-ModuleMember -Function $name
                     }
                 }
+                foreach ($name in $manifest.AliasesToExport) {
+                    if ($name -and $name -ne '*') {
+                        $null = $script:ExportedSet.Add($name)
+                        Export-ModuleMember -Alias $name
+                    }
+                }
+
                 $script:ExportedMap.Clear()
                 $script:ExportedMap.Add('cool', (Join-Path $PSScriptRoot 'Functions/cool.ps1'))
                 $script:ExportedMap.Add('l', (Join-Path $PSScriptRoot 'Functions/ls.ps1'))

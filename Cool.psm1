@@ -9,16 +9,13 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::InputEncoding = [Text.Encoding]::UTF8
 $PSDefaultParameterValues['Get-Content:Encoding'] = 'UTF8'
 
-# Import the PSReadLine script to set up custom key handlers for command history manipulation.
-# Set up custom key handlers in PSReadLine for deleting the current command line from history (Alt+Delete)
-# and for saving the current command line to history without executing it (Alt+s).
+# Import the PSReadLine script to set up custom key handlers and options for the Cool module.
 . (Join-Path $PSScriptRoot "PSReadLine.ps1")
 
 # Set up aliases for 'ls' and 'cd' to point to the module's implementations,
 # and export them for use in the global scope.
 Set-Alias -Name 'ls' -Value 'l' -Option AllScope -Force -Scope Global
 Set-Alias -Name 'cd' -Value 'Set-CurrentDirectory' -Option AllScope -Force -Scope Global
-Export-ModuleMember -Alias 'ls', 'cd'
 
 # Initialize a variable to track whether the module has been fully loaded. 
 # This can be used to prevent certain actions from being performed before the module is ready.

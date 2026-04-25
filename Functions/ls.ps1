@@ -34,5 +34,3 @@ function global:l {
         Write-Host $line
     }
 }
-
-Export-ModuleMember -Function l

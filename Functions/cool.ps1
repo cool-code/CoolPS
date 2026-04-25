@@ -83,5 +83,3 @@ function global:cool {
         }
     }
 }
-
-Export-ModuleMember -Function cool
