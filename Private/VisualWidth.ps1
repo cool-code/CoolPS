@@ -59,21 +59,10 @@ function script:Test-AmbiguousAsWide {
 function script:Get-WTAmbiguousAsWide {
     # 1. Define possible config file paths (stable and preview)    
     $paths = @(
-        if ($IsWindows) {
-            $localAppData = $env:LOCALAPPDATA
-            "$localAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-            "$localAppData\Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json"
-            "$env:USERPROFILE\AppData\Local\Microsoft\Windows Terminal\settings.json"
-        }
-        elseif ($IsLinux -and $env:WSL_DISTRO_NAME) {
-            $winUser = /mnt/c/Windows/System32/cmd.exe /c "echo %USERNAME%" 2>$null | Out-String
-            if ($winUser) {
-                $winUser = $winUser.Trim()
-                "/mnt/c/Users/$winUser/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
-                "/mnt/c/Users/$winUser/AppData/Local/Packages/Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe/LocalState/settings.json"
-                "/mnt/c/Users/$winUser/AppData/Local/Microsoft/Windows Terminal/settings.json"
-            }
-        }
+        $localAppData = $env:LOCALAPPDATA
+        "$localAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+        "$localAppData\Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json"
+        "$env:USERPROFILE\AppData\Local\Microsoft\Windows Terminal\settings.json"
     )
  
     foreach ($path in $paths) {
