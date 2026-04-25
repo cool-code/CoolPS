@@ -148,7 +148,7 @@
     # DscResourcesToExport = @()
 
     # List of all modules packaged with this module
-    ModuleList        = @('Cool')
+    # ModuleList        = @()
 
     # List of all files packaged with this module
     FileList          = @(
