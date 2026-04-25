@@ -44,12 +44,13 @@ function script:ConvertFrom-SourceData {
     $result = [System.Text.StringBuilder]::new(16384)
 
     foreach ($line in $lines) {
-        $commentIdx = $line.IndexOf('#')
-        if ($commentIdx -ge 0) { $line = $line.Substring(0, $commentIdx) }
-        
-        if ([string]::IsNullOrWhiteSpace($line)) { continue }
+        # remove comments and trim whitespace
+        $cleanLine = $line.Split('#')[0].Trim()
+        if (-not $cleanLine) { continue }
 
-        $parts = $line.Split(" `t", [System.StringSplitOptions]::RemoveEmptyEntries)
+        # use regex to split by the last occurrence of whitespace, to allow keys with spaces (like "Saved Games")
+        $parts = [regex]::Split($cleanLine, '\s+(?=\S+$)')
+
         if ($parts.Count -lt 2) { continue }
 
         $key = $parts[0]
@@ -77,8 +78,8 @@ function script:ConvertFrom-SourceData {
         $null = $filters.Add($finalKey)
         if ($result.Length -gt 0) { $null = $result.Append(':') }
         $null = $result.Append($finalKey).Append('=').Append($val)
-        
-    } 
+    }
+
     return $result.ToString()
 }
 
