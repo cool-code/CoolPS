@@ -130,11 +130,11 @@ foreach ($i in 1..$maxDepth) {
 
     # previous history entry: /, //, ///, etc. (goes back in history)
     $null = $commands.Append('function global:').Append('/' * $i)
-    $null = $commands.Append(' { param([switch]$PassThru) try { 1..').Append($i).Append(' | ForEach-Object { Set-CurrentDirectory -LiteralPath - @PSBoundParameters } } catch { } }').AppendLine()
+    $null = $commands.Append(' { param([switch]$PassThru) try { 1..').Append($i).Append(' | ForEach-Object { Set-CurrentDirectory -LiteralPath - @PSBoundParameters -ErrorAction Stop } } catch { } }').AppendLine()
 
     # next history entry: \, \\, \\\, etc. (goes forward in history)
     $null = $commands.Append('function global:').Append('\' * $i)
-    $null = $commands.Append(' { param([switch]$PassThru) try { 1..').Append($i).Append(' | ForEach-Object { Set-CurrentDirectory -LiteralPath + @PSBoundParameters } } catch { } }').AppendLine()
+    $null = $commands.Append(' { param([switch]$PassThru) try { 1..').Append($i).Append(' | ForEach-Object { Set-CurrentDirectory -LiteralPath + @PSBoundParameters -ErrorAction Stop } } catch { } }').AppendLine()
 }
 
 Invoke-Expression $commands.ToString()
