@@ -1,11 +1,11 @@
 ﻿$script:DefaultColors = @{
     "fi" = "0"                   # Default file no color
-    "di" = "38;5;30"             # Directory default blue
-    "ln" = "38;5;35;1"           # Link default cyan bold
-    "or" = "48;5;196;38;5;232;1" # Orphan default white on red bold
+    "di" = "38;5;30"             # Directory default blue-green
+    "ln" = "38;5;81;1"           # Link default cyan bold
+    "or" = "48;5;196;38;5;232;1" # Orphan default red background with black bold
     "ex" = "38;5;208;1"          # Executable file default orange bold
-    "hi" = "38;5;90"             # Hidden file default gray
-    "pi" = "38;5;126"            # FIFO default purple
+    "hi" = "38;5;90"             # Hidden file default purple-gray
+    "pi" = "38;5;126"            # FIFO default yellow-green
     "so" = "38;5;197"            # Socket default pink
 }
 
@@ -66,24 +66,6 @@ function script:Initialize-IconsMemCache {
 Initialize-ColorsMemCache
 Initialize-IconsMemCache
 
-function script:Update-ColorsCache {
-    Remove-Item $script:COLORS_CACHE -ErrorAction SilentlyContinue
-    $env:LS_COLORS = Get-Colors
-    $script:ColorsMemCache.IsInit = $false # Force reinitialize color cache
-    Initialize-ColorsMemCache
-    $msg = Get-LocalizedString 'LSColorsCacheUpdated'
-    Write-Host $msg -ForegroundColor Green
-}
-
-function script:Update-IconsCache {
-    Remove-Item $script:ICONS_CACHE -ErrorAction SilentlyContinue
-    $env:LS_ICONS = Get-Icons
-    $script:IconsMemCache.IsInit = $false # Force reinitialize icon cache
-    Initialize-IconsMemCache
-    $msg = Get-LocalizedString 'LSIconsCacheUpdated'
-    Write-Host $msg -ForegroundColor Green
-}
-
 function script:Get-Color {
     param($Name, $Ext, $Attr)
     return Lookup $script:DefaultColors $script:ColorsMemCache.Hash $Name $Ext $Attr
@@ -114,53 +96,30 @@ function script:Get-ColorAndIcon {
     $ext = $Item.Extension.ToLower()
     $attrs = $Item.Attributes
     $fa = [System.IO.FileAttributes]
-    $attr = "fi"
     $isLink = $attrs.HasFlag($fa::ReparsePoint)
 
-    if ($isLink) {
-        $target = $Item.LinkTarget
-        $attr = if ([System.IO.Directory]::Exists($target) -or [System.IO.File]::Exists($target)) { "ln" } else { "or" }
+    $attr = if ($isLink) {
+        if ($item.PSObject.Methods['ResolveLinkTarget']) {
+            try {
+                $target = $item.ResolveLinkTarget($true);
+                $name = $target.Name
+                $ext = $target.Extension.ToLower()
+                "ln"
+            }
+            catch { "or" }
+        }
+        else { "ln" }
     }
-    elseif ($attrs.HasFlag($fa::Hidden)) {
-        $attr = "hi"
-    }
-    elseif ($Item -is [System.IO.DirectoryInfo]) {
-        $attr = "di"
-    }
-    elseif ($attrs.HasFlag($fa::SparseFile)) {
-        $attr = "pi"
-    }
-    elseif ($ext -eq ".sock" -or $ext -eq ".socket") {
-        $attr = "so"
-    }
-    elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') {
-        $attr = "ex"
-    }
+    elseif ($attrs.HasFlag($fa::Hidden)) { "hi" }
+    elseif ($Item -is [System.IO.DirectoryInfo]) { "di" }
+    elseif ($attrs.HasFlag($fa::SparseFile)) { "pi" }
+    elseif ($ext -eq ".sock" -or $ext -eq ".socket") { "so" }
+    elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') { "ex" }
+    else { "fi" }
 
     # Get initial color and icon
     $color = Get-Color $name $ext $attr
     $icon = Get-Icon $name $ext $attr
-
-    # Handle target logic (only for links and not exceeding recursion depth)
-    if ($isLink -and ($color -eq "target" -or $icon -eq "target") -and $Depth -lt 3) {
-        try {
-            # Get the actual path the link points to
-            $targetPath = $Item.LinkTarget
-            if ($null -ne $targetPath) {
-                $targetItem = Get-Item -LiteralPath $targetPath -ErrorAction Stop
-                # Recursive call, depth+1
-                $targetColor, $targetIcon = Get-ColorAndIcon -Item $targetItem -Depth ($Depth + 1)
-                # If config is target, override with target's color/icon
-                if ($color -eq "target") { $color = $targetColor }
-                if ($icon -eq "target") { $icon = $targetIcon }
-            }
-        }
-        catch {
-            # If the target does not exist (dead link), fallback to or (Orphan) or default value
-            $color = Get-Color -Attr "or"
-            $icon = Get-Icon -Attr "or"
-        }
-    }
 
     # Final rendering
     if ($null -eq $color -or $color -eq "target") {

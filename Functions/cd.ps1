@@ -115,7 +115,7 @@ Export-ModuleMember -Function Set-CurrentDirectory
 # and navigating history with repeated slashes and backslashes.
 
 # go home
-function ~ { Set-CurrentDirectory $HOME }
+function global:~ { Set-CurrentDirectory $HOME }
 
 Export-ModuleMember -Function '~'
 

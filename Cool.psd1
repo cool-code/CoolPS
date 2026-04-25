@@ -7,7 +7,7 @@
     RootModule        = 'Cool.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.0'
+    ModuleVersion     = '0.1.1'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -156,12 +156,11 @@
         'Cool.psm1'
         'PSReadLine.ps1'
         'LazyLoad.ps1'
-        'Private/Localization.ps1'
-        'Private/Profile.ps1'
         'Private/Cache.ps1'
         'Private/ColorAndIcon.ps1'
         'Private/VisualWidth.ps1'
         'Private/Core.ps1'
+        'Private/Localization.ps1'
         'LICENSE'
         'Functions/cd.ps1'
         'Functions/cool.ps1'

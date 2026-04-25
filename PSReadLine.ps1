@@ -1,5 +1,56 @@
 ﻿# HotKeys.ps1 - Define custom hotkeys for PSReadLine
 
+function TabExpansion2 {
+    [CmdletBinding()]
+    param([string]$inputScript, [int]$cursorColumn, $hashtable)
+
+    # 1. Get the original completion results from the system
+    $ret = [System.Management.Automation.CommandCompletion]::CompleteInput($inputScript, $cursorColumn, $hashtable)
+    
+    # If there are no matches, return the original result without modification
+    if ($null -eq $ret -or $ret.CompletionMatches.Count -eq 0) { return $ret }
+
+    $newMatches = New-Object System.Collections.Generic.List[System.Management.Automation.CompletionResult]
+
+    foreach ($result in $ret.CompletionMatches) {
+        $added = $false
+        # 2. Only apply "beautification" for filesystem paths
+        if ($result.ResultType -in @('ProviderContainer', 'ProviderItem')) {
+            $item = Get-Item -LiteralPath $result.ToolTip -Force -ErrorAction SilentlyContinue
+            # In some cases, certain files may not be accessible via Get-Item (e.g., due to permission issues).
+            # In such cases, we attempt to retrieve the same-named file from its parent directory using Get-ChildItem
+            # to bypass permission issues, allowing us to at least beautify its name.
+            if ($null -eq $item) {
+                $parentPath = [System.IO.Path]::GetDirectoryName($result.ToolTip)
+                $fileName = [System.IO.Path]::GetFileName($result.ToolTip)
+                if ($parentPath -and (Test-Path -LiteralPath $parentPath)) {
+                    $item = Get-ChildItem -LiteralPath $parentPath -Filter $fileName -Force -ErrorAction SilentlyContinue
+                }
+            }
+            $listItemText = Format-CoolName -Item $item
+            $newMatches.Add([System.Management.Automation.CompletionResult]::new(
+                    $result.CompletionText,
+                    $listItemText, # Menu display colored text
+                    $result.ResultType,
+                    $result.ToolTip
+                ))
+            $added = $true
+        }
+        # 3. Fallback logic: if the item wasn't beautified, add the original result back
+        if (-not $added) {
+            $newMatches.Add($result)
+        }
+    }
+
+    # 4. Key step: reconstruct and return the CommandCompletion object
+    return [System.Management.Automation.CommandCompletion]::new(
+        $newMatches,
+        $ret.CurrentMatchIndex,
+        $ret.ReplacementIndex,
+        $ret.ReplacementLength
+    )
+}
+
 # Create a shortcut variable for easier access to PSReadLine methods in hotkey script blocks.
 $script:PSRL = [Microsoft.PowerShell.PSConsoleReadLine]
 

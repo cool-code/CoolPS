@@ -22,12 +22,11 @@ function script:Invoke-CommandNotFoundAction {
         try {
             if (-not $script:Cool_IsLoaded) {
                 # Load all necessary components of the Cool module.
-                .  (Join-Path $PSScriptRoot 'Private/Localization.ps1')
                 .  (Join-Path $PSScriptRoot 'Private/Cache.ps1')
                 .  (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1')
                 .  (Join-Path $PSScriptRoot 'Private/VisualWidth.ps1')
-                .  (Join-Path $PSScriptRoot 'Private/Profile.ps1')
                 .  (Join-Path $PSScriptRoot 'Private/Core.ps1')
+                .  (Join-Path $PSScriptRoot 'Private/Localization.ps1')
                 # Mark the module as fully loaded to prevent reinitialization.
                 $manifestPath = Join-Path $PSScriptRoot 'Cool.psd1'
                 $manifest = Import-PowerShellDataFile -Path $manifestPath

@@ -106,6 +106,14 @@ function script:Get-InitialAmbiguousAsWide {
     if ($env:TERM_PROGRAM -eq "vscode" -or $Host.Name -match "Visual Studio Code Host") {
         return $false
     }
+
+    # Read software config (Windows Terminal settings.json)
+    # This step is the last fallback
+    if ($null -ne $env:WT_SESSION) {
+        $wtSetting = Get-WTAmbiguousAsWide
+        if ($null -ne $wtSetting) { return $wtSetting }
+    }
+
     # Real-time cursor probing (most accurate, now robust)
     $detected = Test-AmbiguousAsWide  # This is the improved function
     if ($null -ne $detected) {
@@ -115,13 +123,6 @@ function script:Get-InitialAmbiguousAsWide {
     # Environment variable (user explicit declaration has high priority)
     if ($null -ne $env:AMBIGUOUS_AS_WIDE) {
         return $env:AMBIGUOUS_AS_WIDE -in @('1', 'true', '$true')
-    }
-
-    # Read software config (Windows Terminal settings.json)
-    # This step is the last fallback
-    if ($null -ne $env:WT_SESSION) {
-        $wtSetting = Get-WTAmbiguousAsWide
-        if ($null -ne $wtSetting) { return $wtSetting }
     }
 
     # Final default value
