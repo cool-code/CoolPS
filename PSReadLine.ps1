@@ -229,9 +229,6 @@ try {
     # Set the prediction view style to ListView for better visibility of suggestions.
     Set-PSReadLineOption -PredictionViewStyle ListView -ErrorAction Stop
 
-    # Configure the Tab key to trigger menu completion, which allows cycling through possible completions in a dropdown menu.
-    Set-PSReadLineKeyHandler -Key "Tab" -Function MenuComplete -ErrorAction Stop
-
     # Configure Up and Down arrow keys to move the cursor to the end of the line when searching history, which is more intuitive for most users.
     Set-PSReadLineOption -HistorySearchCursorMovesToEnd -ErrorAction Stop
 
