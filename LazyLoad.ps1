@@ -40,18 +40,16 @@ function script:Invoke-CommandNotFoundAction {
                         Export-ModuleMember -Alias $name
                     }
                 }
-
                 $script:ExportedMap.Clear()
-                $script:ExportedMap.Add('cool', (Join-Path $PSScriptRoot 'Functions/cool.ps1'))
-                $script:ExportedMap.Add('l', (Join-Path $PSScriptRoot 'Functions/ls.ps1'))
-                $cdPath = (Join-Path $PSScriptRoot 'Functions/cd.ps1')
-                $script:ExportedMap.Add('Set-CurrentDirectory', $cdPath)
-                $script:ExportedMap.Add('~', $cdPath)
-                $maxDepth = 20
-                foreach ($i in 1..$maxDepth) {
-                    $script:ExportedMap.Add('.' * ($i + 1), $cdPath)
-                    $script:ExportedMap.Add('\' * $i, $cdPath)
-                    $script:ExportedMap.Add('/' * $i, $cdPath)
+                foreach ($entry in $manifest.PrivateData.CommandsToExport.GetEnumerator()) {
+                    $file = (Join-Path $PSScriptRoot "Functions/$($entry.Key).ps1")
+                    foreach ($name in $entry.Value) {
+                        if ($name -and $name -ne '*') {
+                            $null = $script:ExportedSet.Add($name)
+                            Export-ModuleMember -Function $name
+                            $script:ExportedMap.Add($name, $file)
+                        }
+                    }
                 }
                 $script:Cool_IsLoaded = $true
             }
