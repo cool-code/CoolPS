@@ -299,7 +299,7 @@ function script:EscapeColor {
 }
 
 # Red, Orange, Yellow, Green, Cyan, Blue, Purple, Gray, Silver, White 10 color cycle, index 0-9
-$script:Colors = @(196, 208, 220, 40, 81, 75, 141, 242, 250, 253) | ForEach-Object { EscapeColor "38;5;$_" }
+$script:Colors = @(196, 208, 220, 40, 81, 33, 135, 242, 250, 253) | ForEach-Object { EscapeColor "38;5;$_" }
 
 function script:Color {
     param($Index)
@@ -363,6 +363,9 @@ function global:Format-CoolName {
         [System.IO.FileSystemInfo]$Item
     )
     $color, $icon = Get-ColorAndIcon -Item $Item
+    if ($color -eq "0") {
+        return "$(vPadRight $icon 3)$($Item.Name)"
+    }
     return "$(EscapeColor $color)$(vPadRight $icon 3)$($Item.Name)$(ColorReset)"
 }
 
