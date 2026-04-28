@@ -16,6 +16,9 @@ $PSDefaultParameterValues['Get-Content:Encoding'] = 'UTF8'
 # and export them for use in the global scope.
 Set-Alias -Name 'ls' -Value 'l' -Option AllScope -Force -Scope Global
 Set-Alias -Name 'cd' -Value 'Set-CurrentDirectory' -Option AllScope -Force -Scope Global
+'A'..'Z' | ForEach-Object {
+    Set-Item -Path "Function:$_`:" -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force
+}
 
 # Initialize a variable to track whether the module has been fully loaded. 
 # This can be used to prevent certain actions from being performed before the module is ready.
@@ -34,6 +37,13 @@ if (-not (Get-Variable -Name "Cool_Module_IsImported" -Scope Global -ErrorAction
     $global:Cool_Module_IsImported = $true
     $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
         $ExecutionContext.InvokeCommand.CommandNotFoundAction = $global:Cool_OriginalCommandNotFoundAction
+        & {
+            Set-Alias -Name ls -Value Get-ChildItem -Option AllScope -Force -Scope Global
+            Set-Alias -Name cd -Value Set-Location -Option AllScope -Force -Scope Global
+            'A'..'Z' | ForEach-Object {
+                Set-Item -Path "Function:$_`:" -Value 'Set-Location $MyInvocation.MyCommand.Name' -Force
+            }
+        }.GetNewClosure()
         $global:Cool_Module_IsImported = $false
     }
 }
