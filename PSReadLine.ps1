@@ -25,10 +25,7 @@ function Get-InputFromPSReadLine {
     $cursor = $null
     # Get the current command line and cursor position
     $script:PSRL::GetBufferState([ref]$line, [ref]$cursor)
-    if (-not [string]::IsNullOrWhiteSpace($line)) {
-        return $line
-    }
-    return $null
+    return $line, $cursor
 }
 
 function DeleteFromHistory {
@@ -36,15 +33,15 @@ function DeleteFromHistory {
     $options = $script:PSRL::GetOptions()
     $isPredictorOn = ($options.PredictionSource -ne 'None')
     
-    $line = Get-InputFromPSReadLine
+    $line, $cursor = Get-InputFromPSReadLine
     # Only proceed if there is a non-empty command line
-    if ($null -ne $line) {
+    if (-not [string]::IsNullOrWhiteSpace($line)) {
         $target = $line.Trim()
         $historyPath = $options.HistorySavePath
         if ([System.IO.File]::Exists($historyPath)) {
             # remove the target command from history content
-            $newContent = [System.IO.File]::ReadAllLines($historyPath) | Where-Object { $_ -ne $target }
-            
+            $newContent = [System.IO.File]::ReadAllLines($historyPath) | Where-Object { $_.Trim() -ne $target }
+
             # move original history file to a backup location to prevent conflicts during clearing
             Move-Item $historyPath "$historyPath.bak" -Force -ErrorAction SilentlyContinue
             
@@ -71,16 +68,16 @@ function DeleteFromHistory {
             if ($isPredictorOn) {
                 # Trigger a dummy input to refresh predictor cache
                 $script:PSRL::Insert(' ')
-                $script:PSRL::BackwardDeleteChar()
+                $script:PSRL::Undo()
             }
         }
     }
 }
 
 function SaveInHistory {
-    $line = Get-InputFromPSReadLine
+    $line, $cursor = Get-InputFromPSReadLine
     # Only proceed if there is a non-empty command line
-    if ($null -ne $line) {
+    if (-not [string]::IsNullOrWhiteSpace($line)) {
         $target = $line.Trim()
         $script:PSRL::AddToHistory($target)
     }
@@ -88,8 +85,8 @@ function SaveInHistory {
 }
 
 function SmartDirectoryNavigation {
-    $line = Get-InputFromPSReadLine
-    if ($null -eq $line) {
+    $line, $cursor = Get-InputFromPSReadLine
+    if (-not [string]::IsNullOrWhiteSpace($line)) {
         $script:PSRL::AcceptLine()
         return
     }
@@ -135,11 +132,7 @@ function SmartDirectoryNavigation {
 }
 
 function EnhancedMenuComplete {
-    $line = $null
-    $cursor = $null
-    # We get the current buffer state to determine the word at the cursor position
-    # for potential multi-dot conversion before triggering completion.
-    $script:PSRL::GetBufferState([ref]$line, [ref]$cursor)
+    $line, $cursor = Get-InputFromPSReadLine
 
     # 1. Find the start position of the "word" at the cursor
     # We consider space, semicolon, and quotes as word delimiters for simplicity,
@@ -161,24 +154,87 @@ function EnhancedMenuComplete {
 
     # 4. Execute system completion after potential conversion,
     # which will now work with the updated word under the cursor.
-    $script:PSRL::MenuComplete()
+    try {
+        while ($true) {
+            $script:PSRL::MenuComplete()
+            $line, $cursor = Get-InputFromPSReadLine
+            if ($line.SubString(0, $cursor) -match "\0\d+\s*$") {
+                continue
+            }
+            break
+        }
+    }
+    finally {
+        $line, $cursor = Get-InputFromPSReadLine
+        if ($line -match "\0") {
+            $cleanLine = $line -replace "\0\d+\s*", ""
+            $script:PSRL::Replace(0, $line.Length, $cleanLine)
+            $newCursor = [Math]::Min($cursor, $cleanLine.Length)
+            $script:PSRL::SetCursorPosition($newCursor)
+            $script:PSRL::InvokePrompt()
+        }
+    }
 }
 
 function TabExpansion2 {
     [CmdletBinding()]
     param([string]$inputScript, [int]$cursorColumn, $hashtable)
     # 1. Get the original completion results from the system
+    $offset = 0
+    if ($inputScript -match "(.*)\0(\d+)\s*$") {
+        $replacementLength = $inputScript.Length
+        $inputScript = $matches[1]
+        $cursorColumn = $inputScript.Length
+        $offset = [int]$matches[2]
+        $script:PSRL::Replace(0, $replacementLength, $inputScript)
+    }
+
     $ret = [System.Management.Automation.CommandCompletion]::CompleteInput($inputScript, $cursorColumn, $hashtable)
-    
+
     # If there are no matches, return the original result without modification
     if ($null -eq $ret -or $ret.CompletionMatches.Count -eq 0) { return $ret }
 
+    $inputScript = $inputScript.SubString($ret.ReplacementIndex, $ret.ReplacementLength)
+
+    $count = $ret.CompletionMatches.Count
+    if ([Console]::WindowHeight -le 7) {
+        $offset = 0
+        $maxSafeCount = $count
+    }
+    else {
+        $maxVisibleHeight = [Console]::WindowHeight - 5
+        $windowWidth = [Console]::WindowWidth
+        $maxItemWidth = ($ret.CompletionMatches | Measure-Object -Property { Get-VisualWidth $_.ListItemText } -Maximum).Maximum + 5
+        $columns = [Math]::Max(1, [Math]::Floor($windowWidth / $maxItemWidth))
+        $maxSafeCount = $maxVisibleHeight * $columns
+    }
+
     $newMatches = New-Object System.Collections.Generic.List[System.Management.Automation.CompletionResult]
 
-    foreach ($result in $ret.CompletionMatches) {
+    if ($offset -gt 0) {
+        $i = if ($offset -gt $maxSafeCount) { $offset - $maxSafeCount + 1 } else { 0 }
+        $newMatches.Add([System.Management.Automation.CompletionResult]::new(
+                $inputScript + [char]0 + $i + " ",
+                (ColorOrange) + (EscapeColor "27") + "" + (EscapeColor "7") + " $offset " + "" + (ColorYellow) + (EscapeColor "27") + "" + (EscapeColor "7") + "" + (ColorReset),
+                "Text",
+                "$offset more items above... "
+            ))
+    }
+    foreach ($i in $offset..($count - 1)) {
+        $result = $ret.CompletionMatches[$i]
+        if ($newMatches.Count -ge $maxSafeCount) {
+            $moreCount = $count - $i
+            $newMatches.Add([System.Management.Automation.CompletionResult]::new(
+                    $inputScript + [char]0 + $i + " ",
+                    (ColorCyan) + (EscapeColor "7") + "" + (EscapeColor "27") + "" + (ColorBlue) + (EscapeColor "7") + "" + " $moreCount " + (EscapeColor "27") + "" + (ColorReset),
+                    "Text",
+                    "$moreCount more items... "
+                ))
+            break
+        }
         $added = $false
         # 2. Only apply "beautification" for filesystem paths
-        if ($result.ResultType -in @('ProviderContainer', 'ProviderItem')) {
+        if ($result.ResultType -in @('ProviderContainer', 'ProviderItem', 'Command')) {
             $item = Get-Item -LiteralPath $result.ToolTip -Force -ErrorAction SilentlyContinue
             # In some cases, certain files may not be accessible via Get-Item (e.g., due to permission issues).
             # In such cases, we attempt to retrieve the same-named file from its parent directory using Get-ChildItem
@@ -190,14 +246,16 @@ function TabExpansion2 {
                     $item = Get-ChildItem -LiteralPath $parentPath -Filter $fileName -Force -ErrorAction SilentlyContinue
                 }
             }
-            $listItemText = Format-CoolName -Item $item
-            $newMatches.Add([System.Management.Automation.CompletionResult]::new(
-                    $result.CompletionText,
-                    $listItemText, # Menu display colored text
-                    $result.ResultType,
-                    $result.ToolTip
-                ))
-            $added = $true
+            if ($null -ne $item) {
+                $listItemText = Format-CoolName -Item $item
+                $newMatches.Add([System.Management.Automation.CompletionResult]::new(
+                        $result.CompletionText,
+                        $listItemText, # Menu display colored text
+                        $result.ResultType,
+                        $result.ToolTip
+                    ))
+                $added = $true
+            }
         }
         # 3. Fallback logic: if the item wasn't beautified, add the original result back
         if (-not $added) {
@@ -238,7 +296,7 @@ try {
 
     # This script sets up a custom hotkey (Alt+Delete) in PSReadLine to delete the current command line from history.
     # It works by directly manipulating the history file and then refreshing the PSReadLine cache.
-    Set-PSReadLineKeyHandler -Chord 'Alt+Delete' `
+    Set-PSReadLineKeyHandler -Chord 'Alt+Delete', "Ctrl+Alt+d" `
         -BriefDescription "DeleteFromHistory" `
         -LongDescription "Delete the current command line from history" `
         -ScriptBlock { try { DeleteFromHistory } catch { } } `
@@ -255,7 +313,7 @@ try {
     # This script sets up a custom hotkey (Enter) in PSReadLine to implement smart directory navigation.
     # It intercepts the Enter key, checks if the input is a simple path-like string, and if so,
     # it attempts to resolve it as a directory and change to that directory instead of executing it as a command.
-    Set-PSReadLineKeyHandler -Key Enter `
+    Set-PSReadLineKeyHandler -Chord 'Enter' `
         -BriefDescription "SmartDirectoryNavigation" `
         -LongDescription "Navigate to the directory if the input is a valid path, otherwise execute the command" `
         -ScriptBlock { try { SmartDirectoryNavigation } catch { } } `
@@ -264,11 +322,19 @@ try {
     # This script sets up a custom hotkey (Tab) in PSReadLine to trigger menu completion with enhanced formatting for filesystem paths.
     # It intercepts the Tab key, checks if the current word under the cursor is a potential filesystem path, applies multi-dot conversion if needed,
     # and then triggers the menu completion to show suggestions with colors and icons.
-    Set-PSReadLineKeyHandler -Key Tab `
+    Set-PSReadLineKeyHandler -Chord 'Tab' `
         -BriefDescription "EnhancedMenuComplete" `
         -LongDescription "Trigger menu completion with enhanced formatting for filesystem paths" `
         -ScriptBlock { try { EnhancedMenuComplete } catch { } } `
         -ErrorAction Stop
+
+    Set-PSReadLineOption -AddToHistoryHandler {
+        param($command)
+        if ($command -match "\0\d+\s*") {
+            return $false
+        }
+        return $true
+    }
 }
 catch {
     # If PSReadLine is not available or any error occurs,

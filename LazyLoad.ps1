@@ -74,7 +74,7 @@ function script:Invoke-CommandNotFoundAction {
         return
     }
 
-    $fullInput = Get-InputFromPSReadLine
+    $fullInput, $cursor = Get-InputFromPSReadLine
     $ast = [System.Management.Automation.Language.Parser]::ParseInput($fullInput, [ref]$null, [ref]$null)
 
     $currentHistory = (Get-History -Count 1)
