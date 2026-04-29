@@ -30,6 +30,7 @@ function script:Test-VisualWidth {
         # Ensure cursor is reset and traces are cleared on success, timeout, or exception
         Write-Host -NoNewline "$ESC[G$ESC[K"
         $sw.Stop()
+        [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
     }
 
     # Parse the cursor report (should be in format ESC[row;colR)
