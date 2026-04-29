@@ -16,16 +16,26 @@ $PSDefaultParameterValues['Get-Content:Encoding'] = 'UTF8'
 # and export them for use in the global scope.
 Set-Alias -Name 'ls' -Value 'l' -Option AllScope -Force -Scope Global
 Set-Alias -Name 'cd' -Value 'Set-CurrentDirectory' -Option AllScope -Force -Scope Global
-'A'..'Z' | ForEach-Object {
-    Set-Item -Path "Function:$_`:" -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force
+
+# Create functions for multi-level directory navigation using dots and slashes, and export them to the global scope.
+foreach ($i in 1..20) {
+    New-Item -Path Function:\ -Name "global:$('.' * ($i + 1))" -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force
+    New-Item -Path Function:\ -Name "global:$('/' * ($i + 1))" -Value "try { 1..$i | ForEach-Object { Set-CurrentDirectory - -ErrorAction Stop } } catch { }" -Force
+    New-Item -Path Function:\ -Name "global:$('\' * ($i + 1))" -Value "try { 1..$i | ForEach-Object { Set-CurrentDirectory + -ErrorAction Stop } } catch { }" -Force
 }
+
+Set-Item -Path "Function:~" -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force
+Set-Item -Path "Function:cd~" -Value 'Set-CurrentDirectory ~' -Force
+Set-Item -Path "Function:cd.." -Value 'Set-CurrentDirectory ..' -Force
+Set-Item -Path "Function:cd\" -Value 'Set-CurrentDirectory \' -Force
+Set-Item -Path "Function:cd/" -Value 'Set-CurrentDirectory /' -Force
+foreach ($d in 'A'..'Z') { Set-Item -Path "Function:$d`:" -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force }
 
 # Initialize a variable to track whether the module has been fully loaded. 
 # This can be used to prevent certain actions from being performed before the module is ready.
 $script:Cool_IsLoaded = $false
 $script:Cool_LoadLock = [object]::new()
-$script:ExportedSet = [System.Collections.Generic.HashSet[string]]::new(2048, [System.StringComparer]::OrdinalIgnoreCase)
-$Script:ExportedMap = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$script:ExportedFunctions = [System.Collections.Generic.HashSet[string]]::new(2048, [System.StringComparer]::OrdinalIgnoreCase)
 $script:LastCommandOffset = 0
 $script:LastHistoryId = -1
 $script:LastFullInput = ''
@@ -40,9 +50,11 @@ if (-not (Get-Variable -Name "Cool_Module_IsImported" -Scope Global -ErrorAction
         & {
             Set-Alias -Name ls -Value Get-ChildItem -Option AllScope -Force -Scope Global
             Set-Alias -Name cd -Value Set-Location -Option AllScope -Force -Scope Global
-            'A'..'Z' | ForEach-Object {
-                Set-Item -Path "Function:$_`:" -Value 'Set-Location $MyInvocation.MyCommand.Name' -Force
-            }
+            Set-Item -Path "Function:cd~" -Value 'Set-Location ~' -Force
+            Set-Item -Path "Function:cd.." -Value 'Set-Location ..' -Force
+            Set-Item -Path "Function:cd\" -Value 'Set-Location \' -Force
+            Set-Item -Path "Function:cd/" -Value 'Set-Location /' -Force
+            foreach ($d in 'A'..'Z') { Set-Item -Path "Function:$d`:" -Value 'Set-Location $MyInvocation.MyCommand.Name' -Force }
         }.GetNewClosure()
         $global:Cool_Module_IsImported = $false
     }

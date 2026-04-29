@@ -106,31 +106,3 @@ function global:Set-CurrentDirectory {
         $PSCmdlet.WriteError($_)
     }
 }
-
-# The function is exported as an alias 'cd' for easy use,
-# and it also defines a shorthand function '~' for going to the home directory,
-# as well as functions for going up multiple directories
-# and navigating history with repeated slashes and backslashes.
-
-# go home
-function global:~ { Set-CurrentDirectory $HOME }
-
-# Generate shorthand functions for going up directories, and navigating history.
-$maxDepth = 20
-
-$commands = [System.Text.StringBuilder]::new(10240)
-foreach ($i in 1..$maxDepth) {
-    # upward directory: .., ..., etc. (goes up in directory)
-    $null = $commands.Append('function global:').Append('.' * ($i + 1))
-    $null = $commands.Append(' { param([switch]$PassThru) Set-CurrentDirectory -Path ').Append((@('..') * $i) -join '/').Append(' @PSBoundParameters }').AppendLine()
-
-    # previous history entry: /, //, ///, etc. (goes back in history)
-    $null = $commands.Append('function global:').Append('/' * $i)
-    $null = $commands.Append(' { param([switch]$PassThru) try { 1..').Append($i).Append(' | ForEach-Object { Set-CurrentDirectory -LiteralPath - @PSBoundParameters -ErrorAction Stop } } catch { } }').AppendLine()
-
-    # next history entry: \, \\, \\\, etc. (goes forward in history)
-    $null = $commands.Append('function global:').Append('\' * $i)
-    $null = $commands.Append(' { param([switch]$PassThru) try { 1..').Append($i).Append(' | ForEach-Object { Set-CurrentDirectory -LiteralPath + @PSBoundParameters -ErrorAction Stop } } catch { } }').AppendLine()
-}
-
-Invoke-Expression $commands.ToString()

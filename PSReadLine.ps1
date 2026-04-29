@@ -215,9 +215,9 @@ function TabExpansion2 {
         $i = if ($offset -gt $maxSafeCount) { $offset - $maxSafeCount + 1 } else { 0 }
         $newMatches.Add([System.Management.Automation.CompletionResult]::new(
                 $inputScript + [char]0 + $i + " ",
-                (ColorOrange) + (EscapeColor "27") + "" + (EscapeColor "7") + " $offset " + "" + (ColorYellow) + (EscapeColor "27") + "" + (EscapeColor "7") + "" + (ColorReset),
+                (ColorBlue) + "" + (FontReverse ((FontBold (Get-LocalizedString "PrevPage")) + "")) + (ColorCyan) + "" + (FontReverse "") + (ColorReset),
                 "Text",
-                "$offset more items above... "
+                (Get-LocalizedString "PrevPageToolTip" $offset)
             ))
     }
     foreach ($i in $offset..($count - 1)) {
@@ -226,9 +226,9 @@ function TabExpansion2 {
             $moreCount = $count - $i
             $newMatches.Add([System.Management.Automation.CompletionResult]::new(
                     $inputScript + [char]0 + $i + " ",
-                    (ColorCyan) + (EscapeColor "7") + "" + (EscapeColor "27") + "" + (ColorBlue) + (EscapeColor "7") + "" + " $moreCount " + (EscapeColor "27") + "" + (ColorReset),
+                    (ColorCyan) + (FontReverse "") + "" + (ColorBlue) + (FontReverse ("" + (FontBold (Get-LocalizedString "NextPage")))) + "" + (ColorReset),
                     "Text",
-                    "$moreCount more items... "
+                    (Get-LocalizedString "NextPageToolTip" $moreCount)
                 ))
             break
         }

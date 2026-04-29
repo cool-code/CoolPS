@@ -298,16 +298,56 @@ function script:EscapeColor {
     return "$([char]27)[${Color}m"
 }
 
+function script:FontBold {
+    param($Text)
+    return "$(EscapeColor '1')${Text}$(EscapeColor '22')"
+}
+
+function script:FontDim {
+    param($Text)
+    return "$(EscapeColor '2')${Text}$(EscapeColor '22')"
+}
+
+function script:FontItalic {
+    param($Text)
+    return "$(EscapeColor '3')${Text}$(EscapeColor '23')"
+}
+
+function script:FontUnderline {
+    param($Text)
+    return "$(EscapeColor '4')${Text}$(EscapeColor '24')"
+}
+
+function script:FontBlinking {
+    param($Text)
+    return "$(EscapeColor '5')${Text}$(EscapeColor '25')"
+}
+
+function script:FontReverse {
+    param($Text)
+    return "$(EscapeColor '7')${Text}$(EscapeColor '27')"
+}
+
+function script:FontHidden {
+    param($Text)
+    return "$(EscapeColor '8')${Text}$(EscapeColor '28')"
+}
+
+function script:FontStrikeThrough {
+    param($Text)
+    return "$(EscapeColor '9')${Text}$(EscapeColor '29')"
+}
+
+function script:ColorReset {
+    return EscapeColor "0"
+}
+
 # Red, Orange, Yellow, Green, Cyan, Blue, Purple, Gray, Silver, White 10 color cycle, index 0-9
 $script:Colors = @(196, 208, 220, 40, 81, 33, 135, 242, 250, 253) | ForEach-Object { EscapeColor "38;5;$_" }
 
 function script:Color {
     param($Index)
     return $script:Colors[$Index]
-}
-
-function script:ColorReset {
-    return EscapeColor 0
 }
 
 function script:ColorRed {

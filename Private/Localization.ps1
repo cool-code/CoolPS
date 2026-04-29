@@ -10,6 +10,10 @@ $script:Translations = @{
         'CoolProfileCreated'           = 'Created new {0} profile file.'
         'CoolProfileUpdated'           = 'Updated {0} profile file with Cool import.'
         'CoolProfileAlreadyConfigured' = 'Your {0} profile is already configured for Cool.'
+        "NextPage"                     = " Next Page "
+        "PrevPage"                     = " Prev Page "
+        "NextPageToolTip"              = "Next page has {0} more results"
+        "PrevPageToolTip"              = "Prev page has {0} more results"
     }
     'zh-CN' = @{
         'LSColorsCacheUpdated'         = 'LS_COLORS 缓存已更新！'
@@ -20,6 +24,10 @@ $script:Translations = @{
         'CoolProfileCreated'           = '已创建新的 {0} Profile 文件。'
         'CoolProfileUpdated'           = '已将 Cool 导入语句添加到 {0} Profile 文件。'
         'CoolProfileAlreadyConfigured' = '您的 {0} Profile 已经配置过了，无需重复操作。'
+        "NextPage"                     = " 下一页 "
+        "PrevPage"                     = " 上一页 "
+        "NextPageToolTip"              = "下一页还有 {0} 个补全结果"
+        "PrevPageToolTip"              = "上一页还有 {0} 个补全结果"
     }
     'zh-TW' = @{
         'LSColorsCacheUpdated'         = 'LS_COLORS 快取已更新！'
@@ -30,6 +38,10 @@ $script:Translations = @{
         'CoolProfileCreated'           = '已創建新的 {0} Profile 文件。'
         'CoolProfileUpdated'           = '已將 Cool 導入語句添加到 {0} Profile 文件。'
         'CoolProfileAlreadyConfigured' = '您的 {0} Profile 已經配置過了，無需重複操作。'
+        "NextPage"                     = " 下一頁 "
+        "PrevPage"                     = " 上一頁 "
+        "NextPageToolTip"              = "下一頁還有 {0} 個補全結果"
+        "PrevPageToolTip"              = "上一頁還有 {0} 個補全結果"
     }
     'ja-JP' = @{
         'LSColorsCacheUpdated'         = 'LS_COLORS キャッシュを更新しました！'
@@ -40,6 +52,10 @@ $script:Translations = @{
         'CoolProfileCreated'           = '新しい {0} プロファイルファイルを作成しました。'
         'CoolProfileUpdated'           = '{0} プロファイルファイルに Cool のインポート文を追加しました。'
         'CoolProfileAlreadyConfigured' = '{0} プロファイルはすでに Cool 用に設定されています。'
+        "NextPage"                     = " 次のページ "
+        "PrevPage"                     = " 前のページ "
+        "NextPageToolTip"              = "次のページにはさらに {0} 件の候補があります"
+        "PrevPageToolTip"              = "前のページにはさらに {0} 件の候補があります"
     }
     'ko-KR' = @{
         'LSColorsCacheUpdated'         = 'LS_COLORS 캐시가 업데이트되었습니다!'
@@ -50,6 +66,10 @@ $script:Translations = @{
         'CoolProfileCreated'           = '새 {0} 프로파일 파일을 생성했습니다.'
         'CoolProfileUpdated'           = '{0} 프로파일 파일에 Cool의 가져오기 문을 추가했습니다.'
         'CoolProfileAlreadyConfigured' = '{0} 프로파일은 이미 Cool용으로 설정되어 있습니다.'
+        "NextPage"                     = " 다음 페이지 "
+        "PrevPage"                     = " 이전 페이지 "
+        "NextPageToolTip"              = "다음 페이지에 {0}개의 더 많은 결과가 있습니다"
+        "PrevPageToolTip"              = "이전 페이지에 {0}개의 더 많은 결과가 있습니다"
     }
 }
 

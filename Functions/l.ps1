@@ -1,4 +1,4 @@
-﻿# Functions\ls.ps1
+﻿# Functions\l.ps1
 
 function global:l {
     param(

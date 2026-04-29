@@ -22,33 +22,16 @@ function script:Invoke-CommandNotFoundAction {
         try {
             if (-not $script:Cool_IsLoaded) {
                 # Load all necessary components of the Cool module.
-                .  (Join-Path $PSScriptRoot 'Private/Localization.ps1')
-                .  (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1')
-                .  (Join-Path $PSScriptRoot 'Private/VisualWidth.ps1')
+                . (Join-Path $PSScriptRoot 'Private/Localization.ps1') | Out-Null
+                . (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1') | Out-Null
+                . (Join-Path $PSScriptRoot 'Private/VisualWidth.ps1') | Out-Null
                 # Mark the module as fully loaded to prevent reinitialization.
                 $manifestPath = Join-Path $PSScriptRoot 'Cool.psd1'
                 $manifest = Import-PowerShellDataFile -Path $manifestPath
                 foreach ($name in $manifest.FunctionsToExport) {
                     if ($name -and $name -ne '*') {
-                        $null = $script:ExportedSet.Add($name)
+                        $null = $script:ExportedFunctions.Add($name)
                         Export-ModuleMember -Function $name
-                    }
-                }
-                foreach ($name in $manifest.AliasesToExport) {
-                    if ($name -and $name -ne '*') {
-                        $null = $script:ExportedSet.Add($name)
-                        Export-ModuleMember -Alias $name
-                    }
-                }
-                $script:ExportedMap.Clear()
-                foreach ($entry in $manifest.PrivateData.CommandsToExport.GetEnumerator()) {
-                    $file = (Join-Path $PSScriptRoot "Functions/$($entry.Key).ps1")
-                    foreach ($name in $entry.Value) {
-                        if ($name -and $name -ne '*') {
-                            $null = $script:ExportedSet.Add($name)
-                            Export-ModuleMember -Function $name
-                            $script:ExportedMap.Add($name, $file)
-                        }
                     }
                 }
                 $script:Cool_IsLoaded = $true
@@ -59,16 +42,11 @@ function script:Invoke-CommandNotFoundAction {
         }
     }
 
-    # If the command name matches an entry in the ExportedMap,
-    # we source the corresponding file to ensure the command is defined.
-    if ($script:ExportedMap.ContainsKey($commandName)) {
-        . $script:ExportedMap[$commandName]
-    }
-    
-    # Check if the command matches an exported function or alias from this module.
-    # If it does, we create a script block to invoke that command and set it as the action for this event,
-    # effectively handling the command not found scenario for commands that are actually part of this module.
-    if ($script:ExportedSet.Contains($commandName)) {
+    # If the command is part of this module, we attempt to load it from the Functions directory if it's not already loaded.
+    # This allows for lazy loading of command implementations, improving performance by only loading what is necessary when it is needed.
+    # This mechanism allows us to keep the initial load time of the module fast, while still providing access to all commands when they are needed.
+    if ($script:ExportedFunctions.Contains($commandName)) {
+        . (Join-Path $PSScriptRoot "Functions/$commandName.ps1") | Out-Null
         $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("& '$commandName' @args")
         $commandEventArgs.StopSearch = $true
         return
