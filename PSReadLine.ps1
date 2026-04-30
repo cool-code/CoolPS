@@ -220,6 +220,11 @@ function TabExpansion2 {
                 (Get-LocalizedString "PrevPageToolTip" $offset)
             ))
     }
+
+    $commandCache = @{}
+    Get-Command -CommandType Function, Cmdlet, Filter, Script -ErrorAction SilentlyContinue | ForEach-Object { $commandCache[$_.Name] = $_ };
+    Get-Command -CommandType Alias -ErrorAction SilentlyContinue | ForEach-Object { $commandCache[$_.Name] = $_ }
+
     foreach ($i in $offset..($count - 1)) {
         $result = $ret.CompletionMatches[$i]
         if ($newMatches.Count -ge $maxSafeCount) {
@@ -234,7 +239,7 @@ function TabExpansion2 {
         }
         $added = $false
         # 2. Only apply "beautification" for filesystem paths
-        if ($result.ResultType -in @('ProviderContainer', 'ProviderItem', 'Command')) {
+        if ($result.ResultType -in @('ProviderContainer', 'ProviderItem')) {
             $item = Get-Item -LiteralPath $result.ToolTip -Force -ErrorAction SilentlyContinue
             # In some cases, certain files may not be accessible via Get-Item (e.g., due to permission issues).
             # In such cases, we attempt to retrieve the same-named file from its parent directory using Get-ChildItem
@@ -247,7 +252,7 @@ function TabExpansion2 {
                 }
             }
             if ($null -ne $item) {
-                $listItemText = Format-CoolName -Item $item
+                $listItemText = Format-CoolName $item
                 $newMatches.Add([System.Management.Automation.CompletionResult]::new(
                         $result.CompletionText,
                         $listItemText, # Menu display colored text
@@ -256,6 +261,26 @@ function TabExpansion2 {
                     ))
                 $added = $true
             }
+        }
+        elseif ($result.ResultType -eq 'Command') {
+            # For commands, we can also apply a simple beautification by coloring them differently
+            $cmdInfo = $commandCache[$result.ListItemText]
+            $listItemText = if ($null -ne $cmdInfo) {
+                Format-CoolName $cmdInfo
+            }
+            elseif ($result.ListItemText -match '\.(com|exe|bat|cmd|ps1|sh)$' -or [System.IO.File]::Exists($result.ToolTip)) {
+                Format-CoolName $result.ListItemText
+            }
+            else {
+                $result.ListItemText
+            }
+            $newMatches.Add([System.Management.Automation.CompletionResult]::new(
+                    $result.CompletionText,
+                    $listItemText,
+                    $result.ResultType,
+                    $result.ToolTip
+                ))
+            $added = $true
         }
         # 3. Fallback logic: if the item wasn't beautified, add the original result back
         if (-not $added) {
