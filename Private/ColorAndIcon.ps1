@@ -1,26 +1,26 @@
 ﻿function script:Get-Translate {
     $translate = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-    $translate.Add("BLK", "bd")
-    $translate.Add("CAPABILITY", "ca")
-    $translate.Add("CHR", "cd")
-    $translate.Add("DIR", "di")
-    $translate.Add("DOOR", "do")
-    $translate.Add("EXEC", "ex")
-    $translate.Add("FIFO", "pi")
-    $translate.Add("FILE", "fi")
-    $translate.Add("HIDDEN", "hi")
-    $translate.Add("LINK", "ln")
-    $translate.Add("MISSING", "mi")
-    $translate.Add("MULTIHARDLINK", "mh")
-    $translate.Add("NORMAL", "no")
-    $translate.Add("ORPHAN", "or")
-    $translate.Add("OTHER_WRITABLE", "ow")
-    $translate.Add("RESET", "rs")
-    $translate.Add("SETGID", "sg")
-    $translate.Add("SETUID", "su")
-    $translate.Add("SOCK", "so")
-    $translate.Add("STICKY", "st")
-    $translate.Add("STICKY_OTHER_WRITABLE", "tw")
+    $translate.Add('BLK', 'bd')
+    $translate.Add('CAPABILITY', 'ca')
+    $translate.Add('CHR', 'cd')
+    $translate.Add('DIR', 'di')
+    $translate.Add('DOOR', 'do')
+    $translate.Add('EXEC', 'ex')
+    $translate.Add('FIFO', 'pi')
+    $translate.Add('FILE', 'fi')
+    $translate.Add('HIDDEN', 'hi')
+    $translate.Add('LINK', 'ln')
+    $translate.Add('MISSING', 'mi')
+    $translate.Add('MULTIHARDLINK', 'mh')
+    $translate.Add('NORMAL', 'no')
+    $translate.Add('ORPHAN', 'or')
+    $translate.Add('OTHER_WRITABLE', 'ow')
+    $translate.Add('RESET', 'rs')
+    $translate.Add('SETGID', 'sg')
+    $translate.Add('SETUID', 'su')
+    $translate.Add('SOCK', 'so')
+    $translate.Add('STICKY', 'st')
+    $translate.Add('STICKY_OTHER_WRITABLE', 'tw')
     return $translate    
 }
 
@@ -34,9 +34,9 @@ function script:ConvertFrom-SourceData {
     if (-not [System.IO.File]::Exists($SourceFile)) { return $null }
 
     $filters = [System.Collections.Generic.HashSet[string]]::new(2048)
-    $null = $filters.Add("TERM")
-    $null = $filters.Add("COLOR")
-    $null = $filters.Add("*")
+    $null = $filters.Add('TERM')
+    $null = $filters.Add('COLOR')
+    $null = $filters.Add('*')
 
     $lines = [System.IO.File]::ReadAllLines($SourceFile)
     if ($lines.Count -eq 0) { return $null }
@@ -100,31 +100,31 @@ function script:Get-CacheData {
 }
 
 $script:DefaultColors = @{
-    "fi" = "0"                   # Default file no color
-    "di" = "38;5;30"             # Directory default blue-green
-    "ln" = "38;5;81;1"           # Link default cyan bold
-    "or" = "48;5;196;38;5;232;1" # Orphan default red background with black bold
-    "ex" = "38;5;208;1"          # Executable file default orange bold
-    "hi" = "38;5;90"             # Hidden file default purple-gray
-    "pi" = "38;5;126"            # FIFO default yellow-green
-    "so" = "38;5;197"            # Socket default pink
+    'fi' = '0'                   # Default file no color
+    'di' = '38;5;30'             # Directory default blue-green
+    'ln' = '38;5;81;1'           # Link default cyan bold
+    'or' = '48;5;196;38;5;232;1' # Orphan default red background with black bold
+    'ex' = '38;5;208;1'          # Executable file default orange bold
+    'hi' = '38;5;90'             # Hidden file default purple-gray
+    'pi' = '38;5;126'            # FIFO default yellow-green
+    'so' = '38;5;197'            # Socket default pink
 }
 
 $script:DefaultIcons = @{
-    "fi" = "" # File default file icon
-    "di" = "" # Directory default folder icon
-    "ln" = "" # Link default link icon
-    "or" = "" # Orphan default broken link icon
-    "ex" = "" # Executable file default program icon
-    "hi" = "" # Hidden file default hidden icon
-    "pi" = "" # FIFO default pipe icon
-    "so" = "" # Socket default socket icon
+    'fi' = '' # File default file icon
+    'di' = '' # Directory default folder icon
+    'ln' = '' # Link default link icon
+    'or' = '' # Orphan default broken link icon
+    'ex' = '' # Executable file default program icon
+    'hi' = '' # Hidden file default hidden icon
+    'pi' = '' # FIFO default pipe icon
+    'so' = '' # Socket default socket icon
 }
 
-$script:COLORS_SOURCE = Join-Path $PSScriptRoot "../Data/LS_COLORS"
-$script:COLORS_CACHE = Join-Path $HOME ".LS_COLORS_CACHE"
-$script:ICONS_SOURCE = Join-Path $PSScriptRoot "../Data/LS_ICONS"
-$script:ICONS_CACHE = Join-Path $HOME ".LS_ICONS_CACHE"
+$script:COLORS_SOURCE = Join-Path $PSScriptRoot '../Data/LS_COLORS'
+$script:COLORS_CACHE = Join-Path $HOME '.LS_COLORS_CACHE'
+$script:ICONS_SOURCE = Join-Path $PSScriptRoot '../Data/LS_ICONS'
+$script:ICONS_CACHE = Join-Path $HOME '.LS_ICONS_CACHE'
 
 function script:Get-Colors {
     return Get-CacheData $script:COLORS_SOURCE $script:COLORS_CACHE
@@ -220,17 +220,6 @@ function script:Lookup {
     }
     return $DefaultHash[$Attr]
 }
-
-function script:Get-Color {
-    param($Name, $Ext, $Attr)
-    return Lookup $script:DefaultColors $script:ColorsMemCache.Hash $Name $Ext $Attr
-}
-
-function script:Get-Icon {
-    param($Name, $Ext, $Attr)
-    return Lookup $script:DefaultIcons $script:IconsMemCache.Hash $Name $Ext $Attr
-}
-
 function script:Get-DefaultColor {
     param($Attr)
     return $script:DefaultColors[$Attr]
@@ -241,56 +230,22 @@ function script:Get-DefaultIcon {
     return $script:DefaultIcons[$Attr]
 }
 
-function script:Get-ColorAndIcon {
-    param(
-        [System.IO.FileSystemInfo]$Item,
-        [int]$Depth = 0 # Prevent infinite loop caused by circular links
-    )
-    # Get basic attrs
-    $name = $Item.Name
-    $ext = $Item.Extension.ToLower()
-    $attrs = $Item.Attributes
-    $fa = [System.IO.FileAttributes]
-    $isLink = $attrs.HasFlag($fa::ReparsePoint)
+function script:Get-Color {
+    param($Name, $Ext, $Attr)
+    $color = Lookup $script:DefaultColors $script:ColorsMemCache.Hash $Name $Ext $Attr
+    if ($null -eq $color -or $color -eq 'target') {
+        $color = Get-DefaultColor $Attr
+    }
+    return $color
+}
 
-    $attr = if ($isLink) {
-        if ($item.PSObject.Methods['ResolveLinkTarget']) {
-            try {
-                $target = $item.ResolveLinkTarget($true);
-                $name = $target.Name
-                $ext = $target.Extension.ToLower()
-                "ln"
-            }
-            catch { "or" }
-        }
-        else { "ln" }
+function script:Get-Icon {
+    param($Name, $Ext, $Attr)
+    $icon = Lookup $script:DefaultIcons $script:IconsMemCache.Hash $Name $Ext $Attr
+    if ($null -eq $icon -or $icon -eq 'target') {
+        $icon = Get-DefaultIcon $Attr
     }
-    elseif ($attrs.HasFlag($fa::Hidden)) { "hi" }
-    elseif ($Item -is [System.IO.DirectoryInfo]) { "di" }
-    elseif ($attrs.HasFlag($fa::SparseFile)) { "pi" }
-    elseif ($ext -eq ".sock" -or $ext -eq ".socket") { "so" }
-    elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') { "ex" }
-    else { "fi" }
-
-    # Get initial color and icon
-    $color = Get-Color $name $ext $attr
-    $icon = Get-Icon $name $ext $attr
-
-    # Final rendering
-    if ($null -eq $color -or $color -eq "target") {
-        $color = Get-DefaultColor $attr
-    }
-    if ($null -eq $icon -or $icon -eq "target") {
-        $icon = Get-DefaultIcon $attr
-    }
-
-    if ($attrs.HasFlag($fa::System)) {
-        $color += ";2" # Dim system files
-    }
-    if ($attrs.HasFlag($fa::ReadOnly)) {
-        $color += ";4" # Underline read-only files
-    }
-    return $color, $icon
+    return $icon
 }
 
 function script:EscapeColor {
@@ -339,7 +294,7 @@ function script:FontStrikeThrough {
 }
 
 function script:ColorReset {
-    return EscapeColor "0"
+    return EscapeColor '0'
 }
 
 # Red, Orange, Yellow, Green, Cyan, Blue, Purple, Gray, Silver, White 10 color cycle, index 0-9
@@ -390,23 +345,136 @@ function script:ColorWhite {
     return $script:Colors[9]
 }
 
+function script:Format-CoolCommandName {
+    param(
+        [System.Management.Automation.CommandInfo]$CmdInfo
+    )
+    if ($CmdInfo.CommandType -eq 'Application') {
+        $name = $CmdInfo.Name
+        $ext = $CmdInfo.Extension.ToLower()
+        $attr = if ($ext -eq ".sock" -or $ext -eq ".socket") { 'so' }
+        elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') { 'ex' }
+        else { 'fi' }
+
+        $color = Get-Color $name $ext $attr
+        $icon = Get-Icon $name $ext $attr
+
+        if ($color -eq '0') { 
+            return "$(vPadRight $icon 3)$($CmdInfo.Name)"
+        }
+        return "$(EscapeColor $color)$(vPadRight $icon 3)$($CmdInfo.Name)$(ColorReset)"
+    }
+    $color, $icon = switch ($CmdInfo.CommandType) {
+        'Alias' { @((ColorPurple), '') }
+        'Filter' { @((ColorYellow), '') }
+        'Cmdlet' { @((ColorBlue), '') }
+        'ExternalScript' { @((ColorBlue), '') }
+        'Script' { @((ColorGreen), '') }
+        'Function' { if ($CmdInfo.Name -match '^[A-Z]\:$') { @((ColorRed), '') } else { @((ColorCyan), '') } }
+        Default { @((ColorGray), '') }
+    }
+    return "$color$(vPadRight $icon 3)$($CmdInfo.Name)$(ColorReset)"
+}
+
+function script:Format-CoolNameFromFsInfo {
+    param(
+        [System.IO.FileSystemInfo]$FsInfo
+    )
+    # Get basic attrs
+    $name = $FsInfo.Name
+    $ext = $FsInfo.Extension.ToLower()
+    $attrs = $FsInfo.Attributes
+    $fa = [System.IO.FileAttributes]
+    $isLink = $attrs.HasFlag($fa::ReparsePoint)
+
+    $attr = if ($isLink) {
+        if ($FsInfo.PSObject.Methods['ResolveLinkTarget']) {
+            try {
+                $target = $FsInfo.ResolveLinkTarget($true);
+                $name = $target.Name
+                $ext = $target.Extension.ToLower()
+                'ln'
+            }
+            catch { 'or' }
+        }
+        else { 'ln' }
+    }
+    elseif ($attrs.HasFlag($fa::Hidden)) { 'hi' }
+    elseif ($FsInfo -is [System.IO.DirectoryInfo]) { 'di' }
+    elseif ($attrs.HasFlag($fa::SparseFile)) { 'pi' }
+    elseif ($ext -eq ".sock" -or $ext -eq ".socket") { 'so' }
+    elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') { 'ex' }
+    else { 'fi' }
+
+    # Get initial color and icon
+    $color = Get-Color $name $ext $attr
+    $icon = Get-Icon $name $ext $attr
+
+    # Final rendering
+    if ($attrs.HasFlag($fa::System)) {
+        $color += ';2' # Dim system files
+    }
+    if ($attrs.HasFlag($fa::ReadOnly)) {
+        $color += ';4' # Underline read-only files
+    }
+
+    if ($color -eq '0') { 
+        return "$(vPadRight $icon 3)$($FsInfo.Name)"
+    }
+    return "$(EscapeColor $color)$(vPadRight $icon 3)$($FsInfo.Name)$(ColorReset)"
+}
+
+function script:Format-CoolNameFromPath {
+    param(
+        [string]$Path
+    )
+    $base = $Path
+    $ext = ""
+    $lastDotIndex = $Path.LastIndexOf('.')
+    $lastSlashIndex = $Path.LastIndexOf('/')
+    if ($lastDotIndex -gt $lastSlashIndex) {
+        $base = $Path.Substring(0, $lastDotIndex)
+        $ext = $Path.Substring($lastDotIndex)
+    }
+    if ($lastSlashIndex -ge 0) {
+        $base = $Path.Substring($lastSlashIndex + 1)
+    }
+    $name = $base + $ext
+    $attr = if ([System.IO.Directory]::Exists($Path)) { 'di' }
+    elseif ($ext -eq ".sock" -or $ext -eq ".socket") { 'so' }
+    elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') { 'ex' }
+    else { 'fi' }
+
+    $color = Get-Color $name $ext $attr
+    $icon = Get-Icon $name $ext $attr
+
+    if ($color -eq '0') { 
+        return "$(vPadRight $icon 3)$name"
+    }
+    return "$(EscapeColor $color)$(vPadRight $icon 3)$name$(ColorReset)"
+}
+
 function global:Format-CoolName {
     <#
     .SYNOPSIS
         Formats the input filesystem object as a string with color and icon.
     .PARAMETER Item
-        A FileSystemInfo object representing a file or directory.
+        A CommandInfo/FileSystemInfo object or string representing a file or directory.
     .OUTPUT
         A string with ANSI color codes and an icon, visually representing the file or directory.
     #>
     param(
-        [System.IO.FileSystemInfo]$Item
+        $Item
     )
-    $color, $icon = Get-ColorAndIcon -Item $Item
-    if ($color -eq "0") {
-        return "$(vPadRight $icon 3)$($Item.Name)"
+    if ($Item -is [System.Management.Automation.CommandInfo]) {
+        return Format-CoolCommandName $Item
     }
-    return "$(EscapeColor $color)$(vPadRight $icon 3)$($Item.Name)$(ColorReset)"
+    elseif ($Item -is [System.IO.FileSystemInfo]) {
+        return Format-CoolNameFromFsInfo $Item
+    }
+    elseif ($Item -is [string]) {
+        return Format-CoolNameFromPath $Item
+    }
 }
 
 function global:Format-CoolSize {
