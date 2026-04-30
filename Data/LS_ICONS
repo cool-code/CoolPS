@@ -615,6 +615,7 @@ content         
 .rustfmt        
 .rustup         
 .ccls           
+.msc            
 
 # Assembly / Object / Binary
 .s              
@@ -766,8 +767,10 @@ content         
 .mdf            
 
 # Binary files
+.com            
 .exe            
 .dll            
+.cpl            
 .o              
 .so             
 .a              

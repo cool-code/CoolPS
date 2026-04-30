@@ -710,9 +710,16 @@ STICKY_OTHER_WRITABLE 48;5;235;38;5;139;3 # core
 .vcard                38;5;7              # contact information
 .vcf                  38;5;7              # contact information
 .xln                  38;5;7
+
+# Microsoft
 .ps1                  38;5;75             # PowerShell
 .psd1                 38;5;75             # PowerShell
 .psm1                 38;5;75             # PowerShell
+.com                  38;5;39
+.exe                  38;5;39
+.dll                  38;5;39
+.msc                  38;5;229            # Microsoft Snap-In Control
+.cpl                  38;5;153            # Control Panel List
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # termcap
