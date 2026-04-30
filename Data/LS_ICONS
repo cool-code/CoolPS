@@ -106,6 +106,8 @@ SOCK            
 .zprofile           
 .zsh_history        
 .zshrc              
+.LS_COLORS_CACHE    
+.LS_ICONS_CACHE     
 
 # =========================
 # Common directories in user home
@@ -254,6 +256,8 @@ init            
 dbus            
 containerfile   
 content         
+LS_COLORS       
+LS_ICONS        
 
 # =========================
 # Extension sorting
