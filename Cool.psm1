@@ -29,7 +29,8 @@ Set-Item -Path "Function:cd~" -Value 'Set-CurrentDirectory ~' -Force
 Set-Item -Path "Function:cd.." -Value 'Set-CurrentDirectory ..' -Force
 Set-Item -Path "Function:cd\" -Value 'Set-CurrentDirectory \' -Force
 Set-Item -Path "Function:cd/" -Value 'Set-CurrentDirectory /' -Force
-foreach ($d in 'A'..'Z') { Set-Item -Path "Function:$d`:" -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force }
+# Create drive letter shortcuts (e.g., C:, D:, etc.) for quick navigation to root directories, and export them to the global scope.
+foreach ($d in 65..90) { Set-Item -Path "Function:$([char]$d)`:" -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force }
 
 # Initialize a variable to track whether the module has been fully loaded. 
 # This can be used to prevent certain actions from being performed before the module is ready.
@@ -54,7 +55,7 @@ if (-not (Get-Variable -Name "Cool_Module_IsImported" -Scope Global -ErrorAction
             Set-Item -Path "Function:cd.." -Value 'Set-Location ..' -Force
             Set-Item -Path "Function:cd\" -Value 'Set-Location \' -Force
             Set-Item -Path "Function:cd/" -Value 'Set-Location /' -Force
-            foreach ($d in 'A'..'Z') { Set-Item -Path "Function:$d`:" -Value 'Set-Location $MyInvocation.MyCommand.Name' -Force }
+            foreach ($d in 65..90) { Set-Item -Path "Function:$([char]$d)`:" -Value 'Set-Location $MyInvocation.MyCommand.Name' -Force }
         }.GetNewClosure()
         $oldEvent = Get-EventSubscriber -SourceIdentifier "CoolFileWatcher" -ErrorAction SilentlyContinue
         if ($oldEvent) { Unregister-Event -SourceIdentifier "CoolFileWatcher" }
