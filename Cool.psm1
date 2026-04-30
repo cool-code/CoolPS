@@ -56,6 +56,8 @@ if (-not (Get-Variable -Name "Cool_Module_IsImported" -Scope Global -ErrorAction
             Set-Item -Path "Function:cd/" -Value 'Set-Location /' -Force
             foreach ($d in 'A'..'Z') { Set-Item -Path "Function:$d`:" -Value 'Set-Location $MyInvocation.MyCommand.Name' -Force }
         }.GetNewClosure()
+        $oldEvent = Get-EventSubscriber -SourceIdentifier "CoolFileWatcher" -ErrorAction SilentlyContinue
+        if ($oldEvent) { Unregister-Event -SourceIdentifier "CoolFileWatcher" }
         $global:Cool_Module_IsImported = $false
     }
 }

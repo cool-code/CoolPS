@@ -204,6 +204,50 @@ function script:Initialize-IconsMemCache {
 Initialize-ColorsMemCache
 Initialize-IconsMemCache
 
+function script:Update-ColorsCache {
+    Remove-Item $script:COLORS_CACHE -ErrorAction SilentlyContinue
+    $env:LS_COLORS = Get-Colors
+    $script:ColorsMemCache.IsInit = $false # Force reinitialize color cache
+    Initialize-ColorsMemCache
+}
+
+function script:Update-IconsCache {
+    Remove-Item $script:ICONS_CACHE -ErrorAction SilentlyContinue
+    $env:LS_ICONS = Get-Icons
+    $script:IconsMemCache.IsInit = $false # Force reinitialize icon cache
+    Initialize-IconsMemCache
+}
+
+$script:CoolWatcher = New-Object System.IO.FileSystemWatcher
+$script:CoolWatcher.Path = Join-Path $PSScriptRoot '../Data'
+$script:CoolWatcher.NotifyFilter = [System.IO.NotifyFilters]::LastWrite
+$script:CoolWatcher.EnableRaisingEvents = $true
+
+$global:LastReload = Get-Date
+
+$oldEvent = Get-EventSubscriber -SourceIdentifier "CoolFileWatcher" -ErrorAction SilentlyContinue
+if ($oldEvent) { Unregister-Event -SourceIdentifier "CoolFileWatcher" }
+
+$null = Register-ObjectEvent -InputObject $script:CoolWatcher -EventName Changed -SourceIdentifier "CoolFileWatcher" -Action {
+    try {
+        if ((Get-Date) -lt $global:LastReload.AddMilliseconds(500)) { return }
+        $global:LastReload = Get-Date
+    
+        $fileName = [System.IO.Path]::GetFileName($Event.SourceEventArgs.Name)
+        Start-Sleep -Milliseconds 100
+    
+        $m = Get-Module Cool
+        & $m {
+            param($name)
+            switch ($name) {
+                "LS_COLORS" { Update-ColorsCache }
+                "LS_ICONS" { Update-IconsCache }
+            }
+        } $fileName
+    }
+    catch {}
+}
+
 function script:Lookup {
     param($DefaultHash, $Hash, $Name, $Ext, $Attr)
     if ($null -ne $Name -and $Hash.ContainsKey($Name)) {

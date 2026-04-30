@@ -27,24 +27,6 @@ function script:Initialize-CoolProfile {
     }
 }
 
-function script:Update-ColorsCache {
-    Remove-Item $script:COLORS_CACHE -ErrorAction SilentlyContinue
-    $env:LS_COLORS = Get-Colors
-    $script:ColorsMemCache.IsInit = $false # Force reinitialize color cache
-    Initialize-ColorsMemCache
-    $msg = Get-LocalizedString 'LSColorsCacheUpdated'
-    Write-Host $msg -ForegroundColor Green
-}
-
-function script:Update-IconsCache {
-    Remove-Item $script:ICONS_CACHE -ErrorAction SilentlyContinue
-    $env:LS_ICONS = Get-Icons
-    $script:IconsMemCache.IsInit = $false # Force reinitialize icon cache
-    Initialize-IconsMemCache
-    $msg = Get-LocalizedString 'LSIconsCacheUpdated'
-    Write-Host $msg -ForegroundColor Green
-}
-
 function global:cool {
     param (
         [string]$Command
@@ -61,13 +43,25 @@ function global:cool {
         "update" {
             if ($args.Count -eq 0) {
                 Update-ColorsCache
+                $msg = Get-LocalizedString 'LSColorsCacheUpdated'
+                Write-Host $msg -ForegroundColor Green
                 Update-IconsCache
+                $msg = Get-LocalizedString 'LSIconsCacheUpdated'
+                Write-Host $msg -ForegroundColor Green
             }
             else {
                 foreach ($cmd in $args) {
                     switch ($cmd) {
-                        "colors" { Update-ColorsCache }
-                        "icons" { Update-IconsCache }
+                        "colors" {
+                            Update-ColorsCache
+                            $msg = Get-LocalizedString 'LSColorsCacheUpdated'
+                            Write-Host $msg -ForegroundColor Green
+                        }
+                        "icons" {
+                            Update-IconsCache
+                            $msg = Get-LocalizedString 'LSIconsCacheUpdated'
+                            Write-Host $msg -ForegroundColor Green
+                        }
                         default {
                             $msg = Get-LocalizedString 'UnknownCoolUpdateSubcommand' $cmd
                             Write-Host $msg -ForegroundColor Yellow
