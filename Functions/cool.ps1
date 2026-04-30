@@ -27,6 +27,65 @@ function script:Initialize-CoolProfile {
     }
 }
 
+function script:Get-Editor {
+    $editorEnv = $env:EDITOR
+    $rawEditor = ''
+    $initialArgs = @()
+
+    if ($editorEnv) {
+        $parts = $editorEnv.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $rawEditor = $parts[0]
+        if ($parts.Count -gt 1) { $initialArgs = $parts[1..($parts.Count - 1)] }
+    }
+    
+    if (-not $rawEditor) {
+        $searchList = @('code', 'notepad', 'vim', 'vi', 'nano')
+        foreach ($cmd in $searchList) {
+            if (Get-Command $cmd -ErrorAction SilentlyContinue) {
+                $rawEditor = $cmd
+                break
+            }
+        }
+    }
+
+    if (-not $rawEditor) { throw (Get-LocalizedString 'NoEditorFound') }
+
+    return [PSCustomObject]@{
+        Path = $rawEditor
+        Args = $initialArgs
+    }
+}
+
+function script:CoolEdit {
+    param (
+        [string]$FilePath
+    )
+    $editorObj = Get-Editor
+    $targetFile = "`"$FilePath`""
+    
+    $finalArgs = $editorObj.Args + $targetFile
+    
+    $spawnArgs = @{
+        FilePath     = $editorObj.Path
+        ArgumentList = $finalArgs
+    }
+
+    $isWin = if ($null -ne $PSVersionTable.PSVersion.Major -and $PSVersionTable.PSVersion.Major -ge 6) { 
+        $IsWindows 
+    }
+    else { 
+        $env:OS -match 'Windows_NT' 
+    }
+
+    if ($isWin) {
+        if ($editorObj.Path -match 'code|subl|atom') {
+            $spawnArgs.WindowStyle = 'Hidden'
+        }
+    }
+
+    Start-Process @spawnArgs
+}
+
 function global:cool {
     param (
         [string]$Command
@@ -40,40 +99,30 @@ function global:cool {
         "init" {
             Initialize-CoolProfile
         }
-        "update" {
-            if ($args.Count -eq 0) {
-                Update-ColorsCache
-                $msg = Get-LocalizedString 'LSColorsCacheUpdated'
-                Write-Host $msg -ForegroundColor Green
-                Update-IconsCache
-                $msg = Get-LocalizedString 'LSIconsCacheUpdated'
-                Write-Host $msg -ForegroundColor Green
-            }
-            else {
-                foreach ($cmd in $args) {
-                    switch ($cmd) {
-                        "colors" {
-                            Update-ColorsCache
-                            $msg = Get-LocalizedString 'LSColorsCacheUpdated'
-                            Write-Host $msg -ForegroundColor Green
-                        }
-                        "icons" {
-                            Update-IconsCache
-                            $msg = Get-LocalizedString 'LSIconsCacheUpdated'
-                            Write-Host $msg -ForegroundColor Green
-                        }
-                        default {
-                            $msg = Get-LocalizedString 'UnknownCoolUpdateSubcommand' $cmd
-                            Write-Host $msg -ForegroundColor Yellow
-                        }
+        "edit" {
+            if ($args.Count -eq 1) {
+                $cmd = $args[0]
+                switch ($cmd) {
+                    "colors" {
+                        CoolEdit -FilePath $script:COLORS_SOURCE
+                    }
+                    "icons" {
+                        CoolEdit -FilePath $script:ICONS_SOURCE
+                    }
+                    default {
+                        $msg = Get-LocalizedString 'UnknownCoolEditSubcommand' $cmd
+                        Write-Host $msg -ForegroundColor Yellow
                     }
                 }
+            }
+            else {
+                $msg = Get-LocalizedString 'CoolUsage'
+                Write-Host $msg -ForegroundColor Cyan
             }
         }
         default {
             $msg = Get-LocalizedString 'UnknownCoolCommand' $Command
             Write-Host $msg -ForegroundColor Yellow
-            cool
         }
     }
 }
