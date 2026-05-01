@@ -204,7 +204,7 @@ function TabExpansion2 {
     else {
         $maxVisibleHeight = [Console]::WindowHeight - 5
         $windowWidth = [Console]::WindowWidth
-        $maxItemWidth = ($ret.CompletionMatches | Measure-Object -Property { Get-VisualWidth $_.ListItemText } -Maximum).Maximum + 5
+        $maxItemWidth = ($ret.CompletionMatches.ForEach({ Get-VisualWidth $_.ListItemText }) | Measure-Object -Maximum).Maximum + 5
         $columns = [Math]::Max(1, [Math]::Floor($windowWidth / $maxItemWidth))
         $maxSafeCount = $maxVisibleHeight * $columns
     }
