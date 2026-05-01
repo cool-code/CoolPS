@@ -46,7 +46,10 @@ function script:Invoke-CommandNotFoundAction {
     # This allows for lazy loading of command implementations, improving performance by only loading what is necessary when it is needed.
     # This mechanism allows us to keep the initial load time of the module fast, while still providing access to all commands when they are needed.
     if ($script:ExportedFunctions.Contains($commandName)) {
-        . (Join-Path $PSScriptRoot "Functions/$commandName.ps1") | Out-Null
+        $path = (Join-Path $PSScriptRoot "Functions/$commandName.ps1")
+        if ([System.IO.File]::Exists($path)) {
+            . $path | Out-Null
+        }
         $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("& '$commandName' @args")
         $commandEventArgs.StopSearch = $true
         return
