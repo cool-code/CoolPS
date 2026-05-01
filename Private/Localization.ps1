@@ -1,104 +1,33 @@
 ﻿# Cool localization helper
 
-$script:Translations = @{
-    'en-US' = @{
-        'CoolUsage'                    = "Usage:`r`n  cool init`r`n  cool edit colors|icons"
-        'UnknownCoolEditSubcommand'    = 'Unknown subcommand: {0}. Available: colors|icons'
-        'UnknownCoolCommand'           = 'Unknown command: {0}.'
-        'NoEditorFound'                = 'Unable to find a suitable text editor. Please set the EDITOR environment variable.'
-        'CoolProfileCreated'           = 'Created new {0} profile file.'
-        'CoolProfileUpdated'           = 'Updated {0} profile file with Cool import.'
-        'CoolProfileAlreadyConfigured' = 'Your {0} profile is already configured for Cool.'
-        "NextPage"                     = " Next Page "
-        "PrevPage"                     = " Prev Page "
-        "NextPageToolTip"              = "Next page has {0} more results"
-        "PrevPageToolTip"              = "Prev page has {0} more results"
+function Initialize-Localization {
+    $locale = if ($env:LANG) { $env:LANG } else { (Get-Culture).Name }
+    $localizedRoot = Join-Path $PSScriptRoot "../Localized"
+
+    $script:LocalizedMessages = try {
+        Import-LocalizedData -FileName "Messages" -UICulture $locale -BaseDirectory $localizedRoot -ErrorAction Stop
     }
-    'zh-CN' = @{
-        'CoolUsage'                    = "用法:`r`n  cool init`r`n  cool edit colors|icons"
-        'UnknownCoolEditSubcommand'    = '未知子命令: {0}. 可用子命令: colors|icons'
-        'UnknownCoolCommand'           = '未知命令: {0}.'
-        'NoEditorFound'                = '无法找到合适的文本编辑器。请设置 EDITOR 环境变量。'
-        'CoolProfileCreated'           = '已创建新的 {0} Profile 文件。'
-        'CoolProfileUpdated'           = '已将 Cool 导入语句添加到 {0} Profile 文件。'
-        'CoolProfileAlreadyConfigured' = '您的 {0} Profile 已经配置过了，无需重复操作。'
-        "NextPage"                     = " 下一页 "
-        "PrevPage"                     = " 上一页 "
-        "NextPageToolTip"              = "下一页还有 {0} 个补全结果"
-        "PrevPageToolTip"              = "上一页还有 {0} 个补全结果"
-    }
-    'zh-TW' = @{
-        'CoolUsage'                    = "用法:`r`n  cool init`r`n  cool edit colors|icons"
-        'UnknownCoolEditSubcommand'    = '未知子命令: {0}. 可用子命令: colors|icons'
-        'UnknownCoolCommand'           = '未知命令: {0}.'
-        'NoEditorFound'                = '無法找到合適的文本編輯器。請設置 EDITOR 環境變量。'
-        'CoolProfileCreated'           = '已創建新的 {0} Profile 文件。'
-        'CoolProfileUpdated'           = '已將 Cool 導入語句添加到 {0} Profile 文件。'
-        'CoolProfileAlreadyConfigured' = '您的 {0} Profile 已經配置過了，無需重複操作。'
-        "NextPage"                     = " 下一頁 "
-        "PrevPage"                     = " 上一頁 "
-        "NextPageToolTip"              = "下一頁還有 {0} 個補全結果"
-        "PrevPageToolTip"              = "上一頁還有 {0} 個補全結果"
-    }
-    'ja-JP' = @{
-        'CoolUsage'                    = "使い方:`r`n  cool init`r`n  cool edit colors|icons"
-        'UnknownCoolEditSubcommand'    = '不明なサブコマンド: {0}. 使用可能: colors|icons'
-        'UnknownCoolCommand'           = '不明なコマンド: {0}.'
-        'NoEditorFound'                = '適切なテキストエディタが見つかりません。EDITOR 環境変数を設定してください。'
-        'CoolProfileCreated'           = '新しい {0} プロファイルファイルを作成しました。'
-        'CoolProfileUpdated'           = '{0} プロファイルファイルに Cool のインポート文を追加しました。'
-        'CoolProfileAlreadyConfigured' = '{0} プロファイルはすでに Cool 用に設定されています。'
-        "NextPage"                     = " 次のページ "
-        "PrevPage"                     = " 前のページ "
-        "NextPageToolTip"              = "次のページにはさらに {0} 件の候補があります"
-        "PrevPageToolTip"              = "前のページにはさらに {0} 件の候補があります"
-    }
-    'ko-KR' = @{
-        'CoolUsage'                    = "사용법:`r`n  cool init`r`n  cool edit colors|icons"
-        'UnknownCoolEditSubcommand'    = '알 수 없는 하위 명령: {0}. 사용 가능: colors|icons'
-        'UnknownCoolCommand'           = '알 수 없는 명령: {0}.'
-        'NoEditorFound'                = '적절한 텍스트 편집기를 찾을 수 없습니다. EDITOR 환경 변수를 설정하십시오.'
-        'CoolProfileCreated'           = '새 {0} 프로파일 파일을 생성했습니다.'
-        'CoolProfileUpdated'           = '{0} 프로파일 파일에 Cool의 가져오기 문을 추가했습니다.'
-        'CoolProfileAlreadyConfigured' = '{0} 프로파일은 이미 Cool용으로 설정되어 있습니다.'
-        "NextPage"                     = " 다음 페이지 "
-        "PrevPage"                     = " 이전 페이지 "
-        "NextPageToolTip"              = "다음 페이지에 {0}개의 더 많은 결과가 있습니다"
-        "PrevPageToolTip"              = "이전 페이지에 {0}개의 더 많은 결과가 있습니다"
+    catch {
+        $base = $locale.Split('-')[0]
+        $fallbackLocale = switch ($base) {
+            'zh' { 'zh-CN' }
+            'ja' { 'ja-JP' }
+            'ko' { 'ko-KR' }
+            default { 'en-US' }
+        }
+        Import-LocalizedData -FileName "Messages" -UICulture $fallbackLocale -BaseDirectory $localizedRoot -ErrorAction SilentlyContinue
     }
 }
 
-function script:Get-CoolLocale {
-    $locale = if ($env:LANG) { $env:LANG } else { (Get-Culture).Name }
-    switch -Regex ($locale) {
-        '^zh[-_]?(TW|HK)' { return 'zh-TW' }
-        '^zh' { return 'zh-CN' }
-        '^ja' { return 'ja-JP' }
-        '^ko' { return 'ko-KR' }
-        '^en' { return 'en-US' }
-        default { return 'en-US' }
-    }
-}
+Initialize-Localization
 
 function script:Get-LocalizedString {
     param(
         [Parameter(Mandatory = $true)][string]$Key,
         [Parameter(ValueFromRemainingArguments = $true)][object[]]$Args
     )
-    $locale = Get-CoolLocale
-    if (-not $script:Translations.ContainsKey($locale)) {
-        $base = $locale.Split('-')[0]
-        $locale = switch ($base) {
-            'zh' { 'zh-CN' }
-            'ja' { 'ja-JP' }
-            'ko' { 'ko-KR' }
-            _ { 'en-US' }
-        }
-    }
-    $map = $script:Translations[$locale]
-    if (-not $map) { return $Key }
-    $value = $map[$Key]
-    if (-not $value) { return $Key }
-    if ($Args -and $Args.Count -gt 0) { return ($value -f $Args) }
-    return $value
+    $msg = $script:LocalizedMessages[$Key]
+    if ($null -eq $msg) { $msg = $Key }
+    if ($Args) { return ($msg -f $Args) }
+    return $msg
 }
