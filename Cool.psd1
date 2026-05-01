@@ -99,11 +99,16 @@
         'Private/ColorAndIcon.ps1'
         'Private/VisualWidth.ps1'
         'LICENSE'
-        'Functions/cd.ps1'
         'Functions/cool.ps1'
-        'Functions/ls.ps1'
+        'Functions/l.ps1'
+        'Functions/Set-CurrentDirectory.ps1'
         'Data/LS_COLORS'
         'Data/LS_ICONS'
+        'Localized/en-US/Messages.psd1'
+        'Localized/ja-JP/Messages.psd1'
+        'Localized/ko-KR/Messages.psd1'
+        'Localized/zh-CN/Messages.psd1'
+        'Localized/zh-TW/Messages.psd1'
     )
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
@@ -112,7 +117,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = @('Cool', 'Utility', 'Linux-Style', 'LS_COLORS', 'LS_ICONS', 'CLI')
+            Tags       = @('Cool', 'Utility', 'Linux-Style', 'LS_COLORS', 'LS_ICONS', 'CLI', 'Bash', 'Completion')
 
             # A URL to the license for this module.
             LicenseUri = 'https://github.com/cool-code/CoolPS/blob/main/LICENSE'
