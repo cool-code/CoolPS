@@ -1,4 +1,12 @@
-﻿# Ensure the module is fully loaded before handling any commands,
+﻿function script:HiddenUnexportedFunctions {
+    Get-Command -Module Cool -CommandType Function | ForEach-Object {
+        if ($_.Name -notin $script:ExportedFunctions) {
+            $_.Visibility = 'Private'
+        }
+    }
+}
+
+# Ensure the module is fully loaded before handling any commands,
 # to avoid issues with commands being invoked before their definitions are available.
 [System.Threading.Monitor]::Enter($script:Cool_LoadLock)
 try {
@@ -25,6 +33,7 @@ try {
                 Export-ModuleMember -Function $name
             }
         }
+        HiddenUnexportedFunctions
         $script:Cool_IsLoaded = $true
     }
 }
@@ -56,6 +65,7 @@ function script:Invoke-CommandNotFoundAction {
         $path = (Join-Path $PSScriptRoot "Functions/$commandName.ps1")
         if ([System.IO.File]::Exists($path)) {
             . $path | Out-Null
+            HiddenUnexportedFunctions
         }
         $commandEventArgs.CommandScriptBlock = [scriptblock]::Create("& '$commandName' @args")
         $commandEventArgs.StopSearch = $true
