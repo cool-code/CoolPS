@@ -12,19 +12,16 @@ $PSDefaultParameterValues['Get-Content:Encoding'] = 'UTF8'
 # Import the PSReadLine script to set up custom key handlers and options for the Cool module.
 . (Join-Path $PSScriptRoot 'PSReadLine.ps1')
 
-$restoreScript = @'
-        Set-Alias -Name ls -Value l -Option AllScope -Force -Scope Global
-        Set-Alias -Name cd -Value Set-CurrentDirectory -Option AllScope -Force -Scope Global
-        Set-Item -Path 'Function:global:cd~' -Value ([scriptblock]::Create('Set-CurrentDirectory ~')) -Force
-        Set-Item -Path 'Function:global:cd..' -Value ([scriptblock]::Create('Set-CurrentDirectory ..')) -Force
-        Set-Item -Path 'Function:global:cd\' -Value ([scriptblock]::Create('Set-CurrentDirectory \')) -Force
-        Set-Item -Path 'Function:global:cd/' -Value ([scriptblock]::Create('Set-CurrentDirectory /')) -Force
-        foreach ($d in 65..90) { 
-            $drive = "$([char]$d):"
-            Set-Item -Path "Function:global:$drive" -Value ([scriptblock]::Create('Set-CurrentDirectory $MyInvocation.MyCommand.Name')) -Force 
-        }
-'@
-[scriptblock]::Create($restoreScript).Invoke()
+Set-Alias -Name ls -Value 'l' -Option AllScope -Force -Scope Global
+Set-Alias -Name cd -Value 'Set-CurrentDirectory' -Option AllScope -Force -Scope Global
+Set-Item -Path 'Function:global:cd~' -Value ([scriptblock]::Create('Set-CurrentDirectory ~')) -Force
+Set-Item -Path 'Function:global:cd..' -Value ([scriptblock]::Create('Set-CurrentDirectory ..')) -Force
+Set-Item -Path 'Function:global:cd\' -Value ([scriptblock]::Create('Set-CurrentDirectory \')) -Force
+Set-Item -Path 'Function:global:cd/' -Value ([scriptblock]::Create('Set-CurrentDirectory /')) -Force
+foreach ($d in 65..90) { 
+    $drive = "$([char]$d):"
+    Set-Item -Path "Function:global:$drive" -Value ([scriptblock]::Create('Set-CurrentDirectory $MyInvocation.MyCommand.Name')) -Force 
+}
 
 # Initialize a variable to track whether the module has been fully loaded. 
 # This can be used to prevent certain actions from being performed before the module is ready.
@@ -41,19 +38,18 @@ if (-not (Get-Variable -Name 'Cool_OriginalCommandNotFoundAction' -Scope Global 
     $global:Cool_OriginalCommandNotFoundAction = $ExecutionContext.InvokeCommand.CommandNotFoundAction
     $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
         $ExecutionContext.InvokeCommand.CommandNotFoundAction = $global:Cool_OriginalCommandNotFoundAction
-        $restoreScript = @'
-        Set-Alias -Name ls -Value Get-ChildItem -Option AllScope -Force -Scope Global
-        Set-Alias -Name cd -Value Set-Location -Option AllScope -Force -Scope Global
-        Set-Item -Path 'Function:global:cd~' -Value ([scriptblock]::Create('Set-Location ~')) -Force
-        Set-Item -Path 'Function:global:cd..' -Value ([scriptblock]::Create('Set-Location ..')) -Force
-        Set-Item -Path 'Function:global:cd\' -Value ([scriptblock]::Create('Set-Location \')) -Force
-        Set-Item -Path 'Function:global:cd/' -Value ([scriptblock]::Create('Set-Location /')) -Force
-        foreach ($d in 65..90) { 
-            $drive = "$([char]$d):"
-            Set-Item -Path "Function:global:$drive" -Value ([scriptblock]::Create('Set-Location $MyInvocation.MyCommand.Name')) -Force 
-        }
-'@
-        [scriptblock]::Create($restoreScript).Invoke()
+        & {
+            & ([scriptblock]::Create('Set-Alias -Name ls -Value Get-ChildItem -Option AllScope -Force -Scope Global'))
+            & ([scriptblock]::Create('Set-Alias -Name cd -Value Set-Location -Option AllScope -Force -Scope Global'))
+            Set-Item -Path 'Function:global:cd~' -Value ([scriptblock]::Create('Set-Location ~')) -Force
+            Set-Item -Path 'Function:global:cd..' -Value ([scriptblock]::Create('Set-Location ..')) -Force
+            Set-Item -Path 'Function:global:cd\' -Value ([scriptblock]::Create('Set-Location \')) -Force
+            Set-Item -Path 'Function:global:cd/' -Value ([scriptblock]::Create('Set-Location /')) -Force
+            foreach ($d in 65..90) { 
+                $drive = "$([char]$d):"
+                Set-Item -Path "Function:global:$drive" -Value ([scriptblock]::Create('Set-Location $MyInvocation.MyCommand.Name')) -Force 
+            }
+        }.GetNewClosure()
         $oldEvent = Get-EventSubscriber -SourceIdentifier 'CoolFileWatcher' -ErrorAction SilentlyContinue
         if ($oldEvent) { Unregister-Event -SourceIdentifier 'CoolFileWatcher' }
         Remove-Variable -Name 'Cool_OriginalCommandNotFoundAction' -Scope Global -Force
