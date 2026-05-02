@@ -1,4 +1,38 @@
-﻿function script:Get-TargetNode {
+﻿# Ensure the module is fully loaded before handling any commands,
+# to avoid issues with commands being invoked before their definitions are available.
+[System.Threading.Monitor]::Enter($script:Cool_LoadLock)
+try {
+    if (-not $script:Cool_IsLoaded) {
+        # Load all necessary components of the Cool module.
+        . (Join-Path $PSScriptRoot 'Private/Localization.ps1') | Out-Null
+        . (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1') | Out-Null
+        . (Join-Path $PSScriptRoot 'Private/VisualWidth.ps1') | Out-Null
+
+        # Create functions for multi-level directory navigation using dots and slashes, and export them to the global scope.
+        foreach ($i in 1..20) {
+            New-Item -Path Function:\ -Name "global:$('.' * ($i + 1))" -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force
+            New-Item -Path Function:\ -Name "global:$('/' * ($i + 1))" -Value "try { 1..$i | ForEach-Object { Set-CurrentDirectory - -ErrorAction Stop } } catch { }" -Force
+            New-Item -Path Function:\ -Name "global:$('\' * ($i + 1))" -Value "try { 1..$i | ForEach-Object { Set-CurrentDirectory + -ErrorAction Stop } } catch { }" -Force
+        }
+        Set-Item -Path 'Function:global:~' -Value 'Set-CurrentDirectory $MyInvocation.MyCommand.Name' -Force
+
+        # Mark the module as fully loaded to prevent reinitialization.
+        $manifestPath = Join-Path $PSScriptRoot 'Cool.psd1'
+        $manifest = Import-PowerShellDataFile -Path $manifestPath
+        foreach ($name in $manifest.FunctionsToExport) {
+            if ($name -and $name -ne '*') {
+                $null = $script:ExportedFunctions.Add($name)
+                Export-ModuleMember -Function $name
+            }
+        }
+        $script:Cool_IsLoaded = $true
+    }
+}
+finally {
+    [System.Threading.Monitor]::Exit($script:Cool_LoadLock)
+}
+
+function script:Get-TargetNode {
     param($ast, $offset)
     $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.CommandAst] }, $true) | 
     Where-Object { 
@@ -13,33 +47,6 @@ function script:Invoke-CommandNotFoundAction {
     # This can happen if the original CommandNotFoundAction calls back into this handler.
     if ($commandEventArgs.PSObject.Properties['Cool_Handled']) {
         return
-    }
-
-    # Ensure the module is fully loaded before handling any commands,
-    # to avoid issues with commands being invoked before their definitions are available.
-    if (-not $script:Cool_IsLoaded) {
-        [System.Threading.Monitor]::Enter($script:Cool_LoadLock)
-        try {
-            if (-not $script:Cool_IsLoaded) {
-                # Load all necessary components of the Cool module.
-                . (Join-Path $PSScriptRoot 'Private/Localization.ps1') | Out-Null
-                . (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1') | Out-Null
-                . (Join-Path $PSScriptRoot 'Private/VisualWidth.ps1') | Out-Null
-                # Mark the module as fully loaded to prevent reinitialization.
-                $manifestPath = Join-Path $PSScriptRoot 'Cool.psd1'
-                $manifest = Import-PowerShellDataFile -Path $manifestPath
-                foreach ($name in $manifest.FunctionsToExport) {
-                    if ($name -and $name -ne '*') {
-                        $null = $script:ExportedFunctions.Add($name)
-                        Export-ModuleMember -Function $name
-                    }
-                }
-                $script:Cool_IsLoaded = $true
-            }
-        }
-        finally {
-            [System.Threading.Monitor]::Exit($script:Cool_LoadLock)
-        }
     }
 
     # If the command is part of this module, we attempt to load it from the Functions directory if it's not already loaded.
@@ -131,7 +138,7 @@ function script:Invoke-CommandNotFoundAction {
     if ($null -ne $absolutePath -and [System.IO.Directory]::Exists($absolutePath)) {
         $command = "Set-CurrentDirectory -LiteralPath '$absolutePath'"
         if ($passThru) {
-            $command += " -PassThru"
+            $command += ' -PassThru'
         }
         $commandEventArgs.CommandScriptBlock = [scriptblock]::Create($command)
         $commandEventArgs.StopSearch = $true
@@ -145,7 +152,7 @@ function script:Invoke-CommandNotFoundAction {
         # command that also triggers Cool Module's handler.
         # By marking the event args with a custom property, we can detect if we've already handled this
         # event and avoid calling the original handler again.
-        $commandEventArgs | Add-Member -NotePropertyName "Cool_Handled" -NotePropertyValue $true
+        $commandEventArgs | Add-Member -NotePropertyName 'Cool_Handled' -NotePropertyValue $true
         $global:Cool_OriginalCommandNotFoundAction.Invoke($commandName, $commandEventArgs)
     }
 }
