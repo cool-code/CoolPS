@@ -21,9 +21,10 @@ function global:Set-CurrentDirectory {
         [Parameter(ParameterSetName = 'LiteralPath', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [string]$LiteralPath,
 
-        [string]$StackName,
+        [switch]$PassThru,
 
-        [switch]$PassThru
+        [Parameter(ParameterSetName = 'StackName', Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
+        [string]$StackName
     )
     try {
         $null = $PSBoundParameters.Remove('ErrorAction')
