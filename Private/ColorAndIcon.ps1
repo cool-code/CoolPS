@@ -341,8 +341,8 @@ function script:ColorReset {
     return EscapeColor '0'
 }
 
-# Red, Orange, Yellow, Green, Cyan, Blue, Purple, Gray, Silver, White 10 color cycle, index 0-9
-$script:Colors = @(196, 208, 220, 40, 81, 33, 135, 242, 250, 253) | ForEach-Object { EscapeColor "38;5;$_" }
+# Red, Orange, Yellow, Green, Cyan, Blue, Purple, Magenta, Gray, Silver, White 11 color cycle, index 0-10
+$script:Colors = @(196, 208, 220, 40, 81, 33, 135, 164, 242, 250, 253) | ForEach-Object { EscapeColor "38;5;$_" }
 
 function script:Color {
     param($Index)
@@ -377,16 +377,23 @@ function script:ColorPurple {
     return $script:Colors[6]
 }
 
-function script:ColorGray {
+function script:ColorMagenta {
     return $script:Colors[7]
 }
-
-function script:ColorSilver {
+function script:ColorGray {
     return $script:Colors[8]
 }
 
-function script:ColorWhite {
+function script:ColorSilver {
     return $script:Colors[9]
+}
+
+function script:ColorWhite {
+    return $script:Colors[10]
+}
+
+function script:ColorTurquoise {
+    return EscapeColor '38;5;30'
 }
 
 function script:Format-CoolCommandName {
@@ -396,17 +403,17 @@ function script:Format-CoolCommandName {
     if ($CmdInfo.CommandType -eq 'Application') {
         $name = $CmdInfo.Name
         $ext = $CmdInfo.Extension.ToLower()
-        $attr = if ($ext -eq ".sock" -or $ext -eq ".socket") { 'so' }
-        elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') { 'ex' }
+        $attr = if ($ext -in @(".sock", ".socket")) { 'so' }
+        elseif ($ext -in @('.exe', '.com', '.bat', '.cmd', '.ps1', '.sh')) { 'ex' }
         else { 'fi' }
 
         $color = Get-Color $name $ext $attr
         $icon = Get-Icon $name $ext $attr
 
         if ($color -eq '0') { 
-            return "$(vPadRight $icon 3)$($CmdInfo.Name)"
+            return "$(vPadRight $icon 3)$name"
         }
-        return "$(EscapeColor $color)$(vPadRight $icon 3)$($CmdInfo.Name)$(ColorReset)"
+        return "$(EscapeColor $color)$(vPadRight $icon 3)$name$(ColorReset)"
     }
     $color, $icon = switch ($CmdInfo.CommandType) {
         'Alias' { @((ColorPurple), '') }
@@ -446,8 +453,8 @@ function script:Format-CoolNameFromFsInfo {
     elseif ($attrs.HasFlag($fa::Hidden)) { 'hi' }
     elseif ($FsInfo -is [System.IO.DirectoryInfo]) { 'di' }
     elseif ($attrs.HasFlag($fa::SparseFile)) { 'pi' }
-    elseif ($ext -eq ".sock" -or $ext -eq ".socket") { 'so' }
-    elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') { 'ex' }
+    elseif ($ext -in @(".sock", ".socket")) { 'so' }
+    elseif ($ext -in @('.exe', '.com', '.bat', '.cmd', '.ps1', '.sh')) { 'ex' }
     else { 'fi' }
 
     # Get initial color and icon
@@ -462,10 +469,14 @@ function script:Format-CoolNameFromFsInfo {
         $color += ';4' # Underline read-only files
     }
 
-    if ($color -eq '0') { 
-        return "$(vPadRight $icon 3)$($FsInfo.Name)"
+    if ($name -ne $FsInfo.Name) {
+        # If the name was changed due to being a link, show the original name with a "->" to indicate it's a link
+        $name = "$($FsInfo.Name) -> $name"
     }
-    return "$(EscapeColor $color)$(vPadRight $icon 3)$($FsInfo.Name)$(ColorReset)"
+    if ($color -eq '0') { 
+        return "$(vPadRight $icon 3)$name"
+    }
+    return "$(EscapeColor $color)$(vPadRight $icon 3)$name$(ColorReset)"
 }
 
 function script:Format-CoolNameFromPath {
@@ -485,8 +496,8 @@ function script:Format-CoolNameFromPath {
     }
     $name = $base + $ext
     $attr = if ([System.IO.Directory]::Exists($Path)) { 'di' }
-    elseif ($ext -eq ".sock" -or $ext -eq ".socket") { 'so' }
-    elseif ($ext -match '\.(com|exe|bat|cmd|ps1|sh)$') { 'ex' }
+    elseif ($ext -in @(".sock", ".socket")) { 'so' }
+    elseif ($ext -in @('.exe', '.com', '.bat', '.cmd', '.ps1', '.sh')) { 'ex' }
     else { 'fi' }
 
     $color = Get-Color $name $ext $attr
@@ -568,3 +579,39 @@ function global:Format-CoolSize {
     return "${ValueColor}${formattedValue} ${unitColor}$unit$(ColorReset)"
 }
 
+function global:Format-CoolPermissions {
+    param([string]$Permissions)
+    if ($Permissions.Length -ne 10) { return $Permissions }
+    $sb = [System.Text.StringBuilder]::new(256)
+    $typeChar = $Permissions[0]
+    $typeColor = switch ($typeChar) {
+        'd' { ColorTurquoise }
+        'l' { ColorMagenta }
+        's' { ColorSilver }
+        'p' { ColorPurple }
+        'c' { ColorCyan }
+        'b' { ColorBlue }
+        default { ColorGray }
+    }
+    $null = $sb.Append((FontBold "$typeColor$typeChar"))
+    foreach ($i in 1..9) {
+        $permChar = $Permissions[$i]
+        $permColor = switch ($permChar) {
+            'r' { ColorYellow }
+            'w' { ColorRed }
+            'x' { ColorGreen }
+            's' { ColorCyan }
+            'S' { ColorBlue }
+            't' { ColorPurple }
+            'T' { ColorMagenta }
+            default { ColorGray }
+        }
+        switch ($i) {
+            { $_ -in 1..3 } { $null = $sb.Append((FontBold "${permColor}${permChar}")) }
+            { $_ -in 4..6 } { $null = $sb.Append("${permColor}${permChar}") }
+            { $_ -in 7..9 } { $null = $sb.Append((FontDim "${permColor}${permChar}")) }
+        }
+    }
+    $null = $sb.Append((ColorReset))
+    return $sb.ToString()
+}
