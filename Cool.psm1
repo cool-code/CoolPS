@@ -32,6 +32,8 @@ $script:LastCommandOffset = 0
 $script:LastHistoryId = -1
 $script:LastFullInput = ''
 
+$script:IsWindows = if ($PSVersionTable.PSVersion.Major -ge 6) { $IsWindows } else { $env:OS -eq 'Windows_NT' }
+
 # To ensure that the module's command not found handler is properly chained with any existing handlers,
 # we store the original CommandNotFoundAction and set up a cleanup action to restore it when the module is removed.
 if (-not (Get-Variable -Name 'Cool_OriginalCommandNotFoundAction' -Scope Global -ErrorAction SilentlyContinue)) {

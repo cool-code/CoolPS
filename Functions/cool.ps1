@@ -70,14 +70,7 @@ function script:CoolEdit {
         ArgumentList = $finalArgs
     }
 
-    $isWin = if ($null -ne $PSVersionTable.PSVersion.Major -and $PSVersionTable.PSVersion.Major -ge 6) { 
-        $IsWindows 
-    }
-    else { 
-        $env:OS -match 'Windows_NT' 
-    }
-
-    if ($isWin) {
+    if ($script:IsWindows) {
         if ($editorObj.Path -match 'code|subl|atom') {
             $spawnArgs.WindowStyle = 'Hidden'
         }
