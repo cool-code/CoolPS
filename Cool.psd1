@@ -67,6 +67,7 @@
     FunctionsToExport = @(
         'Format-CoolName'
         'Format-CoolSize'
+        'Format-CoolPermissions'
         'Get-VisualWidth'
         'Format-VisualWidthString'
         '~'
@@ -133,6 +134,7 @@
         'cool'
         'Set-CurrentDirectory'
         'l'
+        'll'
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
