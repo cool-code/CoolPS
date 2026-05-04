@@ -24,7 +24,7 @@
     return $translate    
 }
 
-$script:TranslateCache = Get-Translate
+Set-Variable -Name 'TranslateCache' -Value (Get-Translate) -Visibility Private -Option Constant -Scope Script
 
 function script:ConvertFrom-SourceData {
     param(
@@ -99,32 +99,32 @@ function script:Get-CacheData {
     return $result
 }
 
-$script:DefaultColors = @{
-    'fi' = '0'                   # Default file no color
-    'di' = '38;5;30'             # Directory default blue-green
-    'ln' = '38;5;81;1'           # Link default cyan bold
-    'or' = '48;5;196;38;5;232;1' # Orphan default red background with black bold
-    'ex' = '38;5;208;1'          # Executable file default orange bold
-    'hi' = '38;5;90'             # Hidden file default purple-gray
-    'pi' = '38;5;126'            # FIFO default yellow-green
-    'so' = '38;5;197'            # Socket default pink
-}
+Set-Variable -Name 'DefaultColors' -Value (@{
+        'fi' = '0'                   # Default file no color
+        'di' = '38;5;30'             # Directory default blue-green
+        'ln' = '38;5;81;1'           # Link default cyan bold
+        'or' = '48;5;196;38;5;232;1' # Orphan default red background with black bold
+        'ex' = '38;5;208;1'          # Executable file default orange bold
+        'hi' = '38;5;90'             # Hidden file default purple-gray
+        'pi' = '38;5;126'            # FIFO default yellow-green
+        'so' = '38;5;197'            # Socket default pink
+    }) -Visibility Private -Option Constant -Scope Script
 
-$script:DefaultIcons = @{
-    'fi' = '' # File default file icon
-    'di' = '' # Directory default folder icon
-    'ln' = '' # Link default link icon
-    'or' = '' # Orphan default broken link icon
-    'ex' = '' # Executable file default program icon
-    'hi' = '' # Hidden file default hidden icon
-    'pi' = '' # FIFO default pipe icon
-    'so' = '' # Socket default socket icon
-}
+Set-Variable -Name 'DefaultIcons' -Value (@{
+        'fi' = '' # File default file icon
+        'di' = '' # Directory default folder icon
+        'ln' = '' # Link default link icon
+        'or' = '' # Orphan default broken link icon
+        'ex' = '' # Executable file default program icon
+        'hi' = '' # Hidden file default hidden icon
+        'pi' = '' # FIFO default pipe icon
+        'so' = '' # Socket default socket icon
+    }) -Visibility Private -Option Constant -Scope Script
 
-$script:COLORS_SOURCE = Join-Path $PSScriptRoot '../Data/LS_COLORS'
-$script:COLORS_CACHE = Join-Path $HOME '.LS_COLORS_CACHE'
-$script:ICONS_SOURCE = Join-Path $PSScriptRoot '../Data/LS_ICONS'
-$script:ICONS_CACHE = Join-Path $HOME '.LS_ICONS_CACHE'
+Set-Variable -Name 'COLORS_SOURCE' -Value (Join-Path $PSScriptRoot '../Data/LS_COLORS') -Visibility Private -Option Constant -Scope Script
+Set-Variable -Name 'COLORS_CACHE' -Value (Join-Path $HOME '.LS_COLORS_CACHE') -Visibility Private -Option Constant -Scope Script
+Set-Variable -Name 'ICONS_SOURCE' -Value (Join-Path $PSScriptRoot '../Data/LS_ICONS') -Visibility Private -Option Constant -Scope Script
+Set-Variable -Name 'ICONS_CACHE' -Value (Join-Path $HOME '.LS_ICONS_CACHE') -Visibility Private -Option Constant -Scope Script
 
 function script:Get-Colors {
     return Get-CacheData $script:COLORS_SOURCE $script:COLORS_CACHE
@@ -134,15 +134,15 @@ function script:Get-Icons {
     return Get-CacheData $script:ICONS_SOURCE $script:ICONS_CACHE
 }
 
-$script:ColorsMemCache = [PSCustomObject]@{
-    Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
-    IsInit = $false
-}
+Set-Variable -Name 'ColorsMemCache' -Value ([PSCustomObject]@{
+        Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
+        IsInit = $false
+    }) -Visibility Private -Option Constant -Scope Script
 
-$script:IconsMemCache = [PSCustomObject]@{
-    Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
-    IsInit = $false
-}
+Set-Variable -Name 'IconsMemCache' -Value ([PSCustomObject]@{
+        Hash   = [System.Collections.Generic.Dictionary[string, string]]::new()
+        IsInit = $false
+    }) -Visibility Private -Option Constant -Scope Script
 
 function script:ConvertTo-MemCache {
     param($EnvVar)
@@ -218,35 +218,39 @@ function script:Update-IconsCache {
     Initialize-IconsMemCache
 }
 
-$script:CoolWatcher = New-Object System.IO.FileSystemWatcher
+Set-Variable -Name 'CoolWatcher' -Value ([System.IO.FileSystemWatcher]::new()) -Visibility Private -Option Constant -Scope Script
 $script:CoolWatcher.Path = Join-Path $PSScriptRoot '../Data'
 $script:CoolWatcher.NotifyFilter = [System.IO.NotifyFilters]::LastWrite
 $script:CoolWatcher.EnableRaisingEvents = $true
 
-$global:LastReload = Get-Date
+Set-Variable -Name 'LastReload' -Value (Get-Date) -Visibility Private -Scope Global
 
-$oldEvent = Get-EventSubscriber -SourceIdentifier "CoolFileWatcher" -ErrorAction SilentlyContinue
-if ($oldEvent) { Unregister-Event -SourceIdentifier "CoolFileWatcher" }
+function initWatcher {
+    $oldEvent = Get-EventSubscriber -SourceIdentifier "CoolFileWatcher" -ErrorAction SilentlyContinue
+    if ($oldEvent) { Unregister-Event -SourceIdentifier "CoolFileWatcher" }
 
-$null = Register-ObjectEvent -InputObject $script:CoolWatcher -EventName Changed -SourceIdentifier "CoolFileWatcher" -Action {
-    try {
-        if ((Get-Date) -lt $global:LastReload.AddMilliseconds(500)) { return }
-        $global:LastReload = Get-Date
+    $null = Register-ObjectEvent -InputObject $script:CoolWatcher -EventName Changed -SourceIdentifier "CoolFileWatcher" -Action {
+        try {
+            if ((Get-Date) -lt $global:LastReload.AddMilliseconds(500)) { return }
+            $global:LastReload = Get-Date
     
-        $fileName = [System.IO.Path]::GetFileName($Event.SourceEventArgs.Name)
-        Start-Sleep -Milliseconds 100
+            $fileName = [System.IO.Path]::GetFileName($Event.SourceEventArgs.Name)
+            Start-Sleep -Milliseconds 100
     
-        $m = Get-Module Cool
-        & $m {
-            param($name)
-            switch ($name) {
-                "LS_COLORS" { Update-ColorsCache }
-                "LS_ICONS" { Update-IconsCache }
-            }
-        } $fileName
+            $m = Get-Module Cool
+            & $m {
+                param($name)
+                switch ($name) {
+                    "LS_COLORS" { Update-ColorsCache }
+                    "LS_ICONS" { Update-IconsCache }
+                }
+            } $fileName
+        }
+        catch {}
     }
-    catch {}
 }
+
+initWatcher
 
 function script:Lookup {
     param($DefaultHash, $Hash, $Name, $Ext, $Attr)
@@ -341,8 +345,8 @@ function script:ColorReset {
     return EscapeColor '0'
 }
 
+Set-Variable -Name 'Colors' -Value (@(196, 208, 220, 40, 81, 33, 135, 164, 242, 250, 253) | ForEach-Object { EscapeColor "38;5;$_" }) -Visibility Private -Option Constant -Scope Script
 # Red, Orange, Yellow, Green, Cyan, Blue, Purple, Magenta, Gray, Silver, White 11 color cycle, index 0-10
-$script:Colors = @(196, 208, 220, 40, 81, 33, 135, 164, 242, 250, 253) | ForEach-Object { EscapeColor "38;5;$_" }
 
 function script:Color {
     param($Index)
@@ -421,7 +425,7 @@ function script:Format-CoolCommandName {
         'Cmdlet' { @((ColorBlue), '') }
         'ExternalScript' { @((ColorBlue), '') }
         'Script' { @((ColorGreen), '') }
-        'Function' { if ($name -match '^[A-Z]\:$') { @((ColorRed), '') } else { @((ColorCyan), '') } }
+        'Function' { if ($name -match '^[A-Z]\:$') { @((ColorRed), '') } else { @((ColorCyan), '') } }
         Default { @((ColorGray), '') }
     }
     return "$color$(vPadRight $icon 3)$($name)$(ColorReset)"
@@ -509,6 +513,27 @@ function script:Format-CoolNameFromPath {
     return "$(EscapeColor $color)$(vPadRight $icon 3)$name$(ColorReset)"
 }
 
+function script:Format-CoolCompletionResult {
+    param(
+        [System.Management.Automation.CompletionResult]$CompletionResult
+    )
+    $text = $CompletionResult.ListItemText
+    $color, $icon = switch ($CompletionResult.ResultType) {
+        'History' { @((ColorSilver), '') }
+        'Property' { @((ColorCyan), '') }
+        'Method' { @((ColorBlue), '') }
+        'ParameterName' { @((ColorPurple), '') }
+        'ParameterValue' { @((ColorGreen), '') }
+        'Variable' { @((ColorYellow), '') }
+        'Namespace' { @((ColorRed), '') }
+        'Type' { @((ColorRed), '') }
+        'Keyword' { @((ColorMagenta), '') }
+        'DynamicKeyword' { @((ColorMagenta), '') }
+        Default { @((ColorWhite), '') }
+    }
+    return "$color$(vPadRight $icon 3)$($text)$(ColorReset)"
+}
+
 function global:Format-CoolName {
     <#
     .SYNOPSIS
@@ -521,6 +546,9 @@ function global:Format-CoolName {
     param(
         $Item
     )
+    if ($Item -is [System.Management.Automation.CompletionResult]) {
+        return Format-CoolCompletionResult $Item
+    }
     if ($Item -is [System.Management.Automation.CommandInfo]) {
         return Format-CoolCommandName $Item
     }

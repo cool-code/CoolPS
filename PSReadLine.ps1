@@ -22,7 +22,7 @@ if (-not ([System.Management.Automation.PSTypeName]'Microsoft.PowerShell.PSConso
     Import-Module PSReadLine
 }
 
-$script:PSRL = [Microsoft.PowerShell.PSConsoleReadLine]
+Set-Variable -Name 'PSRL' -Value ([Microsoft.PowerShell.PSConsoleReadLine]) -Visibility Private -Option Constant -Scope Script
 
 function Get-InputFromPSReadLine {
     $line = $null
@@ -194,6 +194,15 @@ function TabExpansion2 {
 
     $ret = [System.Management.Automation.CommandCompletion]::CompleteInput($inputScript, $cursorColumn, $hashtable)
 
+    $variableCache = [System.Collections.Generic.HashSet[string]]::new()
+    Get-Variable -Scope Global -ErrorAction SilentlyContinue | Where-Object { $_.Visibility -eq 'Public' } | ForEach-Object { $null = $variableCache.Add($_.Name) }
+    $ret.CompletionMatches = $ret.CompletionMatches | Where-Object { 
+        if ($_.ResultType -eq 'Variable') {
+            return $variableCache.Contains($_.ListItemText)
+        }
+        return $true
+    }
+
     # If there are no matches, return the original result without modification
     if ($null -eq $ret -or $ret.CompletionMatches.Count -eq 0) { return $ret }
 
@@ -268,6 +277,9 @@ function TabExpansion2 {
             elseif ($result.ListItemText -match '\.(com|exe|bat|cmd|ps1|sh)$' -or [System.IO.File]::Exists($result.ToolTip)) {
                 Format-CoolName $result.ListItemText
             }
+        }
+        else {
+            $listItemText = Format-CoolName $result
         }
 
         if ($listItemText -eq $result.ListItemText) {

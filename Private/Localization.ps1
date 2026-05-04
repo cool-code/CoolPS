@@ -3,8 +3,7 @@
 function Initialize-Localization {
     $locale = if ($env:LANG) { $env:LANG } else { (Get-Culture).Name }
     $localizedRoot = Join-Path $PSScriptRoot "../Localized"
-
-    $script:LocalizedMessages = try {
+    $messages = try {
         Import-LocalizedData -FileName "Messages" -UICulture $locale -BaseDirectory $localizedRoot -ErrorAction Stop
     }
     catch {
@@ -17,6 +16,7 @@ function Initialize-Localization {
         }
         Import-LocalizedData -FileName "Messages" -UICulture $fallbackLocale -BaseDirectory $localizedRoot -ErrorAction SilentlyContinue
     }
+    Set-Variable -Name 'LocalizedMessages' -Value $messages -Visibility Private -Option Constant -Scope Script
 }
 
 Initialize-Localization

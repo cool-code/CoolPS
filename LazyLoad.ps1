@@ -1,4 +1,10 @@
-﻿function script:HiddenUnexportedFunctions {
+﻿Set-Variable -Name 'Cool_LoadLock' -Value ([object]::new()) -Visibility Private -Option Constant -Scope Script
+Set-Variable -Name 'ExportedFunctions' -Value ([System.Collections.Generic.HashSet[string]]::new(2048, [System.StringComparer]::OrdinalIgnoreCase)) -Visibility Private -Option Constant -Scope Script
+Set-Variable -Name 'LastCommandOffset' -Value 0 -Visibility Private -Scope Script
+Set-Variable -Name 'LastHistoryId' -Value -1 -Visibility Private -Scope Script
+Set-Variable -Name 'LastFullInput' -Value '' -Visibility Private -Scope Script
+
+function script:HiddenUnexportedFunctions {
     Get-Command -Module Cool -CommandType Function | ForEach-Object {
         if ($_.Name -notin $script:ExportedFunctions) {
             $_.Visibility = 'Private'
@@ -11,10 +17,12 @@
 [System.Threading.Monitor]::Enter($script:Cool_LoadLock)
 try {
     if (-not $script:Cool_IsLoaded) {
+        $script:Cool_IsLoaded = $true
+
         # Load all necessary components of the Cool module.
         . (Join-Path $PSScriptRoot 'Private/Localization.ps1') | Out-Null
-        . (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1') | Out-Null
         . (Join-Path $PSScriptRoot 'Private/VisualWidth.ps1') | Out-Null
+        . (Join-Path $PSScriptRoot 'Private/ColorAndIcon.ps1') | Out-Null
 
         # Create functions for multi-level directory navigation using dots and slashes, and export them to the global scope.
         foreach ($i in 1..20) {
@@ -34,7 +42,6 @@ try {
             }
         }
         HiddenUnexportedFunctions
-        $script:Cool_IsLoaded = $true
     }
 }
 finally {

@@ -26,19 +26,16 @@ foreach ($d in 65..90) {
 
 # Initialize a variable to track whether the module has been fully loaded. 
 # This can be used to prevent certain actions from being performed before the module is ready.
-$script:Cool_IsLoaded = $false
-$script:Cool_LoadLock = [object]::new()
-$script:ExportedFunctions = [System.Collections.Generic.HashSet[string]]::new(2048, [System.StringComparer]::OrdinalIgnoreCase)
-$script:LastCommandOffset = 0
-$script:LastHistoryId = -1
-$script:LastFullInput = ''
+Set-Variable -Name 'Cool_IsLoaded' -Value $false -Visibility Private -Scope Script
 
-$script:IsWindows = if ($PSVersionTable.PSVersion.Major -ge 6) { $IsWindows } else { $env:OS -eq 'Windows_NT' }
+if ($PSVersionTable.PSVersion.Major -lt 6) {
+    Set-Variable -Name 'IsWindows' -Value ($env:OS -eq 'Windows_NT') -Scope Global
+}
 
 # To ensure that the module's command not found handler is properly chained with any existing handlers,
 # we store the original CommandNotFoundAction and set up a cleanup action to restore it when the module is removed.
 if (-not (Get-Variable -Name 'Cool_OriginalCommandNotFoundAction' -Scope Global -ErrorAction SilentlyContinue)) {
-    $global:Cool_OriginalCommandNotFoundAction = $ExecutionContext.InvokeCommand.CommandNotFoundAction
+    Set-Variable -Name 'Cool_OriginalCommandNotFoundAction' -Value $ExecutionContext.InvokeCommand.CommandNotFoundAction -Visibility Private -Option Constant -Scope Global
     $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
         $ExecutionContext.InvokeCommand.CommandNotFoundAction = $global:Cool_OriginalCommandNotFoundAction
         & {

@@ -1,8 +1,8 @@
 ﻿
 # initializing navigation history (if not already initialized)
-$script:Cool_NavHistory = [System.Collections.Generic.List[string]]::new()
+Set-Variable -Name 'Cool_NavHistory' -Value ([System.Collections.Generic.List[string]]::new()) -Visibility Private -Option Constant -Scope Script
 $script:Cool_NavHistory.Add((Get-Location).Path)
-$script:Cool_NavIndex = 0
+Set-Variable -Name 'Cool_NavIndex' -Value 0 -Visibility Private -Scope Script
 
 # This function replaces the built-in Set-Location (cd) to add enhanced navigation features:
 # 1. cd - : Go back in history

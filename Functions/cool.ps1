@@ -70,7 +70,7 @@ function script:CoolEdit {
         ArgumentList = $finalArgs
     }
 
-    if ($script:IsWindows) {
+    if ($IsWindows) {
         if ($editorObj.Path -match 'code|subl|atom') {
             $spawnArgs.WindowStyle = 'Hidden'
         }
