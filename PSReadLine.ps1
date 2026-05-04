@@ -18,6 +18,10 @@ function Convert-MultiDots {
         })
 }
 
+if (-not ([System.Management.Automation.PSTypeName]'Microsoft.PowerShell.PSConsoleReadLine').Type) {
+    Import-Module PSReadLine
+}
+
 $script:PSRL = [Microsoft.PowerShell.PSConsoleReadLine]
 
 function Get-InputFromPSReadLine {
@@ -179,7 +183,6 @@ function EnhancedMenuComplete {
 function TabExpansion2 {
     [CmdletBinding()]
     param([string]$inputScript, [int]$cursorColumn, $hashtable)
-    # 1. Get the original completion results from the system
     $offset = 0
     if ($inputScript -match "(.*)\0(\d+)\s*$") {
         $replacementLength = $inputScript.Length
@@ -237,8 +240,9 @@ function TabExpansion2 {
                 ))
             break
         }
-        $added = $false
-        # 2. Only apply "beautification" for filesystem paths
+
+        $listItemText = $result.ListItemText
+
         if ($result.ResultType -in @('ProviderContainer', 'ProviderItem')) {
             $item = Get-Item -LiteralPath $result.ToolTip -Force -ErrorAction SilentlyContinue
             # In some cases, certain files may not be accessible via Get-Item (e.g., due to permission issues).
@@ -253,13 +257,6 @@ function TabExpansion2 {
             }
             if ($null -ne $item) {
                 $listItemText = Format-CoolName $item
-                $newMatches.Add([System.Management.Automation.CompletionResult]::new(
-                        $result.CompletionText,
-                        $listItemText, # Menu display colored text
-                        $result.ResultType,
-                        $result.ToolTip
-                    ))
-                $added = $true
             }
         }
         elseif ($result.ResultType -eq 'Command') {
@@ -271,24 +268,21 @@ function TabExpansion2 {
             elseif ($result.ListItemText -match '\.(com|exe|bat|cmd|ps1|sh)$' -or [System.IO.File]::Exists($result.ToolTip)) {
                 Format-CoolName $result.ListItemText
             }
-            else {
-                $result.ListItemText
-            }
+        }
+
+        if ($listItemText -eq $result.ListItemText) {
+            $newMatches.Add($result)
+        }
+        else {
             $newMatches.Add([System.Management.Automation.CompletionResult]::new(
                     $result.CompletionText,
                     $listItemText,
                     $result.ResultType,
                     $result.ToolTip
                 ))
-            $added = $true
-        }
-        # 3. Fallback logic: if the item wasn't beautified, add the original result back
-        if (-not $added) {
-            $newMatches.Add($result)
         }
     }
 
-    # 4. Key step: reconstruct and return the CommandCompletion object
     return [System.Management.Automation.CommandCompletion]::new(
         $newMatches,
         $ret.CurrentMatchIndex,
