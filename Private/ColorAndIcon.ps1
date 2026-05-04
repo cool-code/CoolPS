@@ -400,8 +400,8 @@ function script:Format-CoolCommandName {
     param(
         [System.Management.Automation.CommandInfo]$CmdInfo
     )
+    $name = $CmdInfo.Name
     if ($CmdInfo.CommandType -eq 'Application') {
-        $name = $CmdInfo.Name
         $ext = $CmdInfo.Extension.ToLower()
         $attr = if ($ext -in @(".sock", ".socket")) { 'so' }
         elseif ($ext -in @('.exe', '.com', '.bat', '.cmd', '.ps1', '.sh')) { 'ex' }
@@ -421,10 +421,10 @@ function script:Format-CoolCommandName {
         'Cmdlet' { @((ColorBlue), '') }
         'ExternalScript' { @((ColorBlue), '') }
         'Script' { @((ColorGreen), '') }
-        'Function' { if ($CmdInfo.Name -match '^[A-Z]\:$') { @((ColorRed), '') } else { @((ColorCyan), '') } }
+        'Function' { if ($name -match '^[A-Z]\:$') { @((ColorRed), '') } else { @((ColorCyan), '') } }
         Default { @((ColorGray), '') }
     }
-    return "$color$(vPadRight $icon 3)$($CmdInfo.Name)$(ColorReset)"
+    return "$color$(vPadRight $icon 3)$($name)$(ColorReset)"
 }
 
 function script:Format-CoolNameFromFsInfo {
