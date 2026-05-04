@@ -10,6 +10,7 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 $PSDefaultParameterValues['Get-Content:Encoding'] = 'UTF8'
 
 # Import the PSReadLine script to set up custom key handlers and options for the Cool module.
+. (Join-Path $PSScriptRoot 'Initial.ps1')
 . (Join-Path $PSScriptRoot 'PSReadLine.ps1')
 
 Set-Alias -Name ls -Value 'l' -Option AllScope -Force -Scope Global

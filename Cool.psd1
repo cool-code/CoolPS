@@ -156,6 +156,7 @@
     FileList          = @(
         'Cool.psd1'
         'Cool.psm1'
+        'Initial.ps1'
         'PSReadLine.ps1'
         'LazyLoad.ps1'
         'Private/Localization.ps1'
