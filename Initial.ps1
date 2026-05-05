@@ -82,3 +82,19 @@ function Get-InitialZWJSupport {
 
 Set-Variable -Name 'AmbiguousAsWide' -Value (Get-InitialAmbiguousAsWide) -Visibility Private -Option Constant -Scope Script
 Set-Variable -Name 'ZWJ' -Value ([PSCustomObject](Get-InitialZWJSupport)) -Visibility Private -Option Constant -Scope Script
+
+function Set-SystemAliasesAndFunctions {
+    param([hashtable]$Aliases)
+    $ls = $Aliases['ls']
+    $cd = $Aliases['cd']
+    Set-Alias -Name ls -Value $ls -Option AllScope -Force -Scope Global
+    Set-Alias -Name cd -Value $cd -Option AllScope -Force -Scope Global
+    Set-Item -Path Function:cd~ -Value ([scriptblock]::Create("$cd ~")) -Force
+    Set-Item -Path Function:cd.. -Value ([scriptblock]::Create("$cd ..")) -Force
+    Set-Item -Path Function:cd\ -Value ([scriptblock]::Create("$cd \")) -Force
+    Set-Item -Path Function:cd/ -Value ([scriptblock]::Create("$cd /")) -Force
+    foreach ($d in 65..90) { 
+        $drive = "$([char]$d):"
+        Set-Item -Path Function:$drive -Value ([scriptblock]::Create($cd + ' $MyInvocation.MyCommand.Name')) -Force 
+    }
+}

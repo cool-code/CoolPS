@@ -303,71 +303,107 @@ function TabExpansion2 {
     )
 }
 
-# This script sets up custom hotkeys in PSReadLine for enhanced command line editing and history management.
-# Set up command prediction to use history and display predictions in a list view style.
-try {
-    if ($PSVersionTable.PSVersion -ge [Version]"7.2") {
-        # Enable command prediction based on history
-        Set-PSReadLineOption -PredictionSource HistoryAndPlugin -ErrorAction Stop
+function Get-ResetPSReadLineOptionsAndKeyHandlers {
+    $originalKeyHandlers = @{}
+    Get-PSReadLineKeyHandler -Bound | ForEach-Object { 
+        $originalKeyHandlers[$_.Key] = $_
     }
-    else {
-        # For older versions, just use history for prediction
-        Set-PSReadLineOption -PredictionSource History -ErrorAction Stop
-    }
-
-    # Set the prediction view style to ListView for better visibility of suggestions.
-    Set-PSReadLineOption -PredictionViewStyle ListView -ErrorAction Stop
-
-    # Configure Up and Down arrow keys to move the cursor to the end of the line when searching history, which is more intuitive for most users.
-    Set-PSReadLineOption -HistorySearchCursorMovesToEnd -ErrorAction Stop
-
-    # Set Up and Down arrow keys to search through command history based on the current input, similar to typical shell behavior.
-    Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward -ErrorAction Stop
-    Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward -ErrorAction Stop
-
-    # This script sets up a custom hotkey (Alt+Delete) in PSReadLine to delete the current command line from history.
-    # It works by directly manipulating the history file and then refreshing the PSReadLine cache.
-    Set-PSReadLineKeyHandler -Chord 'Alt+Delete', "Ctrl+Alt+d" `
-        -BriefDescription "DeleteFromHistory" `
-        -LongDescription "Delete the current command line from history" `
-        -ScriptBlock { try { DeleteFromHistory } catch { } } `
-        -ErrorAction Stop
-
-    # This script sets up a custom hotkey (Alt+s) in PSReadLine to save the current command line to history without executing it.
-    # It retrieves the current command line, adds it to history, and then reverts the line to allow the user to continue editing or executing it as they wish.
-    Set-PSReadLineKeyHandler -Chord 'Alt+s' `
-        -BriefDescription "SaveInHistory" `
-        -LongDescription "Save the current command line in history but do not execute it" `
-        -ScriptBlock { try { SaveInHistory } catch { } } `
-        -ErrorAction Stop
-
-    # This script sets up a custom hotkey (Enter) in PSReadLine to implement smart directory navigation.
-    # It intercepts the Enter key, checks if the input is a simple path-like string, and if so,
-    # it attempts to resolve it as a directory and change to that directory instead of executing it as a command.
-    Set-PSReadLineKeyHandler -Chord 'Enter' `
-        -BriefDescription "SmartDirectoryNavigation" `
-        -LongDescription "Navigate to the directory if the input is a valid path, otherwise execute the command" `
-        -ScriptBlock { try { SmartDirectoryNavigation } catch { } } `
-        -ErrorAction Stop
-
-    # This script sets up a custom hotkey (Tab) in PSReadLine to trigger menu completion with enhanced formatting for filesystem paths.
-    # It intercepts the Tab key, checks if the current word under the cursor is a potential filesystem path, applies multi-dot conversion if needed,
-    # and then triggers the menu completion to show suggestions with colors and icons.
-    Set-PSReadLineKeyHandler -Chord 'Tab' `
-        -BriefDescription "EnhancedMenuComplete" `
-        -LongDescription "Trigger menu completion with enhanced formatting for filesystem paths" `
-        -ScriptBlock { try { EnhancedMenuComplete } catch { } } `
-        -ErrorAction Stop
-
-    Set-PSReadLineOption -AddToHistoryHandler {
-        param($command)
-        if ($command -match "\0\d+\s*") {
-            return $false
+    $originalPSReadLineOptions = Get-PSReadLineOption
+    return {
+        foreach ($key in @('UpArrow', 'DownArrow', 'Alt+Delete', 'Ctrl+Alt+d', 'Alt+s', 'Tab', 'Enter')) {
+            try {
+                if ($originalKeyHandlers.ContainsKey($key)) {
+                    $h = $originalKeyHandlers[$key]
+                    Set-PSReadLineKeyHandler -Chord $h.Key -Function $h.Function -ErrorAction Stop
+                }
+                else {
+                    Remove-PSReadLineKeyHandler -Chord $key -ErrorAction Stop
+                }
+            }
+            catch {}
         }
-        return $true
-    }
+        try {
+            Set-PSReadLineOption -PredictionSource $originalPSReadLineOptions.PredictionSource -ErrorAction SilentlyContinue
+            Set-PSReadLineOption -PredictionViewStyle $originalPSReadLineOptions.PredictionViewStyle -ErrorAction SilentlyContinue
+            Set-PSReadLineOption -AddToHistoryHandler $originalPSReadLineOptions.AddToHistoryHandler -ErrorAction SilentlyContinue
+            if ($originalPSReadLineOptions.HistorySearchCursorMovesToEnd -eq 'False') {
+                Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$false -ErrorAction SilentlyContinue
+            }
+        }
+        catch {}
+    }.GetNewClosure()
 }
-catch {
-    # If PSReadLine is not available or any error occurs,
-    # we can safely ignore it as these hotkeys are optional enhancements.
+
+function Set-PSReadLineOptionsAndKeyHandlers {
+    # This script sets up custom hotkeys in PSReadLine for enhanced command line editing and history management.
+    # Set up command prediction to use history and display predictions in a list view style.
+    try {
+        if ($PSVersionTable.PSVersion -ge [Version]"7.2") {
+            # Enable command prediction based on history
+            Set-PSReadLineOption -PredictionSource HistoryAndPlugin -ErrorAction Stop
+        }
+        else {
+            # For older versions, just use history for prediction
+            Set-PSReadLineOption -PredictionSource History -ErrorAction Stop
+        }
+
+        # Set the prediction view style to ListView for better visibility of suggestions.
+        Set-PSReadLineOption -PredictionViewStyle ListView -ErrorAction Stop
+
+        # Configure Up and Down arrow keys to move the cursor to the end of the line when searching history, which is more intuitive for most users.
+        Set-PSReadLineOption -HistorySearchCursorMovesToEnd -ErrorAction Stop
+
+        # Set up an AddToHistoryHandler to prevent adding certain commands (e.g., those containing null characters followed by digits) to history,
+        # which are used as markers for pagination in our custom completion logic.
+        Set-PSReadLineOption -AddToHistoryHandler {
+            param($command)
+            if ($command -match "\0\d+\s*") {
+                return $false
+            }
+            return $true
+        }
+
+        # Set Up and Down arrow keys to search through command history based on the current input, similar to typical shell behavior.
+        Set-PSReadLineKeyHandler -Chord 'UpArrow' -Function HistorySearchBackward -ErrorAction Stop
+        Set-PSReadLineKeyHandler -Chord 'DownArrow' -Function HistorySearchForward -ErrorAction Stop
+
+        # This script sets up a custom hotkey (Alt+Delete) in PSReadLine to delete the current command line from history.
+        # It works by directly manipulating the history file and then refreshing the PSReadLine cache.
+        Set-PSReadLineKeyHandler -Chord 'Alt+Delete', "Ctrl+Alt+d" `
+            -BriefDescription "DeleteFromHistory" `
+            -LongDescription "Delete the current command line from history" `
+            -ScriptBlock { try { DeleteFromHistory } catch { } } `
+            -ErrorAction Stop
+
+        # This script sets up a custom hotkey (Alt+s) in PSReadLine to save the current command line to history without executing it.
+        # It retrieves the current command line, adds it to history, and then reverts the line to allow the user to continue editing or executing it as they wish.
+        Set-PSReadLineKeyHandler -Chord 'Alt+s' `
+            -BriefDescription "SaveInHistory" `
+            -LongDescription "Save the current command line in history but do not execute it" `
+            -ScriptBlock { try { SaveInHistory } catch { } } `
+            -ErrorAction Stop
+
+        # This script sets up a custom hotkey (Enter) in PSReadLine to implement smart directory navigation.
+        # It intercepts the Enter key, checks if the input is a simple path-like string, and if so,
+        # it attempts to resolve it as a directory and change to that directory instead of executing it as a command.
+        Set-PSReadLineKeyHandler -Chord 'Enter' `
+            -BriefDescription "SmartDirectoryNavigation" `
+            -LongDescription "Navigate to the directory if the input is a valid path, otherwise execute the command" `
+            -ScriptBlock { try { SmartDirectoryNavigation } catch { } } `
+            -ErrorAction Stop
+
+        # This script sets up a custom hotkey (Tab) in PSReadLine to trigger menu completion with enhanced formatting for filesystem paths.
+        # It intercepts the Tab key, checks if the current word under the cursor is a potential filesystem path, applies multi-dot conversion if needed,
+        # and then triggers the menu completion to show suggestions with colors and icons.
+        Set-PSReadLineKeyHandler -Chord 'Tab' `
+            -BriefDescription "EnhancedMenuComplete" `
+            -LongDescription "Trigger menu completion with enhanced formatting for filesystem paths" `
+            -ScriptBlock { try { EnhancedMenuComplete } catch { } } `
+            -ErrorAction Stop
+
+    }
+    catch {
+        # If PSReadLine is not available or any error occurs,
+        # we can safely ignore it as these hotkeys are optional enhancements.
+    }
 }
