@@ -405,7 +405,8 @@ function script:Format-CoolCommandName {
         [System.Management.Automation.CommandInfo]$CmdInfo
     )
     $name = $CmdInfo.Name
-    if ($CmdInfo.CommandType -eq 'Application') {
+    $type = $CmdInfo.CommandType
+    if ($type -eq 'Application') {
         $ext = $CmdInfo.Extension.ToLower()
         $attr = if ($ext -in @(".sock", ".socket")) { 'so' }
         elseif ($ext -in @('.exe', '.com', '.bat', '.cmd', '.ps1', '.sh')) { 'ex' }
@@ -419,7 +420,12 @@ function script:Format-CoolCommandName {
         }
         return "$(EscapeColor $color)$(vPadRight $icon 3)$name$(ColorReset)"
     }
-    $color, $icon = switch ($CmdInfo.CommandType) {
+    if ($type -eq 'Alias') {
+        if (-not [string]::IsNullOrEmpty($CmdInfo.Definition)) {
+            $name += " -> $($CmdInfo.Definition)"
+        }
+    }
+    $color, $icon = switch ($type) {
         'Alias' { @((ColorPurple), '') }
         'Filter' { @((ColorYellow), '') }
         'Cmdlet' { @((ColorBlue), '') }
