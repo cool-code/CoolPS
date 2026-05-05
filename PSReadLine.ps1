@@ -163,6 +163,7 @@ function EnhancedMenuComplete {
             $script:PSRL::MenuComplete()
             $line, $cursor = Get-InputFromPSReadLine
             if ($line.SubString(0, $cursor) -match "\0\d+\s*$") {
+                $script:PSRL::InvokePrompt()
                 continue
             }
             break
@@ -181,18 +182,53 @@ function EnhancedMenuComplete {
 }
 
 function TabExpansion2 {
-    [CmdletBinding()]
-    param([string]$inputScript, [int]$cursorColumn, $hashtable)
-    $offset = 0
-    if ($inputScript -match "(.*)\0(\d+)\s*$") {
-        $replacementLength = $inputScript.Length
-        $inputScript = $matches[1]
-        $cursorColumn = $inputScript.Length
-        $offset = [int]$matches[2]
-        $script:PSRL::Replace(0, $replacementLength, $inputScript)
-    }
+    [CmdletBinding(DefaultParameterSetName = 'ScriptInputSet')]
+    [OutputType([System.Management.Automation.CommandCompletion])]
+    Param(
+        [Parameter(ParameterSetName = 'ScriptInputSet', Mandatory = $true, Position = 0)]
+        [AllowEmptyString()]
+        [string] $inputScript,
 
-    $ret = [System.Management.Automation.CommandCompletion]::CompleteInput($inputScript, $cursorColumn, $hashtable)
+        [Parameter(ParameterSetName = 'ScriptInputSet', Position = 1)]
+        [int] $cursorColumn = $inputScript.Length,
+
+        [Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 0)]
+        [System.Management.Automation.Language.Ast] $ast,
+
+        [Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 1)]
+        [System.Management.Automation.Language.Token[]] $tokens,
+
+        [Parameter(ParameterSetName = 'AstInputSet', Mandatory = $true, Position = 2)]
+        [System.Management.Automation.Language.IScriptPosition] $positionOfCursor,
+
+        [Parameter(ParameterSetName = 'ScriptInputSet', Position = 2)]
+        [Parameter(ParameterSetName = 'AstInputSet', Position = 3)]
+        [Hashtable] $options = $null
+    )
+
+    $offset = 0
+
+    if ($psCmdlet.ParameterSetName -eq 'ScriptInputSet') {
+        if ($inputScript -match "(.*)\0(\d+)\s*$") {
+            $replacementLength = $inputScript.Length
+            $inputScript = $matches[1]
+            $cursorColumn = $inputScript.Length
+            $offset = [int]$matches[2]
+            $script:PSRL::Replace(0, $replacementLength, $inputScript)
+        }
+
+        $ret = [System.Management.Automation.CommandCompletion]::CompleteInput(
+            <#inputScript#>  $inputScript,
+            <#cursorColumn#> $cursorColumn,
+            <#options#>      $options)
+    }
+    else {
+        $ret = [System.Management.Automation.CommandCompletion]::CompleteInput(
+            <#ast#>              $ast,
+            <#tokens#>           $tokens,
+            <#positionOfCursor#> $positionOfCursor,
+            <#options#>          $options)
+    }
 
     $variableCache = [System.Collections.Generic.HashSet[string]]::new()
     Get-Variable -Scope Global -ErrorAction SilentlyContinue | Where-Object { $_.Visibility -eq 'Public' } | ForEach-Object { $null = $variableCache.Add($_.Name) }
@@ -206,7 +242,7 @@ function TabExpansion2 {
     # If there are no matches, return the original result without modification
     if ($null -eq $ret -or $ret.CompletionMatches.Count -eq 0) { return $ret }
 
-    $inputScript = $inputScript.SubString($ret.ReplacementIndex, $ret.ReplacementLength)
+    $replaceText = $inputScript.SubString($ret.ReplacementIndex, $ret.ReplacementLength)
 
     $count = $ret.CompletionMatches.Count
     if ([Console]::WindowHeight -le 7) {
@@ -214,26 +250,26 @@ function TabExpansion2 {
         $maxSafeCount = $count
     }
     else {
-        $maxVisibleHeight = [Console]::WindowHeight - 5
+        $maxVisibleHeight = [Console]::WindowHeight - 4
         $windowWidth = [Console]::WindowWidth
-        $maxItemWidth = ($ret.CompletionMatches.ForEach({ Get-VisualWidth $_.ListItemText }) | Measure-Object -Maximum).Maximum + 5
+        $maxItemWidth = ($ret.CompletionMatches.ForEach({ Get-VisualWidth $_.ListItemText }) | Measure-Object -Maximum).Maximum + 4
         $columns = [Math]::Max(1, [Math]::Floor($windowWidth / $maxItemWidth))
-        $maxSafeCount = $maxVisibleHeight * $columns
+        $maxSafeCount = $maxVisibleHeight * $columns - 1
     }
 
-    $newMatches = New-Object System.Collections.Generic.List[System.Management.Automation.CompletionResult]
+    $newMatches = [System.Collections.Generic.List[System.Management.Automation.CompletionResult]]::new($maxSafeCount + 2)
 
     if ($offset -gt 0) {
         $i = if ($offset -gt $maxSafeCount) { $offset - $maxSafeCount + 1 } else { 0 }
         $newMatches.Add([System.Management.Automation.CompletionResult]::new(
-                $inputScript + [char]0 + $i + " ",
+                $replaceText + [char]0 + $i + " ",
                 (ColorBlue) + "" + (FontReverse ((FontBold (Get-LocalizedString "PrevPage")) + "")) + (ColorCyan) + "" + (FontReverse "") + (ColorReset),
                 "Text",
                 (Get-LocalizedString "PrevPageToolTip" $offset)
             ))
     }
 
-    $commandCache = @{}
+    $commandCache = [System.Collections.Generic.Dictionary[string, System.Management.Automation.CommandInfo]]::new()
     Get-Command -CommandType Function, Cmdlet, Filter, Script -ErrorAction SilentlyContinue | ForEach-Object { $commandCache[$_.Name] = $_ };
     Get-Command -CommandType Alias -ErrorAction SilentlyContinue | ForEach-Object { $commandCache[$_.Name] = $_ }
 
@@ -242,7 +278,7 @@ function TabExpansion2 {
         if ($newMatches.Count -ge $maxSafeCount) {
             $moreCount = $count - $i
             $newMatches.Add([System.Management.Automation.CompletionResult]::new(
-                    $inputScript + [char]0 + $i + " ",
+                    $replaceText + [char]0 + $i + " ",
                     (ColorCyan) + (FontReverse "") + "" + (ColorBlue) + (FontReverse ("" + (FontBold (Get-LocalizedString "NextPage")))) + "" + (ColorReset),
                     "Text",
                     (Get-LocalizedString "NextPageToolTip" $moreCount)
@@ -326,6 +362,7 @@ function Get-ResetPSReadLineOptionsAndKeyHandlers {
             Set-PSReadLineOption -PredictionSource $originalPSReadLineOptions.PredictionSource -ErrorAction SilentlyContinue
             Set-PSReadLineOption -PredictionViewStyle $originalPSReadLineOptions.PredictionViewStyle -ErrorAction SilentlyContinue
             Set-PSReadLineOption -AddToHistoryHandler $originalPSReadLineOptions.AddToHistoryHandler -ErrorAction SilentlyContinue
+            Set-PSReadLineOption -CompletionQueryItems $originalPSReadLineOptions.CompletionQueryItems -ErrorAction SilentlyContinue
             if ($originalPSReadLineOptions.HistorySearchCursorMovesToEnd -eq 'False') {
                 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$false -ErrorAction SilentlyContinue
             }
@@ -352,6 +389,8 @@ function Set-PSReadLineOptionsAndKeyHandlers {
 
         # Configure Up and Down arrow keys to move the cursor to the end of the line when searching history, which is more intuitive for most users.
         Set-PSReadLineOption -HistorySearchCursorMovesToEnd -ErrorAction Stop
+
+        Set-PSReadLineOption -CompletionQueryItems 500 -ErrorAction SilentlyContinue
 
         # Set up an AddToHistoryHandler to prevent adding certain commands (e.g., those containing null characters followed by digits) to history,
         # which are used as markers for pagination in our custom completion logic.
