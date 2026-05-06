@@ -120,6 +120,9 @@ function global:Get-VisualWidth {
         An integer representing the visual width of the string.
     #>
     param([string]$Text)
+    if ([string]::IsNullOrEmpty($Text)) { return 0 }
+    # Fast path for pure ASCII (no ANSI codes, no wide chars)
+    if ($Text -notmatch '[^\x20-\x7E]') { return $Text.Length } 
     $elements, $widths = Get-VisualElementsAndWidths -Text $Text
     $totalWidth = 0
     foreach ($w in $widths) { $totalWidth += $w }
