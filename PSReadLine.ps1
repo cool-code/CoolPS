@@ -230,6 +230,9 @@ function TabExpansion2 {
             <#options#>          $options)
     }
 
+    # If there are no completion results, we can return early without further processing
+    if ($null -eq $ret) { return $ret }
+
     $variableCache = [System.Collections.Generic.HashSet[string]]::new()
     Get-Variable -Scope Global -ErrorAction SilentlyContinue | Where-Object { $_.Visibility -eq 'Public' } | ForEach-Object { $null = $variableCache.Add($_.Name) }
     $ret.CompletionMatches = $ret.CompletionMatches | Where-Object { 
@@ -240,7 +243,7 @@ function TabExpansion2 {
     }
 
     # If there are no matches, return the original result without modification
-    if ($null -eq $ret -or $ret.CompletionMatches.Count -eq 0) { return $ret }
+    if ($ret.CompletionMatches.Count -eq 0) { return $ret }
 
     $replaceText = $inputScript.SubString($ret.ReplacementIndex, $ret.ReplacementLength)
 
@@ -252,7 +255,7 @@ function TabExpansion2 {
     else {
         $maxVisibleHeight = [Console]::WindowHeight - 4
         $windowWidth = [Console]::WindowWidth
-        $maxItemWidth = ($ret.CompletionMatches.ForEach({ Get-VisualWidth $_.ListItemText }) | Measure-Object -Maximum).Maximum + 4
+        $maxItemWidth = ($ret.CompletionMatches.ForEach({ Get-VisualWidth $_.ListItemText }) | Measure-Object -Maximum).Maximum + 5
         $columns = [Math]::Max(1, [Math]::Floor($windowWidth / $maxItemWidth))
         $maxSafeCount = $maxVisibleHeight * $columns - 1
     }
