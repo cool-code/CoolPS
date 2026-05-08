@@ -7,6 +7,7 @@ project.lock.json
 /staging/
 /Packages/
 *.nuget.props
+/Benchmark*
 
 # VS auto-generated solution files for project.json solutions
 *.xproj

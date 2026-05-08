@@ -53,7 +53,7 @@ public class ConfigLoader
             string key = parts[0];
             string val = parts[1];
 
-            if (val == "*" || val == "" || filters.Contains(key)) continue;
+            if ((val == "*") || (val == "") || filters.Contains(key)) continue;
 
             string finalKey;
             if (_translateMap.TryGetValue(key, out string translated))
