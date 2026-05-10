@@ -58,8 +58,36 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     #endregion
 
     #region string representation
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override string ToString() => $"U+{_value:X4}";
+    private static readonly char[] _hexDigits = "0123456789ABCDEF".ToCharArray();
+    public unsafe override string ToString()
+    {
+        if (IsValid)
+        {
+            uint v = _value;
+
+            // Compute minimal hex digits for general uint values
+            int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
+
+            int len = 2 + digits;
+            char* buf = stackalloc char[len];
+            buf[0] = 'U'; buf[1] = '+';
+
+            // Use fixed to pin the _hexDigits array and get a pointer to it for efficient indexing
+            fixed (char* hexDigits = _hexDigits)
+            {
+                for (int j = len - 1; j >= 2; j--)
+                {
+                    buf[j] = hexDigits[v & 0xF];
+                    v >>= 4;
+                }
+            }
+
+            return new string(buf, 0, len);
+        }
+        // For invalid code points, return "U+FFFD" which is the standard replacement character
+        // used to represent invalid or unrepresentable code points in Unicode.
+        return "U+FFFD";
+    }
     #endregion
 
     #region range checks
