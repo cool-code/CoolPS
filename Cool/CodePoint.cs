@@ -243,14 +243,14 @@ public static class CodePointHelper
 
 unsafe readonly struct Bitmap : IDisposable
 {
-    private readonly ulong* _pbitmap;
+    private readonly uint* _pbitmap;
     private readonly int _bitHighLimit;
 
     public Bitmap(int bitHighLimit, string ranage)
     {
         _bitHighLimit = bitHighLimit;
-        int size = ((bitHighLimit + 1) >> 6) * sizeof(ulong);
-        _pbitmap = (ulong*)Marshal.AllocHGlobal(size);
+        int size = ((bitHighLimit + 1) >> 5) * sizeof(uint);
+        _pbitmap = (uint*)Marshal.AllocHGlobal(size);
         Marshal.Copy(new byte[size], 0, (IntPtr)_pbitmap, size);
         string[] parts = ranage.Split(',');
         foreach (var part in parts)
@@ -271,13 +271,13 @@ unsafe readonly struct Bitmap : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly void SetBit(int pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 6] |= 1UL << (pos & 63); } }
+    public readonly void SetBit(int pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 5] |= 1u << (pos & 31); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool GetBit(int pos) => (pos <= _bitHighLimit) && ((_pbitmap[pos >> 6] & (1UL << (pos & 63))) != 0);
+    public readonly bool GetBit(int pos) => (pos <= _bitHighLimit) && ((_pbitmap[pos >> 5] & (1u << (pos & 31))) != 0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly void ClearBit(int pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 6] &= ~(1UL << (pos & 63)); } }
+    public readonly void ClearBit(int pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 5] &= ~(1u << (pos & 31)); } }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly void Dispose() => Marshal.FreeHGlobal((IntPtr)_pbitmap);
 }
