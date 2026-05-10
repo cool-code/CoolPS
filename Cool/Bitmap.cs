@@ -8,12 +8,12 @@ namespace Cool;
 public unsafe readonly struct Bitmap : IDisposable
 {
     private readonly uint* _pbitmap;
-    private readonly int _bitHighLimit;
+    private readonly uint _bitHighLimit;
 
-    public Bitmap(int bitHighLimit, string ranage)
+    public Bitmap(uint bitHighLimit, string ranage)
     {
         _bitHighLimit = bitHighLimit;
-        int size = ((bitHighLimit + 1) >> 5) * sizeof(uint);
+        int size = ((int)(bitHighLimit + 1) >> 5) * sizeof(uint);
         _pbitmap = (uint*)Marshal.AllocHGlobal(size);
         Marshal.Copy(new byte[size], 0, (IntPtr)_pbitmap, size);
         string[] parts = ranage.Split(',');
@@ -22,26 +22,26 @@ public unsafe readonly struct Bitmap : IDisposable
             int dashIndex = part.IndexOf('-');
             if (dashIndex > 0)
             {
-                int start = int.Parse(part.Substring(0, dashIndex), NumberStyles.HexNumber);
-                int end = Math.Min(bitHighLimit, int.Parse(part.Substring(dashIndex + 1), NumberStyles.HexNumber));
-                for (int i = start; i <= end; i++) SetBit(i);
+                uint start = uint.Parse(part.Substring(0, dashIndex), NumberStyles.HexNumber);
+                uint end = Math.Min(bitHighLimit, uint.Parse(part.Substring(dashIndex + 1), NumberStyles.HexNumber));
+                for (uint i = start; i <= end; i++) SetBit(i);
             }
             else
             {
-                int pos = int.Parse(part, NumberStyles.HexNumber);
+                uint pos = uint.Parse(part, NumberStyles.HexNumber);
                 SetBit(pos);
             }
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly void SetBit(int pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 5] |= 1u << (pos & 31); } }
+    public readonly void SetBit(uint pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 5] |= 1u << (int)(pos & 31); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool GetBit(int pos) => (pos <= _bitHighLimit) && ((_pbitmap[pos >> 5] & (1u << (pos & 31))) != 0);
+    public readonly bool GetBit(uint pos) => (pos <= _bitHighLimit) && ((_pbitmap[pos >> 5] & (1u << (int)(pos & 31))) != 0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly void ClearBit(int pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 5] &= ~(1u << (pos & 31)); } }
+    public readonly void ClearBit(uint pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 5] &= ~(1u << (int)(pos & 31)); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly void Dispose() => Marshal.FreeHGlobal((IntPtr)_pbitmap);

@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace Cool;
@@ -222,7 +223,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     ///   <field name="_zeroPtr">Bitmap for zero-width characters</field>
     ///   <field name="_emojiPtr">Bitmap for emoji characters</field>
     /// </summary>
-    private const int MaxCodePoint = 0x1FFFF;
+    private const uint MaxCodePoint = 0x1FFFF;
     private static readonly Bitmap wideBitmap = new(MaxCodePoint, _wideRange);
     private static readonly Bitmap ambigBitmap = new(MaxCodePoint, _ambigRange);
     private static readonly Bitmap zeroBitmap = new(MaxCodePoint, _zeroRange);
@@ -243,7 +244,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsWideWidth
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => wideBitmap.GetBit((int)_value) || (((_value - 0x20000u) & ~0x10000u) <= 0xFFFDu);
+        get => wideBitmap.GetBit(_value) || (((_value - 0x20000u) & ~0x10000u) <= 0xFFFDu);
     }
 
 
@@ -261,7 +262,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsAmbiguousWidth
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ambigBitmap.GetBit((int)_value) || (((_value - 0xF0000u) & ~0x10000u) <= 0xFFFDu);
+        get => ambigBitmap.GetBit(_value) || (((_value - 0xF0000u) & ~0x10000u) <= 0xFFFDu);
     }
 
     /// <summary>
@@ -272,7 +273,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsZeroWidth
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => zeroBitmap.GetBit((int)_value) || (_value - 0xE0000u <= 0xE007Fu - 0xE0000u) || (_value - 0xE0100u <= 0xE01EFu - 0xE0100u);
+        get => zeroBitmap.GetBit(_value) || (_value - 0xE0000u <= 0xE007Fu - 0xE0000u) || (_value - 0xE0100u <= 0xE01EFu - 0xE0100u);
     }
 
     /// <summary>
@@ -281,7 +282,49 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsEmoji
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => emojiBitmap.GetBit((int)_value);
+        get => emojiBitmap.GetBit(_value);
+    }
+
+    /// <summary>
+    /// Check if the code point is an emoji modifier by checking if it falls within the range of emoji modifiers defined in the Unicode standard (U+1F3FB to U+1F3FF).
+    /// </summary>
+    public bool IsEmojiModifier
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => (_value - 0x1F3FBu) <= (0x1F3FFu - 0x1F3FBu);
     }
     #endregion
+
+    private const uint HighSurrogateStart = 0xD800;
+    private const uint HighSurrogateEnd = 0xDBFF;
+    private const uint LowSurrogateStart = 0xDC00;
+    private const uint LowSurrogateEnd = 0xDFFF;
+
+    public bool IsHighSurrogate
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => (_value - HighSurrogateStart) <= (HighSurrogateEnd - HighSurrogateStart);
+    }
+    public bool IsLowSurrogate
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => (_value - LowSurrogateStart) <= (LowSurrogateEnd - LowSurrogateStart);
+    }
+    public bool IsSurrogate
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => (_value - HighSurrogateStart) <= (LowSurrogateEnd - HighSurrogateStart);
+    }
+
+    public static CodePoint ToCodePoint(char highSurrogate, char lowSurrogate)
+    {
+        uint high = highSurrogate - HighSurrogateStart;
+        uint low = lowSurrogate - LowSurrogateStart;
+        if ((high <= (HighSurrogateEnd - HighSurrogateStart)) && (low <= (LowSurrogateEnd - LowSurrogateStart)))
+        {
+            uint codePointValue = (high << 10) + low + 0x10000;
+            return new CodePoint(codePointValue);
+        }
+        throw new ArgumentException("Invalid surrogate pair");
+    }
 }
