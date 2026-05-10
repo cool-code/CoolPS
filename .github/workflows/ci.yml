@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Build and Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Runner info
+        run: |
+          echo "Runner: $RUNNER_OS"
+          dotnet --info || true
+
+      - name: Setup .NET 6.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Setup .NET 7.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Run tests (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          frameworks="net6.0 net7.0 net8.0 net9.0 net10.0"
+          results_dir=./test-results/${{ matrix.os }}
+          mkdir -p "$results_dir"
+          exit_code=0
+          for f in $frameworks; do
+            echo "=== dotnet test for $f ==="
+            dotnet test Tests/Cool.Tests/Cool.Tests.csproj -c Release --framework $f --logger "trx;LogFileName=test-results-${{ matrix.os }}-${f}-${{ github.run_id }}.trx" --results-directory "$results_dir"
+            rc=$?
+            if [ $rc -ne 0 ]; then
+              exit_code=$rc
+            fi
+          done
+          exit $exit_code
+
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $frameworks = @('net462','net47','net48','net481','net6.0','net7.0','net8.0','net9.0','net10.0')
+          $resultsDir = "test-results/${{ matrix.os }}"
+          New-Item -ItemType Directory -Force -Path $resultsDir | Out-Null
+          $exitCode = 0
+          foreach ($f in $frameworks) {
+            Write-Host "=== dotnet test for $f ==="
+            dotnet test Tests/Cool.Tests/Cool.Tests.csproj -c Release --framework $f --logger "trx;LogFileName=test-results-${{ matrix.os }}-$f-${{ github.run_id }}.trx" --results-directory $resultsDir
+            if ($LASTEXITCODE -ne 0) { $exitCode = $LASTEXITCODE }
+          }
+          exit $exitCode
+      - name: List TRX files (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          echo "PWD: $(pwd)"
+          echo "Listing workspace files..."
+          ls -la || true
+          echo "Listing test-results directory..."
+          ls -la test-results || true
+          echo "Finding any .trx files..."
+          find . -type f -name "*.trx" -print || true
+
+      - name: List TRX files (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          Write-Host "PWD: $PWD"
+          Write-Host "Listing workspace files..."
+          Get-ChildItem -Force -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+          Write-Host "Listing test-results directory..."
+          if (Test-Path test-results) { Get-ChildItem -Recurse test-results -Force | ForEach-Object { Write-Host $_.FullName } } else { Write-Host 'test-results not found' }
+          Write-Host "Finding any .trx files..."
+          Get-ChildItem -Recurse -Filter *.trx -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: |
+            test-results/**
+            **/TestResults/**
+            **/*.trx

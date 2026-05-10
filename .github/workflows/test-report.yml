@@ -1,0 +1,33 @@
+name: Test Report
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  report:
+    name: Create test report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Report
+        uses: dorny/test-reporter@v3
+        with:
+          # Match artifacts named like 'test-results-ubuntu-latest', 'test-results-windows-latest', etc.
+          artifact: '/test-results-(.*)/'
+          # Will create a check run named 'Unit tests ubuntu-latest' etc.
+          name: 'Unit tests $1'
+          # Look for any .trx files inside the artifact
+          path: '**/*.trx'
+          reporter: dotnet-trx
+          use-actions-summary: 'true'
+          list-suites: 'all'
+          list-tests: 'failed'
+          fail-on-empty: 'false'
+          # token defaults to ${{ github.token }} if omitted
+          # token: ${{ secrets.GITHUB_TOKEN }}
