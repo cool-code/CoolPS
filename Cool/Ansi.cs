@@ -26,27 +26,33 @@ public static class Ansi
         public const string DefaultBackgroundColor = Esc + "49m";
 
     }
-    private static readonly string[] _fg256Cache = new string[256];
-    private static readonly string[] _bg256Cache = new string[256];
-    private static readonly string[] _fg16Cache = new string[16];
-    private static readonly string[] _bg16Cache = new string[16];
-    static Ansi()
+    private static readonly string[] _fg256Cache = Init256ColorCache(true);
+    private static readonly string[] _bg256Cache = Init256ColorCache(false);
+    private static readonly string[] _fg16Cache = Init16ColorCache(true);
+    private static readonly string[] _bg16Cache = Init16ColorCache(false);
+
+    private static string[] Init256ColorCache(bool isForeground)
     {
-        for (int i = 0; i < 256; i++)
-        {
-            _fg256Cache[i] = Esc + "38;5;" + i + "m";
-            _bg256Cache[i] = Esc + "48;5;" + i + "m";
-        }
+        string prefix = isForeground ? "38;5;" : "48;5;";
+        string[] cache = new string[256];
+        for (int i = 0; i < 256; i++) cache[i] = Esc + prefix + i + "m";
+        return cache;
+    }
+
+    private static string[] Init16ColorCache(bool isForeground)
+    {
+        string[] cache = new string[16];
+        int baseCode = isForeground ? 30 : 40;
         for (int i = 0; i < 16; i++)
         {
-            // i < 8 is standard color (30-37)，i >= 8 is bright color (90-97)
-            int fgCode = (i < 8) ? (30 + i) : (90 + (i - 8));
-            // i < 8 is standard color (40-47)，i >= 8 is bright color (100-107)
-            int bgCode = (i < 8) ? (40 + i) : (100 + (i - 8));
-            _fg16Cache[i] = Esc + fgCode + "m";
-            _bg16Cache[i] = Esc + bgCode + "m";
+            // foreground color: i < 8 is standard color (30-37)，i >= 8 is bright color (90-97)
+            // background color: i < 8 is standard color (40-47)，i >= 8 is bright color (100-107)
+            int code = (i < 8) ? (baseCode + i) : (baseCode + 60 + (i - 8));
+            cache[i] = Esc + code + "m";
         }
+        return cache;
     }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string EscapeSGR(string input) => Esc + input + "m";
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
