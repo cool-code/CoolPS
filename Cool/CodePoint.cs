@@ -1,6 +1,6 @@
 using System;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Cool;
 
@@ -40,7 +40,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
 
     #region hash code
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override int GetHashCode() => _value.GetHashCode();
+    public override int GetHashCode() => (int)_value;
     #endregion
 
     #region operators
@@ -56,38 +56,91 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public static bool operator <=(CodePoint left, CodePoint right) => left._value <= right._value;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >=(CodePoint left, CodePoint right) => left._value >= right._value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static CodePoint operator +(CodePoint cp, int offset) => new(cp._value + (uint)offset);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static CodePoint operator -(CodePoint cp, int offset) => new(cp._value - (uint)offset);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int operator -(CodePoint left, CodePoint right) => (int)(left._value - right._value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static CodePoint operator ++(CodePoint cp) => new(cp._value + 1);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static CodePoint operator --(CodePoint cp) => new(cp._value - 1);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static CodePoint operator +(CodePoint cp1, CodePoint cp2) => FromSurrogatePair(cp1, cp2);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string operator +(string s, CodePoint cp) => string.Concat(s, cp.ToString());
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string operator +(CodePoint cp, string s) => string.Concat(cp.ToString(), s);
+    public static string operator *(CodePoint cp, int count)
+    {
+        if (count <= 0) return string.Empty;
+        uint v = cp._value;
+        if (v <= 0xFFFFu) return new string((char)v, count);
+        // For invalid code points, return the standard replacement character repeated 'count' times
+        if (!cp.IsValid) return new string('\uFFFD', count);
+        // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
+        StringBuilder sb = StringBuilderPool.Shared.Rent(count << 1);
+        try
+        {
+            v -= 0x10000u;
+            char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
+            char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
+            for (int i = 0; i < count; i++)
+            {
+                sb.Append(highSurrogate);
+                sb.Append(lowSurrogate);
+            }
+            return sb.ToString();
+        }
+        finally
+        {
+            StringBuilderPool.Shared.Return(sb);
+        }
+    }
     #endregion
 
     #region string representation
-    private static readonly char[] _hexDigits = "0123456789ABCDEF".ToCharArray();
-    public unsafe override string ToString()
+    public override string ToString()
     {
-        if (IsValid)
-        {
-            uint v = _value;
+        uint v = _value;
+        if (v <= 0xFFFFu) return new string((char)v, 1);
+        // For invalid code points, return the standard replacement character
+        if (IsValid) return "\uFFFD";
+        // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
+        v -= 0x10000u;
+        char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
+        char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
+        return new string([highSurrogate, lowSurrogate]);
+    }
 
-            // Compute minimal hex digits for general uint values
-            int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
-
-            int len = 2 + digits;
-            char* buf = stackalloc char[len];
-            buf[0] = 'U'; buf[1] = '+';
-
-            // Use fixed to pin the _hexDigits array and get a pointer to it for efficient indexing
-            fixed (char* hexDigits = _hexDigits)
-            {
-                for (int j = len - 1; j >= 2; j--)
-                {
-                    buf[j] = hexDigits[v & 0xF];
-                    v >>= 4;
-                }
-            }
-
-            return new string(buf, 0, len);
-        }
+    internal static readonly char[] _hexDigits = "0123456789ABCDEF".ToCharArray();
+    public unsafe string ToUnicodeString()
+    {
         // For invalid code points, return "U+FFFD" which is the standard replacement character
         // used to represent invalid or unrepresentable code points in Unicode.
-        return "U+FFFD";
+        if (!IsValid) return "U+FFFD";
+
+        uint v = _value;
+
+        // Compute minimal hex digits for general uint values
+        int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
+
+        int len = 2 + digits;
+        char* buf = stackalloc char[len];
+        buf[0] = 'U'; buf[1] = '+';
+
+        // Use fixed to pin the _hexDigits array and get a pointer to it for efficient indexing
+        fixed (char* hexDigits = _hexDigits)
+        {
+            for (int j = len - 1; j >= 2; j--)
+            {
+                buf[j] = hexDigits[v & 0xF];
+                v >>= 4;
+            }
+        }
+
+        return new string(buf, 0, len);
     }
     #endregion
 
@@ -295,10 +348,11 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     }
     #endregion
 
-    private const uint HighSurrogateStart = 0xD800;
-    private const uint HighSurrogateEnd = 0xDBFF;
-    private const uint LowSurrogateStart = 0xDC00;
-    private const uint LowSurrogateEnd = 0xDFFF;
+    #region surrogate checks and conversions
+    internal const uint HighSurrogateStart = 0xD800;
+    internal const uint HighSurrogateEnd = 0xDBFF;
+    internal const uint LowSurrogateStart = 0xDC00;
+    internal const uint LowSurrogateEnd = 0xDFFF;
 
     public bool IsHighSurrogate
     {
@@ -316,7 +370,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         get => (_value - HighSurrogateStart) <= (LowSurrogateEnd - HighSurrogateStart);
     }
 
-    public static CodePoint ToCodePoint(char highSurrogate, char lowSurrogate)
+    public static CodePoint FromSurrogatePair(char highSurrogate, char lowSurrogate)
     {
         uint high = highSurrogate - HighSurrogateStart;
         uint low = lowSurrogate - LowSurrogateStart;
@@ -326,5 +380,87 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
             return new CodePoint(codePointValue);
         }
         throw new ArgumentException("Invalid surrogate pair");
+    }
+
+    public static CodePoint FromSurrogatePair(uint highSurrogate, uint lowSurrogate)
+    {
+        uint high = highSurrogate - HighSurrogateStart;
+        uint low = lowSurrogate - LowSurrogateStart;
+        if ((high <= (HighSurrogateEnd - HighSurrogateStart)) && (low <= (LowSurrogateEnd - LowSurrogateStart)))
+        {
+            uint codePointValue = (high << 10) + low + 0x10000;
+            return new CodePoint(codePointValue);
+        }
+        throw new ArgumentException("Invalid surrogate pair");
+    }
+
+    public static CodePoint FromSurrogatePair(int highSurrogate, int lowSurrogate)
+    {
+        uint high = (uint)highSurrogate - HighSurrogateStart;
+        uint low = (uint)lowSurrogate - LowSurrogateStart;
+        if ((high <= (HighSurrogateEnd - HighSurrogateStart)) && (low <= (LowSurrogateEnd - LowSurrogateStart)))
+        {
+            uint codePointValue = (high << 10) + low + 0x10000;
+            return new CodePoint(codePointValue);
+        }
+        throw new ArgumentException("Invalid surrogate pair");
+    }
+
+    public static CodePoint FromSurrogatePair(CodePoint highSurrogate, CodePoint lowSurrogate)
+    {
+        uint high = highSurrogate._value - HighSurrogateStart;
+        uint low = lowSurrogate._value - LowSurrogateStart;
+        if ((high <= (HighSurrogateEnd - HighSurrogateStart)) && (low <= (LowSurrogateEnd - LowSurrogateStart)))
+        {
+            uint codePointValue = (high << 10) + low + 0x10000;
+            return new CodePoint(codePointValue);
+        }
+        throw new ArgumentException("Invalid surrogate pair");
+    }
+    #endregion
+}
+
+public static class CodePointExtensions
+{
+    public static StringBuilder Append(this StringBuilder sb, CodePoint cp)
+    {
+        uint v = cp;
+        if (v <= 0xFFFFu) return sb.Append((char)v);
+        // For invalid code points, return the standard replacement character
+        if (!cp.IsValid) return sb.Append('\uFFFD');
+        // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
+        v -= 0x10000u;
+        char highSurrogate = (char)((v >> 10) + CodePoint.HighSurrogateStart);
+        char lowSurrogate = (char)((v & 0x3FFu) + CodePoint.LowSurrogateStart);
+        return sb.Append(highSurrogate).Append(lowSurrogate);
+    }
+    public static StringBuilder Append(this StringBuilder sb, params CodePoint[] cp)
+    {
+        foreach (var c in cp) sb.Append(c);
+        return sb;
+    }
+    public static StringBuilder AppendUnicodeString(this StringBuilder sb, CodePoint cp)
+    {
+        // For invalid code points, append "U+FFFD" which is the standard replacement character
+        // used to represent invalid or unrepresentable code points in Unicode.
+        if (!cp.IsValid) return sb.Append("U+FFFD");
+
+        uint v = cp;
+
+        // Compute minimal hex digits for general uint values
+        int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
+
+        sb.Append("U+");
+        for (int j = digits - 1; j >= 0; j--)
+        {
+            sb.Append(CodePoint._hexDigits[v & 0xF]);
+            v >>= 4;
+        }
+        return sb;
+    }
+    public static StringBuilder AppendUnicodeString(this StringBuilder sb, params CodePoint[] cp)
+    {
+        foreach (var c in cp) sb.AppendUnicodeString(c);
+        return sb;
     }
 }
