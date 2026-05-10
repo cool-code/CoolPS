@@ -157,6 +157,12 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
 
     #region properties
 
+    public int CharCount
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => ((_value - 0xFFFFu) <= (0x10FFFFu - 0xFFFFu)) ? 2 : 1;
+    }
+
     /// <summary>
     /// Check if the code point is an ASCII character by simply checking if its value is less than or equal to 127, which is the maximum code point for ASCII characters.
     /// </summary>
