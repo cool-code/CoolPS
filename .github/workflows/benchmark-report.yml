@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Find benchmark artifact for triggering run
         id: find-artifact
-        uses: actions/github-script@v8.0.0
+        uses: actions/github-script@v8
         with:
           script: |
             const runId = context.payload.workflow_run && context.payload.workflow_run.id;
@@ -142,7 +142,7 @@ jobs:
 
       - name: Upload merged reports
         if: always()
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v6
         with:
           name: merged-report-results
           path: out/merged/**

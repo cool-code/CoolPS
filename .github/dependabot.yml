@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "automerge"
+    # Dependabot will propose updates to action versions (patch/minor/major depending on config and tags)
+    # You can adjust `interval` to "daily" or `open-pull-requests-limit` as desired.
