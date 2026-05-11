@@ -193,4 +193,4 @@ jobs:
           path: |
             BenchmarkDotNet.Artifacts.net8/**
             BenchmarkDotNet.Artifacts.net48/**
-            BenchmarkDotNet.Artifacts/**
+            # removed generic BenchmarkDotNet.Artifacts/** to avoid duplicating net48 results
