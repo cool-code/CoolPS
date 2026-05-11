@@ -15,7 +15,7 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Runner info
         run: |
@@ -23,12 +23,12 @@ jobs:
           dotnet --info || true
 
       - name: Setup .NET 6.x
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '6.0.x'
 
       - name: Setup .NET 7.x
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '7.0.x'
 
@@ -94,10 +94,104 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
+        continue-on-error: true
         with:
           name: test-results-${{ matrix.os }}
           path: |
             test-results/**
             **/TestResults/**
             **/*.trx
+
+  benchmarks:
+    name: Benchmarks (Windows)
+    runs-on: windows-latest
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Runner info
+        run: |
+          echo "Runner: $RUNNER_OS"
+          dotnet --info || true
+
+      - name: Setup .NET 8.x
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Check .NET SDKs
+        run: |
+          dotnet --info || true
+          dotnet --list-sdks || true
+
+      - name: Restore benchmarks (Windows) [retry]
+        shell: powershell
+        run: |
+          $max = 3
+          for ($i = 1; $i -le $max; $i++) {
+            Write-Host "dotnet restore Benchmarks attempt $i"
+            dotnet restore ./Benchmarks/Cool.Benchmarks.csproj
+            if ($LASTEXITCODE -eq 0) { break }
+            Start-Sleep -Seconds (5 * $i)
+            if ($i -eq $max) { exit $LASTEXITCODE }
+          }
+
+      - name: Build benchmarks [retry]
+        shell: powershell
+        run: |
+          $max = 3
+          for ($i = 1; $i -le $max; $i++) {
+            Write-Host "dotnet build Benchmarks attempt $i"
+            dotnet build Benchmarks/Cool.Benchmarks.csproj -c Release --no-restore
+            if ($LASTEXITCODE -eq 0) { break }
+            Start-Sleep -Seconds (5 * $i)
+            if ($i -eq $max) { exit $LASTEXITCODE }
+          }
+
+      - name: Run benchmarks (.NET 8)
+        run: dotnet run -c Release -f net8.0 --project Benchmarks/Cool.Benchmarks.csproj -- --filter "*"
+
+      - name: Save benchmarks results (net8)
+        if: always()
+        shell: powershell
+        run: |
+          if (Test-Path BenchmarkDotNet.Artifacts) {
+            $dest = 'BenchmarkDotNet.Artifacts.net8'
+            if (Test-Path $dest) { Remove-Item -Recurse -Force $dest -ErrorAction SilentlyContinue }
+            New-Item -ItemType Directory -Force -Path $dest | Out-Null
+            Copy-Item -Path 'BenchmarkDotNet.Artifacts\*' -Destination $dest -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Host "Saved net8 results to $dest"
+          } else {
+            Write-Host 'No BenchmarkDotNet.Artifacts directory found after net8 run'
+          }
+
+      - name: Run benchmarks (.NET 4.8)
+        shell: powershell
+        run: |
+          dotnet run -c Release -f net48 --project Benchmarks/Cool.Benchmarks.csproj -- --filter "*"
+
+      - name: Save benchmarks results (net48)
+        if: always()
+        shell: powershell
+        run: |
+          if (Test-Path BenchmarkDotNet.Artifacts) {
+            $dest = 'BenchmarkDotNet.Artifacts.net48'
+            if (Test-Path $dest) { Remove-Item -Recurse -Force $dest -ErrorAction SilentlyContinue }
+            New-Item -ItemType Directory -Force -Path $dest | Out-Null
+            Copy-Item -Path 'BenchmarkDotNet.Artifacts\*' -Destination $dest -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Host "Saved net48 results to $dest"
+          } else {
+            Write-Host 'No BenchmarkDotNet.Artifacts directory found after net48 run'
+          }
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmark-results
+          path: |
+            BenchmarkDotNet.Artifacts.net8/**
+            BenchmarkDotNet.Artifacts.net48/**
+            # removed generic BenchmarkDotNet.Artifacts/** to avoid duplicating net48 results

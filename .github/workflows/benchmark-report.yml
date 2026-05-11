@@ -1,0 +1,165 @@
+name: Benchmark Report
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    name: Publish Benchmarks Report (Job Summary)
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Find benchmark artifact for triggering run
+        id: find-artifact
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const runId = context.payload.workflow_run && context.payload.workflow_run.id;
+            if (!runId) {
+              core.setOutput('found', 'false');
+              console.log('No workflow_run id in payload');
+              return;
+            }
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const resp = await github.rest.actions.listWorkflowRunArtifacts({ owner, repo, run_id: runId });
+            const artifacts = resp.data.artifacts || [];
+            console.log('Artifacts for run ' + runId + ': ' + artifacts.map(a => a.name).join(', '));
+            const art = artifacts.find(a => a.name === 'benchmark-results');
+            if (!art) {
+              core.setOutput('found', 'false');
+              core.setOutput('names', artifacts.map(a => a.name).join(','));
+              return;
+            }
+            core.setOutput('found', 'true');
+            core.setOutput('id', String(art.id));
+            core.setOutput('downloadUrl', art.archive_download_url);
+
+      - name: Download artifact archive (from triggering run)
+        if: steps.find-artifact.outputs.found == 'true'
+        run: |
+          echo "Downloading artifact from: ${{ steps.find-artifact.outputs.downloadUrl }}"
+          mkdir -p benchmark-results
+          curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -o artifact.zip "${{ steps.find-artifact.outputs.downloadUrl }}"
+          unzip -o artifact.zip -d benchmark-results
+          rm -f artifact.zip
+        shell: bash
+
+      - name: Prepare publish directory
+        run: |
+          set -eu
+          mkdir -p out
+          if [ -d "benchmark-results/BenchmarkDotNet.Artifacts/results" ]; then
+            cp -r benchmark-results/BenchmarkDotNet.Artifacts/results/* out/ || true
+          else
+            cp -r benchmark-results/* out/ || true
+          fi
+          # copy nested html/csv/md preserving paths
+          find benchmark-results -type f \( -name "*.html" -o -name "*.csv" -o -name "*.md" \) -print0 | \
+          while IFS= read -r -d '' file; do
+            rel=${file#benchmark-results/}
+            dir=$(dirname "$rel")
+            mkdir -p "out/$dir"
+            cp "$file" "out/$rel" || true
+          done || true
+
+      - name: List out directory
+        run: |
+          echo "Contents of out:"
+          ls -la out || true
+
+      - name: Merge benchmark markdown per runtime
+        if: always()
+        run: |
+          echo "Merging benchmark markdown files by host/runtime"
+          mkdir -p out/merged
+          find out -type f -name '*-report-github.md' -print0 | while IFS= read -r -d '' f; do
+            [ -f "$f" ] || continue
+            # read a prefix to detect fences or host line
+            header=$(sed -n '1,200p' "$f" 2>/dev/null || true)
+            # if file contains a fenced code block header, try to split at the closing fence
+            if printf "%s" "$header" | grep -q '^```'; then
+              firstFence=$(grep -n '^```' "$f" | head -n1 | cut -d: -f1 || true)
+              secondRelative=$(tail -n +$((firstFence+1)) "$f" | grep -n '^```' | head -n1 | cut -d: -f1 || true)
+              if [ -n "$secondRelative" ]; then
+                headerLines=$((firstFence + secondRelative))
+                header=$(sed -n "1,${headerLines}p" "$f" 2>/dev/null || true)
+                body=$(sed -n "$((headerLines+1)),\$p" "$f" 2>/dev/null || true)
+              else
+                header=$(sed -n '1,50p' "$f" 2>/dev/null || true)
+                body=$(sed -n '51,$p' "$f" 2>/dev/null || true)
+              fi
+            else
+              header=$(sed -n '1,50p' "$f" 2>/dev/null || true)
+              body=$(sed -n '51,$p' "$f" 2>/dev/null || true)
+            fi
+
+            hostLine=$(printf "%s\n" "$header" | grep -m1 '\[Host\]' || true)
+            if [ -z "$hostLine" ]; then
+              hostLine=$(printf "%s\n" "$header" | sed -n '/\S/{p;q;}' || true)
+            fi
+
+            label=$(printf "%s" "$hostLine" | sed 's/^[[:space:]]*//; s/\[Host\].*:[[:space:]]*//; s/[^A-Za-z0-9._-]/_/g; s/_\+/_/g; s/^[._-][._-]*//; s/^_//; s/_$//' | tr '[:upper:]' '[:lower:]')
+            if [ -z "$label" ]; then label="unknown"; fi
+            short=$(printf "%s" "$label" | cut -c1-60)
+            hash=$(printf "%s" "$hostLine" | sha1sum 2>/dev/null | cut -d' ' -f1 | cut -c1-8 2>/dev/null || echo "00000000")
+            label="${short}_${hash}"
+            merged="out/merged/${label}-merged-report-github.md"
+            if [ ! -f "$merged" ]; then
+              # write the header from the first-seen file for this host group
+              printf '%s\n\n' "$header" > "$merged" || true
+            fi
+            name=$(basename "$f" "-report-github.md")
+            printf '### %s\n\n' "$name" >> "$merged"
+            if [ -n "$body" ]; then
+              printf '%s\n\n' "$body" >> "$merged"
+            else
+              # fallback: append entire file
+              sed -n '1,$p' "$f" >> "$merged" 2>/dev/null || true
+            fi
+          done
+
+      - name: List merged directory
+        if: always()
+        run: |
+          echo "Merged directory contents:"
+          if [ -d out/merged ]; then
+            ls -la out/merged || true
+            for f in out/merged/*-merged-report-github.md; do
+              [ -f "$f" ] || continue
+              echo "----- $f -----"
+              sed -n '1,60p' "$f" || true
+            done
+          else
+            echo "out/merged not found"
+          fi
+
+      - name: Upload merged reports
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: merged-report-results
+          path: out/merged/**
+
+      - name: Publish benchmark markdown to job summary
+        if: always()
+        run: |
+          echo "Publishing benchmark markdown to job summary"
+          shopt -s nullglob dotglob || true
+          found=0
+          for f in out/merged/*-merged-report-github.md; do
+            [ -f "$f" ] || continue
+            echo "## $(basename "$f")" >> $GITHUB_STEP_SUMMARY
+            sed -n '1,400p' "$f" >> $GITHUB_STEP_SUMMARY || true
+            echo "" >> $GITHUB_STEP_SUMMARY
+            found=1
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "No report markdown files found" >> $GITHUB_STEP_SUMMARY
+          fi
