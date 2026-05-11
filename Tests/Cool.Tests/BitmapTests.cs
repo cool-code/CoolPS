@@ -94,5 +94,27 @@ namespace Cool.Tests
                 bmp.Dispose();
             }
         }
+
+        [Fact]
+        public void Bitmap_ToString_RoundTrip_Small()
+        {
+            var bmp = new Bitmap(0xFFu, "1-3,5,7-9");
+            try
+            {
+                Assert.Equal("1-3,5,7-9", bmp.ToString());
+            }
+            finally { bmp.Dispose(); }
+        }
+
+        [Fact]
+        public void Bitmap_ToString_RoundTrip_WideRange()
+        {
+            var bmp = new Bitmap(MaxCodePoint, WideRange);
+            try
+            {
+                Assert.Equal(WideRange, bmp.ToString());
+            }
+            finally { bmp.Dispose(); }
+        }
     }
 }
