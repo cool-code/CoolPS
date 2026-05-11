@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Cool.Benchmarks.AnsiInliningBenchmarks-20260511-091740</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.13.8, Windows 11 (10.0.26100.32690) (Hyper-V)
+AMD EPYC 7763, 1 CPU, 4 logical and 2 physical cores
+  [Host]     : .NET Framework 4.8.1 (4.8.9325.0), X64 RyuJIT VectorSize=256
+  DefaultJob : .NET Framework 4.8.1 (4.8.9325.0), X64 RyuJIT VectorSize=256
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                 </th><th>Mean </th><th>Error</th><th>StdDev</th><th>Code Size</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>Foreground_Xterm256_ReturnLen</td><td>202.3 &mu;s</td><td>0.37 &mu;s</td><td>0.33 &mu;s</td><td>79 B</td><td>-</td><td>-</td><td>-</td><td>-</td>
+</tr><tr><td>Foreground_Xterm16_ReturnLen</td><td>202.2 &mu;s</td><td>0.94 &mu;s</td><td>0.83 &mu;s</td><td>79 B</td><td>-</td><td>-</td><td>-</td><td>-</td>
+</tr><tr><td>Foreground_RGB_ReturnLen</td><td>26,475.4 &mu;s</td><td>187.89 &mu;s</td><td>175.75 &mu;s</td><td>310 B</td><td>2437.5000</td><td>1062.5000</td><td>31.2500</td><td>15314192 B</td>
+</tr><tr><td>EscapeSGR_ReturnLen</td><td>3,972.0 &mu;s</td><td>55.11 &mu;s</td><td>51.55 &mu;s</td><td>93 B</td><td>1273.4375</td><td>-</td><td>-</td><td>8023570 B</td>
+</tr><tr><td>Bold_ReturnLen</td><td>1,972.7 &mu;s</td><td>12.11 &mu;s</td><td>10.11 &mu;s</td><td>77 B</td><td>890.6250</td><td>-</td><td>-</td><td>5616519 B</td>
+</tr></tbody></table>
+</body>
+</html>
