@@ -81,11 +81,30 @@ jobs:
           mkdir -p out/merged
           find out -type f -name '*-report-github.md' -print0 | while IFS= read -r -d '' f; do
             [ -f "$f" ] || continue
-            header=$(sed -n '1,50p' "$f" 2>/dev/null || true)
+            # read a prefix to detect fences or host line
+            header=$(sed -n '1,200p' "$f" 2>/dev/null || true)
+            # if file contains a fenced code block header, try to split at the closing fence
+            if printf "%s" "$header" | grep -q '^```'; then
+              firstFence=$(grep -n '^```' "$f" | head -n1 | cut -d: -f1 || true)
+              secondRelative=$(tail -n +$((firstFence+1)) "$f" | grep -n '^```' | head -n1 | cut -d: -f1 || true)
+              if [ -n "$secondRelative" ]; then
+                headerLines=$((firstFence + secondRelative))
+                header=$(sed -n "1,${headerLines}p" "$f" 2>/dev/null || true)
+                body=$(sed -n "$((headerLines+1)),\$p" "$f" 2>/dev/null || true)
+              else
+                header=$(sed -n '1,50p' "$f" 2>/dev/null || true)
+                body=$(sed -n '51,$p' "$f" 2>/dev/null || true)
+              fi
+            else
+              header=$(sed -n '1,50p' "$f" 2>/dev/null || true)
+              body=$(sed -n '51,$p' "$f" 2>/dev/null || true)
+            fi
+
             hostLine=$(printf "%s\n" "$header" | grep -m1 '\[Host\]' || true)
             if [ -z "$hostLine" ]; then
               hostLine=$(printf "%s\n" "$header" | sed -n '/\S/{p;q;}' || true)
             fi
+
             label=$(printf "%s" "$hostLine" | sed 's/^[[:space:]]*//; s/\[Host\].*:[[:space:]]*//; s/[^A-Za-z0-9._-]/_/g; s/_\+/_/g; s/^[._-][._-]*//; s/^_//; s/_$//' | tr '[:upper:]' '[:lower:]')
             if [ -z "$label" ]; then label="unknown"; fi
             short=$(printf "%s" "$label" | cut -c1-60)
@@ -93,12 +112,17 @@ jobs:
             label="${short}_${hash}"
             merged="out/merged/${label}-merged-report-github.md"
             if [ ! -f "$merged" ]; then
-              printf '```\n%s\n```\n\n' "$header" > "$merged" || true
+              # write the header from the first-seen file for this host group
+              printf '%s\n\n' "$header" > "$merged" || true
             fi
             name=$(basename "$f" "-report-github.md")
             printf '### %s\n\n' "$name" >> "$merged"
-            sed -n '51,$p' "$f" >> "$merged" 2>/dev/null || true
-            printf '\n\n' >> "$merged"
+            if [ -n "$body" ]; then
+              printf '%s\n\n' "$body" >> "$merged"
+            else
+              # fallback: append entire file
+              sed -n '1,$p' "$f" >> "$merged" 2>/dev/null || true
+            fi
           done
 
       - name: List merged directory
