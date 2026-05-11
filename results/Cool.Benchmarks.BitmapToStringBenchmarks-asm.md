@@ -29,7 +29,7 @@
        rep stosd
        mov       rcx,rsi
        mov       [rbp-0D0],rsp
-       mov       rax,95D0B9C70082
+       mov       rax,2BCCB0410B6
        mov       [rbp-40],rax
        mov       rsi,rcx
        mov       ecx,[rsi+8]
@@ -48,7 +48,7 @@ M01_L00:
        mov       ecx,0FFFFFFFF
 M01_L01:
        mov       ebx,ecx
-       mov       rcx,[13B4C030]
+       mov       rcx,[13F8C030]
        mov       edx,100
        cmp       [rcx],ecx
        call      Cool.StringBuilderPool.Rent(Int32)
@@ -73,7 +73,7 @@ M01_L02:
        mov       ebx,[rbp-0A4]
        je        near ptr M01_L20
 M01_L03:
-       mov       rcx,[13B4BF20]
+       mov       rcx,[13F8BF20]
        mov       edx,r8d
        neg       edx
        mov       [rbp-0AC],r8d
@@ -133,7 +133,7 @@ M01_L10:
        and       r10d,0F
        dec       ecx
        movsxd    r11,ecx
-       mov       r13,[13B4BF18]
+       mov       r13,[13F8BF18]
        cmp       r10d,[r13+8]
        jae       near ptr M01_L04
        movsxd    r10,r10d
@@ -167,7 +167,7 @@ M01_L13:
        and       r10d,0F
        dec       ecx
        movsxd    r11,ecx
-       mov       rbx,[13B4BF18]
+       mov       rbx,[13F8BF18]
        cmp       r10d,[rbx+8]
        jae       near ptr M01_L04
        movsxd    r10,r10d
@@ -202,7 +202,7 @@ M01_L16:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[13B4BF18]
+       mov       r9,[13F8BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -259,7 +259,7 @@ M01_L24:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[13B4BF18]
+       mov       r9,[13F8BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -293,7 +293,7 @@ M01_L27:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[13B4BF18]
+       mov       r9,[13F8BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -328,7 +328,7 @@ M01_L30:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[13B4BF18]
+       mov       r9,[13F8BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -352,7 +352,7 @@ M01_L31:
        call      M01_L33
        nop
        mov       rax,[rbp-0C0]
-       mov       rcx,95D0B9C70082
+       mov       rcx,2BCCB0410B6
        cmp       [rbp-40],rcx
        je        short M01_L32
        call      CORINFO_HELP_FAIL_FAST
@@ -381,7 +381,7 @@ M01_L33:
        mov       rbp,[rcx+20]
        mov       [rsp+20],rbp
        lea       rbp,[rbp+0F0]
-       mov       rcx,[13B4C030]
+       mov       rcx,[13F8C030]
        mov       rdx,[rbp-0B8]
        cmp       [rcx],ecx
        call      Cool.StringBuilderPool.Return(System.Text.StringBuilder)
@@ -430,7 +430,7 @@ M01_L33:
        rep stosd
        mov       rcx,rsi
        mov       [rbp-0D0],rsp
-       mov       rax,1069643F2295
+       mov       rax,6A315131EB07
        mov       [rbp-40],rax
        mov       rsi,rcx
        mov       ecx,[rsi+8]
@@ -449,7 +449,7 @@ M01_L00:
        mov       ecx,0FFFFFFFF
 M01_L01:
        mov       ebx,ecx
-       mov       rcx,[1342C030]
+       mov       rcx,[13E3C030]
        mov       edx,100
        cmp       [rcx],ecx
        call      Cool.StringBuilderPool.Rent(Int32)
@@ -474,7 +474,7 @@ M01_L02:
        mov       ebx,[rbp-0A4]
        je        near ptr M01_L20
 M01_L03:
-       mov       rcx,[1342BF20]
+       mov       rcx,[13E3BF20]
        mov       edx,r8d
        neg       edx
        mov       [rbp-0AC],r8d
@@ -534,7 +534,7 @@ M01_L10:
        and       r10d,0F
        dec       ecx
        movsxd    r11,ecx
-       mov       r13,[1342BF18]
+       mov       r13,[13E3BF18]
        cmp       r10d,[r13+8]
        jae       near ptr M01_L04
        movsxd    r10,r10d
@@ -568,7 +568,7 @@ M01_L13:
        and       r10d,0F
        dec       ecx
        movsxd    r11,ecx
-       mov       rbx,[1342BF18]
+       mov       rbx,[13E3BF18]
        cmp       r10d,[rbx+8]
        jae       near ptr M01_L04
        movsxd    r10,r10d
@@ -603,7 +603,7 @@ M01_L16:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[1342BF18]
+       mov       r9,[13E3BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -660,7 +660,7 @@ M01_L24:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[1342BF18]
+       mov       r9,[13E3BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -694,7 +694,7 @@ M01_L27:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[1342BF18]
+       mov       r9,[13E3BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -729,7 +729,7 @@ M01_L30:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[1342BF18]
+       mov       r9,[13E3BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -753,7 +753,7 @@ M01_L31:
        call      M01_L33
        nop
        mov       rax,[rbp-0C0]
-       mov       rcx,1069643F2295
+       mov       rcx,6A315131EB07
        cmp       [rbp-40],rcx
        je        short M01_L32
        call      CORINFO_HELP_FAIL_FAST
@@ -782,7 +782,7 @@ M01_L33:
        mov       rbp,[rcx+20]
        mov       [rsp+20],rbp
        lea       rbp,[rbp+0F0]
-       mov       rcx,[1342C030]
+       mov       rcx,[13E3C030]
        mov       rdx,[rbp-0B8]
        cmp       [rcx],ecx
        call      Cool.StringBuilderPool.Return(System.Text.StringBuilder)
@@ -831,7 +831,7 @@ M01_L33:
        rep stosd
        mov       rcx,rsi
        mov       [rbp-0D0],rsp
-       mov       rax,942C7E4CDC34
+       mov       rax,12598953CE60
        mov       [rbp-40],rax
        mov       rsi,rcx
        mov       ecx,[rsi+8]
@@ -850,7 +850,7 @@ M01_L00:
        mov       ecx,0FFFFFFFF
 M01_L01:
        mov       ebx,ecx
-       mov       rcx,[143EC030]
+       mov       rcx,[1438C030]
        mov       edx,100
        cmp       [rcx],ecx
        call      Cool.StringBuilderPool.Rent(Int32)
@@ -875,7 +875,7 @@ M01_L02:
        mov       ebx,[rbp-0A4]
        je        near ptr M01_L20
 M01_L03:
-       mov       rcx,[143EBF20]
+       mov       rcx,[1438BF20]
        mov       edx,r8d
        neg       edx
        mov       [rbp-0AC],r8d
@@ -935,7 +935,7 @@ M01_L10:
        and       r10d,0F
        dec       ecx
        movsxd    r11,ecx
-       mov       r13,[143EBF18]
+       mov       r13,[1438BF18]
        cmp       r10d,[r13+8]
        jae       near ptr M01_L04
        movsxd    r10,r10d
@@ -969,7 +969,7 @@ M01_L13:
        and       r10d,0F
        dec       ecx
        movsxd    r11,ecx
-       mov       rbx,[143EBF18]
+       mov       rbx,[1438BF18]
        cmp       r10d,[rbx+8]
        jae       near ptr M01_L04
        movsxd    r10,r10d
@@ -1004,7 +1004,7 @@ M01_L16:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[143EBF18]
+       mov       r9,[1438BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -1061,7 +1061,7 @@ M01_L24:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[143EBF18]
+       mov       r9,[1438BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -1095,7 +1095,7 @@ M01_L27:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[143EBF18]
+       mov       r9,[1438BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -1130,7 +1130,7 @@ M01_L30:
        and       ecx,0F
        dec       r8d
        movsxd    rax,r8d
-       mov       r9,[143EBF18]
+       mov       r9,[1438BF18]
        cmp       ecx,[r9+8]
        jae       near ptr M01_L04
        movsxd    rcx,ecx
@@ -1154,7 +1154,7 @@ M01_L31:
        call      M01_L33
        nop
        mov       rax,[rbp-0C0]
-       mov       rcx,942C7E4CDC34
+       mov       rcx,12598953CE60
        cmp       [rbp-40],rcx
        je        short M01_L32
        call      CORINFO_HELP_FAIL_FAST
@@ -1183,7 +1183,7 @@ M01_L33:
        mov       rbp,[rcx+20]
        mov       [rsp+20],rbp
        lea       rbp,[rbp+0F0]
-       mov       rcx,[143EC030]
+       mov       rcx,[1438C030]
        mov       rdx,[rbp-0B8]
        cmp       [rcx],ecx
        call      Cool.StringBuilderPool.Return(System.Text.StringBuilder)

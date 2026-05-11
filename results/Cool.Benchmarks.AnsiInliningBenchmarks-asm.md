@@ -13,7 +13,7 @@ M00_L00:
        jae       short M00_L02
        movsxd    r9,edx
        mov       r8d,[r8+r9*4+10]
-       mov       r9,[13F4C260]
+       mov       r9,[1431C260]
        cmp       r8d,[r9+8]
        jae       short M00_L02
        movsxd    r8,r8d
@@ -46,7 +46,7 @@ M00_L00:
        jae       short M00_L02
        movsxd    r9,edx
        mov       r8d,[r8+r9*4+10]
-       mov       r9,[138CC270]
+       mov       r9,[1363C270]
        cmp       r8d,[r9+8]
        jae       short M00_L02
        movsxd    r8,r8d
@@ -121,17 +121,17 @@ M00_L02:
        mov       esi,ecx
        mov       edi,edx
        mov       ebx,r8d
-       mov       rcx,[144AC280]
+       mov       rcx,[1330C280]
        mov       edx,14
        cmp       [rcx],ecx
        call      Cool.StringBuilderPool.Rent(Int32)
        mov       rbp,rax
-       mov       rdx,[144B2010]
+       mov       rdx,[13312010]
        mov       rcx,rbp
        cmp       [rcx],ecx
        call      System.Text.StringBuilder.Append(System.String)
        mov       rcx,rax
-       mov       rdx,[144B2018]
+       mov       rdx,[13312018]
        cmp       [rcx],ecx
        call      System.Text.StringBuilder.Append(System.String)
        mov       rcx,rax
@@ -158,7 +158,7 @@ M00_L02:
        mov       rcx,rbp
        call      System.Text.StringBuilder.ToString()
        mov       rsi,rax
-       mov       rcx,[144AC280]
+       mov       rcx,[1330C280]
        mov       rdx,rbp
        cmp       [rcx],ecx
        call      Cool.StringBuilderPool.Return(System.Text.StringBuilder)
@@ -186,7 +186,7 @@ M00_L02:
        cmp       dword ptr [rcx+8],0
        jle       short M00_L01
 M00_L00:
-       mov       rcx,[13572000]
+       mov       rcx,[13D22000]
        call      Cool.Ansi.EscapeSGR(System.String)
        add       edi,[rax+8]
        inc       ebx
@@ -205,8 +205,8 @@ M00_L01:
 ```assembly
 ; Cool.Ansi.EscapeSGR(System.String)
        mov       rdx,rcx
-       mov       rcx,[13572008]
-       mov       r8,[13571F98]
+       mov       rcx,[13D22008]
+       mov       r8,[13D21F98]
        mov       rax,offset System.String.Concat(System.String, System.String, System.String)
        jmp       rax
 ; Total bytes of code 32
@@ -221,7 +221,7 @@ M00_L01:
        xor       esi,esi
        xor       edi,edi
 M00_L00:
-       mov       rcx,[13FC2000]
+       mov       rcx,[13F12000]
        call      Cool.Ansi.Bold(System.String)
        add       esi,[rax+8]
        inc       edi
@@ -237,8 +237,8 @@ M00_L00:
 ```assembly
 ; Cool.Ansi.Bold(System.String)
        mov       rdx,rcx
-       mov       rcx,[13FC2008]
-       mov       r8,[13FC2010]
+       mov       rcx,[13F12008]
+       mov       r8,[13F12010]
        mov       rax,offset System.String.Concat(System.String, System.String, System.String)
        jmp       rax
 ; Total bytes of code 32
