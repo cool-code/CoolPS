@@ -72,20 +72,28 @@ public static class Ansi
     public static string Foreground(int r, int g, int b)
     {
         var sb = _sbPool.Rent(20);
-        sb.Foreground(r, g, b);
-        var result = sb.ToString();
-        _sbPool.Return(sb);
-        return result;
+        try
+        {
+            return sb.Foreground(r, g, b).ToString();
+        }
+        finally
+        {
+            _sbPool.Return(sb);
+        }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static StringBuilder Background(this StringBuilder sb, int r, int g, int b) => sb.Append(Esc).Append("48;2;").AppendRGB(r, g, b).Append('m');
     public static string Background(int r, int g, int b)
     {
         var sb = _sbPool.Rent(20);
-        sb.Background(r, g, b);
-        var result = sb.ToString();
-        _sbPool.Return(sb);
-        return result;
+        try
+        {
+            return sb.Background(r, g, b).ToString();
+        }
+        finally
+        {
+            _sbPool.Return(sb);
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
