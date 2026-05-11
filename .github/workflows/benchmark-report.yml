@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Find benchmark artifact for triggering run
         id: find-artifact
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const runId = context.payload.workflow_run && context.payload.workflow_run.id;
