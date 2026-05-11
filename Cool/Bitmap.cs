@@ -47,7 +47,6 @@ public unsafe readonly struct Bitmap : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly void Dispose() => Marshal.FreeHGlobal((IntPtr)_pbitmap);
 
-    private static readonly char[] _hexDigits = "0123456789ABCDEF".ToCharArray();
     public override string ToString()
     {
         // Build ranges in the same hex format used by the constructor: "START-END,POS,..."
@@ -62,45 +61,42 @@ public unsafe readonly struct Bitmap : IDisposable
             bool inRange = false;
             uint rangeStart = 0, rangeEnd = 0;
 
-            fixed (char* hex = _hexDigits)
+            for (int wi = 0; wi < words; wi++)
             {
-                for (int wi = 0; wi < words; wi++)
-                {
-                    uint w = _pbitmap[wi];
-                    if (wi == words - 1) w &= lastMask;
+                uint w = _pbitmap[wi];
+                if (wi == words - 1) w &= lastMask;
 
-                    while (w != 0u)
+                while (w != 0u)
+                {
+                    int tz = CountTrailingZeros(w);
+                    uint pos = ((uint)wi << 5) + (uint)tz;
+
+                    if (!inRange)
                     {
-                        int tz = CountTrailingZeros(w);
-                        uint pos = ((uint)wi << 5) + (uint)tz;
-
-                        if (!inRange)
-                        {
-                            inRange = true;
-                            rangeStart = rangeEnd = pos;
-                        }
-                        else if (pos == rangeEnd + 1)
-                        {
-                            rangeEnd = pos;
-                        }
-                        else
-                        {
-                            if (!first) { sb.Append(','); } else { first = false; }
-                            AppendRange(sb, rangeStart, rangeEnd, hex);
-
-                            rangeStart = rangeEnd = pos;
-                        }
-
-                        // clear lowest set bit
-                        w &= w - 1u;
+                        inRange = true;
+                        rangeStart = rangeEnd = pos;
                     }
-                }
+                    else if (pos == rangeEnd + 1)
+                    {
+                        rangeEnd = pos;
+                    }
+                    else
+                    {
+                        if (!first) { sb.Append(','); } else { first = false; }
+                        AppendRange(sb, rangeStart, rangeEnd);
 
-                if (inRange)
-                {
-                    if (!first) sb.Append(',');
-                    AppendRange(sb, rangeStart, rangeEnd, hex);
+                        rangeStart = rangeEnd = pos;
+                    }
+
+                    // clear lowest set bit
+                    w &= w - 1u;
                 }
+            }
+
+            if (inRange)
+            {
+                if (!first) sb.Append(',');
+                AppendRange(sb, rangeStart, rangeEnd);
             }
 
             return sb.ToString();
@@ -112,22 +108,23 @@ public unsafe readonly struct Bitmap : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AppendRange(StringBuilder sb, uint rangeStart, uint rangeEnd, char* hex)
+    private static void AppendRange(StringBuilder sb, uint rangeStart, uint rangeEnd)
     {
         if (rangeStart == rangeEnd)
         {
-            AppendHex(sb, rangeStart, hex);
+            AppendHex(sb, rangeStart);
         }
         else
         {
-            AppendHex(sb, rangeStart, hex);
+            AppendHex(sb, rangeStart);
             sb.Append('-');
-            AppendHex(sb, rangeEnd, hex);
+            AppendHex(sb, rangeEnd);
         }
     }
 
+    private static readonly char[] _hexDigits = "0123456789ABCDEF".ToCharArray();
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AppendHex(StringBuilder sb, uint value, char* hexDigits)
+    private static void AppendHex(StringBuilder sb, uint value)
     {
         if (value == 0u)
         {
@@ -143,7 +140,7 @@ public unsafe readonly struct Bitmap : IDisposable
         while (value != 0u)
         {
             uint nibble = value & 0xFu;
-            buf[--i] = hexDigits[nibble];
+            buf[--i] = _hexDigits[nibble];
             value >>= 4;
         }
 
@@ -151,16 +148,14 @@ public unsafe readonly struct Bitmap : IDisposable
         sb.Append(buf + i, bufferLength - i);
     }
 
+    private static readonly int[] MultiplyDeBruijnBitPosition = [
+        0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
+        31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
+    ];
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int CountTrailingZeros(uint v)
     {
-        // v != 0 when called
-        int c = 0;
-        while ((v & 1u) == 0)
-        {
-            v >>= 1;
-            c++;
-        }
-        return c;
+        return MultiplyDeBruijnBitPosition[((uint)((v & -v) * 0x077CB531U)) >> 27];
     }
 }
