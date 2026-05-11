@@ -11,13 +11,13 @@ public unsafe readonly struct Bitmap : IDisposable
     private readonly uint* _pbitmap;
     private readonly uint _bitHighLimit;
 
-    public Bitmap(uint bitHighLimit, string ranage)
+    public Bitmap(uint bitHighLimit, string range)
     {
         _bitHighLimit = bitHighLimit;
         int size = ((int)(bitHighLimit + 1) >> 5) * sizeof(uint);
         _pbitmap = (uint*)Marshal.AllocHGlobal(size);
         Marshal.Copy(new byte[size], 0, (IntPtr)_pbitmap, size);
-        string[] parts = ranage.Split(',');
+        string[] parts = range.Split(',');
         foreach (var part in parts)
         {
             int dashIndex = part.IndexOf('-');
