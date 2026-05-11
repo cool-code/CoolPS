@@ -122,7 +122,7 @@ public unsafe readonly struct Bitmap : IDisposable
         }
     }
 
-    private static readonly char[] _hexDigits = "0123456789ABCDEF".ToCharArray();
+    private static readonly string _hexDigits = "0123456789ABCDEF";
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AppendHex(StringBuilder sb, uint value)
     {
@@ -140,7 +140,7 @@ public unsafe readonly struct Bitmap : IDisposable
         while (value != 0u)
         {
             uint nibble = value & 0xFu;
-            buf[--i] = _hexDigits[nibble];
+            buf[--i] = _hexDigits[(int)nibble];
             value >>= 4;
         }
 

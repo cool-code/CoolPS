@@ -114,7 +114,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         return new string([highSurrogate, lowSurrogate]);
     }
 
-    internal static readonly char[] _hexDigits = "0123456789ABCDEF".ToCharArray();
+    private static readonly string _hexDigits = "0123456789ABCDEF";
     public unsafe string ToUnicodeString()
     {
         // For invalid code points, return "U+FFFD" which is the standard replacement character
@@ -130,14 +130,10 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         char* buf = stackalloc char[len];
         buf[0] = 'U'; buf[1] = '+';
 
-        // Use fixed to pin the _hexDigits array and get a pointer to it for efficient indexing
-        fixed (char* hexDigits = _hexDigits)
+        for (int j = len - 1; j >= 2; j--)
         {
-            for (int j = len - 1; j >= 2; j--)
-            {
-                buf[j] = hexDigits[v & 0xF];
-                v >>= 4;
-            }
+            buf[j] = _hexDigits[(int)(v & 0xF)];
+            v >>= 4;
         }
 
         return new string(buf, 0, len);
@@ -445,6 +441,7 @@ public static class CodePointExtensions
         foreach (var c in cp) sb.Append(c);
         return sb;
     }
+    private static readonly string _hexDigits = "0123456789ABCDEF";
     public static StringBuilder AppendUnicodeString(this StringBuilder sb, CodePoint cp)
     {
         // For invalid code points, append "U+FFFD" which is the standard replacement character
@@ -457,9 +454,10 @@ public static class CodePointExtensions
         int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
 
         sb.Append("U+");
+
         for (int j = digits - 1; j >= 0; j--)
         {
-            sb.Append(CodePoint._hexDigits[v & 0xF]);
+            sb.Append(_hexDigits[(int)(v & 0xF)]);
             v >>= 4;
         }
         return sb;
