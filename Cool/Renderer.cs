@@ -87,6 +87,6 @@ public class Renderer
             color = GetDefaultColor(typekey);
             icon = GetDefaultIcon(typekey);
         }
-        return string.Concat(color, icon, name, Ansi.SGR.Reset);
+        return string.Concat(color, icon, name, Ansi.Reset);
     }
 }

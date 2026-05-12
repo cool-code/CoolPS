@@ -20,9 +20,9 @@ namespace Cool.Benchmarks
         {
             var rnd = new Random(42);
             var n = 200_000;
-            colors256 = Enumerable.Range(0, n).Select(_ => rnd.Next(0, 256)).ToArray();
-            colors16 = Enumerable.Range(0, n).Select(_ => rnd.Next(0, 16)).ToArray();
-            rgbs = Enumerable.Range(0, n).Select(_ => (rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256))).ToArray();
+            colors256 = [.. Enumerable.Range(0, n).Select(_ => rnd.Next(0, 256))];
+            colors16 = [.. Enumerable.Range(0, n).Select(_ => rnd.Next(0, 16))];
+            rgbs = [.. Enumerable.Range(0, n).Select(_ => (rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256)))];
         }
 
         [Benchmark]
@@ -53,18 +53,32 @@ namespace Cool.Benchmarks
             int sum = 0;
             for (int i = 0; i < rgbs.Length; i++)
             {
-                var t = rgbs[i];
-                sum += Ansi.Foreground(t.r, t.g, t.b).Length;
+                var (r, g, b) = rgbs[i];
+                sum += Ansi.Foreground(r, g, b).Length;
             }
             return sum;
         }
 
         [Benchmark]
-        public int EscapeSGR_ReturnLen()
+        public int SB_Foreground_RGB_ReturnLen()
+        {
+            int sum = 0;
+            StringBuilder sb = new(20);
+            for (int i = 0; i < rgbs.Length; i++)
+            {
+                var (r, g, b) = rgbs[i];
+                sum += sb.Foreground(r, g, b).Length;
+                sb.Clear();
+            }
+            return sum;
+        }
+
+        [Benchmark]
+        public int SGREscape_ReturnLen()
         {
             int sum = 0;
             for (int i = 0; i < colors16.Length; i++)
-                sum += Ansi.EscapeSGR("0;1").Length;
+                sum += AnsiSGR.Escape("0;1").Length;
             return sum;
         }
 
@@ -73,7 +87,7 @@ namespace Cool.Benchmarks
         {
             int sum = 0;
             for (int i = 0; i < 100_000; i++)
-                sum += Ansi.Bold("text").Length;
+                sum += AnsiSGR.Bold("text").Length;
             return sum;
         }
     }

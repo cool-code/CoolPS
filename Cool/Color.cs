@@ -2,7 +2,7 @@ namespace Cool;
 
 public static class Color
 {
-    public const string Default = Ansi.SGR.DefaultForegroundColor;
+    public static readonly string Default = Ansi.DefaultForeground;
     public static readonly string Red = Ansi.Foreground(Xterm256.Red1);
     public static readonly string Orange = Ansi.Foreground(Xterm256.Orange1);
     public static readonly string Yellow = Ansi.Foreground(Xterm256.OrangeYellow);
