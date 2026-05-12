@@ -11,13 +11,17 @@ public unsafe sealed class Bitmap : IDisposable
     private readonly uint* _pBitmap;
     private readonly GCHandle _gcHandle;
     public readonly uint BitHighLimit;
-    public readonly int WordCount;
+    /// <summary>
+    /// The size of the bitmap in bytes, which is determined by the highest bit position (BitHighLimit) that the bitmap supports.
+    /// This property returns the total number of bytes allocated for the bitmap,
+    /// which is determined by the formula: ((BitHighLimit >> 5) + 1) * sizeof(uint).
+    /// </summary>
+    public int Size => ((int)(BitHighLimit >> 5) + 1) * sizeof(uint);
 
     public Bitmap(uint bitHighLimit, string range)
     {
         BitHighLimit = bitHighLimit;
-        WordCount = (int)((BitHighLimit >> 5) + 1);
-        var bitmap = new uint[WordCount];
+        var bitmap = new uint[(int)(BitHighLimit >> 5) + 1];
         _gcHandle = GCHandle.Alloc(bitmap, GCHandleType.Pinned);
         _pBitmap = (uint*)_gcHandle.AddrOfPinnedObject();
         string[] parts = range.Split(',');
@@ -56,7 +60,7 @@ public unsafe sealed class Bitmap : IDisposable
     public override string ToString()
     {
         // Build ranges in the same hex format used by the constructor: "START-END,POS,..."
-        int words = WordCount;
+        int words = (int)(BitHighLimit >> 5) + 1;
         int lastBits = (int)(BitHighLimit & 31) + 1;
         uint lastMask = (lastBits == 32) ? uint.MaxValue : ((1u << lastBits) - 1u);
 

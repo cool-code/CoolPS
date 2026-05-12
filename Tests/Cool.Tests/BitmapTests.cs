@@ -120,9 +120,11 @@ namespace Cool.Tests
         [Fact]
         public void Bitmap_SizeProperty_IsCalculatedFromBitHighLimit()
         {
-            // helper to check expected size
-            void Check(uint limit, int expected)
+            // The bitmap is backed by 32-bit words; Size is the total bytes:
+            // ((limit >> 5) + 1) * sizeof(uint)
+            void Check(uint limit)
             {
+                var expected = ((int)(limit >> 5) + 1) * sizeof(uint);
                 var bmp = new Bitmap(limit, "0");
                 try
                 {
@@ -131,15 +133,15 @@ namespace Cool.Tests
                 finally { bmp.Dispose(); }
             }
 
-            Check(0u, 1);             // 0 >> 3 = 0 + 1 = 1 byte
-            Check(7u, 1);             // fits in one byte
-            Check(8u, 2);             // needs second byte
-            Check(15u, 2);
-            Check(31u, 4);            // 31 >> 3 = 3 + 1 = 4
-            Check(32u, 5);            // 32 >> 3 = 4 + 1 = 5
-            Check(255u, 32);          // 255 >> 3 = 31 + 1 = 32
-            Check(256u, 33);          // 256 >> 3 = 32 + 1 = 33
-            Check(MaxCodePoint, (int)(MaxCodePoint >> 3) + 1);
+            Check(0u);    // 1 word => 4 bytes
+            Check(7u);    // still 1 word
+            Check(8u);    // still 1 word
+            Check(15u);
+            Check(31u);   // last bit in first word
+            Check(32u);   // spills into second word => 8 bytes
+            Check(255u);  // 8 words => 32 bytes
+            Check(256u);  // 9 words => 36 bytes
+            Check(MaxCodePoint);
         }
     }
 }
