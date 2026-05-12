@@ -11,6 +11,5 @@
 
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
-    <PackageReference Include="System.Runtime.Caching" Version="8.0.1" />
   </ItemGroup>
 </Project>

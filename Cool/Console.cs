@@ -60,7 +60,7 @@ public static class Console
             // Find the first "breakpoint" character. If none found, return original string directly.
             while (i < len)
             {
-                if (pStr[i].IsC1Control) break;
+                if (pStr[i].IsC1Control()) break;
                 i++;
             }
 
@@ -80,7 +80,7 @@ public static class Console
                 {
                     char c = pStr[i];
 
-                    if (c.IsC1Control)
+                    if (c.IsC1Control())
                     {
                         // 1. Append the continuous valid segment from the last breakpoint to the current breakpoint
                         int count = i - start;
@@ -171,7 +171,7 @@ public static class Console
                     do
                     {
                         cmd = pStr[i++];
-                    } while ((i < len) && (cmd.IsAsciiDigit || (cmd == ';') || (cmd == ':')));
+                    } while ((i < len) && (cmd.IsAsciiDigit() || (cmd == ';') || (cmd == ':')));
 
                     // If we reached the end after parsing parameters, break out of the loop
                     // Note:
