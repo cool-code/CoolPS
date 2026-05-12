@@ -116,5 +116,30 @@ namespace Cool.Tests
             }
             finally { bmp.Dispose(); }
         }
+
+        [Fact]
+        public void Bitmap_SizeProperty_IsCalculatedFromBitHighLimit()
+        {
+            // helper to check expected size
+            void Check(uint limit, int expected)
+            {
+                var bmp = new Bitmap(limit, "0");
+                try
+                {
+                    Assert.Equal(expected, bmp.Size);
+                }
+                finally { bmp.Dispose(); }
+            }
+
+            Check(0u, 1);             // 0 >> 3 = 0 + 1 = 1 byte
+            Check(7u, 1);             // fits in one byte
+            Check(8u, 2);             // needs second byte
+            Check(15u, 2);
+            Check(31u, 4);            // 31 >> 3 = 3 + 1 = 4
+            Check(32u, 5);            // 32 >> 3 = 4 + 1 = 5
+            Check(255u, 32);          // 255 >> 3 = 31 + 1 = 32
+            Check(256u, 33);          // 256 >> 3 = 32 + 1 = 33
+            Check(MaxCodePoint, (int)(MaxCodePoint >> 3) + 1);
+        }
     }
 }
