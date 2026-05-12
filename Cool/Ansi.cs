@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -53,36 +54,18 @@ public static class Ansi
         return cache;
     }
 
-    private static unsafe readonly char* _onesPlaceCache = InitOnesPlaceCache();
-    private static unsafe readonly char* _tensPlaceCache = InitTensPlaceCache();
-    private static unsafe readonly char* _hundredsPlaceCache = InitHundredsPlaceCache();
-    private static unsafe char* InitOnesPlaceCache()
+    private static unsafe readonly char* _onesPlaceCache = InitPlaceCache(i => i % 10);
+    private static unsafe readonly char* _tensPlaceCache = InitPlaceCache(i => i / 10 % 10);
+    private static unsafe readonly char* _hundredsPlaceCache = InitPlaceCache(i => i / 100 % 10);
+    private static unsafe char* InitPlaceCache(Func<int, int> getValue)
     {
-        char* cache = (char*)Marshal.AllocHGlobal(256 * sizeof(char));
-
+        char[] array = new char[256];
+        GCHandle gcHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
+        AppDomain.CurrentDomain.DomainUnload += (s, e) => gcHandle.Free();
+        char* cache = (char*)gcHandle.AddrOfPinnedObject();
         for (int i = 0; i < 256; i++)
         {
-            cache[i] = (char)('0' + (i % 10));
-        }
-        return cache;
-    }
-
-    private static unsafe char* InitTensPlaceCache()
-    {
-        char* cache = (char*)Marshal.AllocHGlobal(256 * sizeof(char));
-        for (int i = 0; i < 256; i++)
-        {
-            cache[i] = (char)('0' + (i / 10 % 10));
-        }
-        return cache;
-    }
-
-    private static unsafe char* InitHundredsPlaceCache()
-    {
-        char* cache = (char*)Marshal.AllocHGlobal(256 * sizeof(char));
-        for (int i = 0; i < 256; i++)
-        {
-            cache[i] = (char)('0' + (i / 100 % 10));
+            cache[i] = (char)('0' + getValue(i));
         }
         return cache;
     }
