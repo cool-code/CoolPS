@@ -6,17 +6,20 @@ using System.Text;
 
 namespace Cool;
 
-public unsafe readonly struct Bitmap : IDisposable
+public unsafe sealed class Bitmap : IDisposable
 {
-    private readonly uint* _pbitmap;
-    private readonly uint _bitHighLimit;
+    private readonly uint* _pBitmap;
+    private readonly GCHandle _gcHandle;
+    public readonly uint BitHighLimit;
+    public readonly int WordCount;
 
     public Bitmap(uint bitHighLimit, string range)
     {
-        _bitHighLimit = bitHighLimit;
-        int size = ((int)(bitHighLimit + 1) >> 5) * sizeof(uint);
-        _pbitmap = (uint*)Marshal.AllocHGlobal(size);
-        Marshal.Copy(new byte[size], 0, (IntPtr)_pbitmap, size);
+        BitHighLimit = bitHighLimit;
+        WordCount = (int)((BitHighLimit >> 5) + 1);
+        var bitmap = new uint[WordCount];
+        _gcHandle = GCHandle.Alloc(bitmap, GCHandleType.Pinned);
+        _pBitmap = (uint*)_gcHandle.AddrOfPinnedObject();
         string[] parts = range.Split(',');
         foreach (var part in parts)
         {
@@ -36,25 +39,28 @@ public unsafe readonly struct Bitmap : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly void SetBit(uint pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 5] |= 1u << (int)(pos & 31); } }
+    public void SetBit(uint pos) { if (pos <= BitHighLimit) { _pBitmap[pos >> 5] |= 1u << (int)(pos & 31); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool GetBit(uint pos) => (pos <= _bitHighLimit) && ((_pbitmap[pos >> 5] & (1u << (int)(pos & 31))) != 0);
+    public bool GetBit(uint pos) => (pos <= BitHighLimit) && ((_pBitmap[pos >> 5] & (1u << (int)(pos & 31))) != 0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly void ClearBit(uint pos) { if (pos <= _bitHighLimit) { _pbitmap[pos >> 5] &= ~(1u << (int)(pos & 31)); } }
+    public void ClearBit(uint pos) { if (pos <= BitHighLimit) { _pBitmap[pos >> 5] &= ~(1u << (int)(pos & 31)); } }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly void Dispose() => Marshal.FreeHGlobal((IntPtr)_pbitmap);
+    public void Dispose()
+    {
+        if (_gcHandle.IsAllocated) _gcHandle.Free();
+        GC.SuppressFinalize(this);
+    }
 
     public override string ToString()
     {
         // Build ranges in the same hex format used by the constructor: "START-END,POS,..."
-        int words = (int)(_bitHighLimit >> 5) + 1;
-        int lastBits = (int)(_bitHighLimit & 31) + 1;
+        int words = WordCount;
+        int lastBits = (int)(BitHighLimit & 31) + 1;
         uint lastMask = (lastBits == 32) ? uint.MaxValue : ((1u << lastBits) - 1u);
 
-        var sb = StringBuilderPool.Shared.Rent(256);
+        var sb = StringBuilderPool.Shared.Rent();
         try
         {
             bool first = true;
@@ -63,7 +69,7 @@ public unsafe readonly struct Bitmap : IDisposable
 
             for (int wi = 0; wi < words; wi++)
             {
-                uint w = _pbitmap[wi];
+                uint w = _pBitmap[wi];
                 if (wi == words - 1) w &= lastMask;
 
                 while (w != 0u)
@@ -132,11 +138,11 @@ public unsafe readonly struct Bitmap : IDisposable
             return;
         }
 
-        const int bufferLength = 8;
+        const int buflen = 8;
         // max 8 hex digits for a uint
-        char* buf = stackalloc char[bufferLength];
+        char* buf = stackalloc char[buflen];
         // fill from the end backwards so digits end up in correct order
-        int i = bufferLength;
+        int i = buflen;
         while (value != 0u)
         {
             uint nibble = value & 0xFu;
@@ -145,10 +151,10 @@ public unsafe readonly struct Bitmap : IDisposable
         }
 
         // bulk append the prepared range
-        sb.Append(buf + i, bufferLength - i);
+        sb.Append(buf + i, buflen - i);
     }
 
-    private static readonly int[] MultiplyDeBruijnBitPosition = [
+    private static readonly int[] _multiplyDeBruijnBitPosition = [
         0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
         31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
     ];
@@ -156,6 +162,23 @@ public unsafe readonly struct Bitmap : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int CountTrailingZeros(uint v)
     {
-        return MultiplyDeBruijnBitPosition[((uint)((v & -v) * 0x077CB531U)) >> 27];
+        return _multiplyDeBruijnBitPosition[((uint)((v & -v) * 0x077CB531U)) >> 27];
+    }
+
+    /// <summary>
+    /// Creates a Bitmap instance that will be automatically disposed when the current AppDomain is unloaded.
+    /// This is useful for caching bitmaps that are intended to live for the duration of the application without needing explicit disposal.
+    /// Note: 
+    ///     Do not call Dispose on the returned Bitmap, as it will be automatically cleaned up on AppDomain unload.
+    ///     Calling Dispose manually may lead to ObjectDisposedException if accessed afterward.
+    /// </summary>
+    /// <param name="bitHighLimit">The highest bit position that the bitmap will support.</param>
+    /// <param name="range">A string representing the range of bits to set initially.</param>
+    /// <returns>A Bitmap instance that will be automatically disposed when the current AppDomain is unloaded.</returns>
+    public static Bitmap CreateStatic(uint bitHighLimit, string range)
+    {
+        Bitmap bmp = new(bitHighLimit, range);
+        AppDomain.CurrentDomain.DomainUnload += (s, e) => bmp.Dispose();
+        return bmp;
     }
 }

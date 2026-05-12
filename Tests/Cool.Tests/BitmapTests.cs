@@ -98,7 +98,7 @@ namespace Cool.Tests
         [Fact]
         public void Bitmap_ToString_RoundTrip_Small()
         {
-            var bmp = new Bitmap(0xFFu, "1-3,5,7-9");
+            var bmp = new Bitmap(10, "1-3,5,7-9");
             try
             {
                 Assert.Equal("1-3,5,7-9", bmp.ToString());

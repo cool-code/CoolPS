@@ -279,10 +279,10 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     ///   <field name="_emojiPtr">Bitmap for emoji characters</field>
     /// </summary>
     private const uint MaxCodePoint = 0x1FFFF;
-    private static readonly Bitmap wideBitmap = new(MaxCodePoint, _wideRange);
-    private static readonly Bitmap ambigBitmap = new(MaxCodePoint, _ambigRange);
-    private static readonly Bitmap zeroBitmap = new(MaxCodePoint, _zeroRange);
-    private static readonly Bitmap emojiBitmap = new(MaxCodePoint, _emojiRange);
+    private static readonly Bitmap wideBitmap = Bitmap.CreateStatic(MaxCodePoint, _wideRange);
+    private static readonly Bitmap ambigBitmap = Bitmap.CreateStatic(MaxCodePoint, _ambigRange);
+    private static readonly Bitmap zeroBitmap = Bitmap.CreateStatic(MaxCodePoint, _zeroRange);
+    private static readonly Bitmap emojiBitmap = Bitmap.CreateStatic(MaxCodePoint, _emojiRange);
 
     /// <summary>
     /// Check if the code point is in the bitmap for wide characters, which allows for O(1) checks for code points up to 0x1FFFF.
