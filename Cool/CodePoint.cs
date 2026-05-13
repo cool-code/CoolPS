@@ -115,7 +115,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     }
 
     private static readonly string _hexDigits = "0123456789ABCDEF";
-    public unsafe string ToUnicodeString()
+    public unsafe string ToUnicode()
     {
         // For invalid code points, return "U+FFFD" which is the standard replacement character
         // used to represent invalid or unrepresentable code points in Unicode.
@@ -442,7 +442,7 @@ public static class CodePointExtensions
         return sb;
     }
     private static readonly string _hexDigits = "0123456789ABCDEF";
-    public static StringBuilder AppendUnicodeString(this StringBuilder sb, CodePoint cp)
+    public static StringBuilder AppendUnicode(this StringBuilder sb, CodePoint cp)
     {
         // For invalid code points, append "U+FFFD" which is the standard replacement character
         // used to represent invalid or unrepresentable code points in Unicode.
@@ -462,9 +462,9 @@ public static class CodePointExtensions
         }
         return sb;
     }
-    public static StringBuilder AppendUnicodeString(this StringBuilder sb, params CodePoint[] cp)
+    public static StringBuilder AppendUnicode(this StringBuilder sb, params CodePoint[] cp)
     {
-        foreach (var c in cp) sb.AppendUnicodeString(c);
+        foreach (var c in cp) sb.AppendUnicode(c);
         return sb;
     }
 }
