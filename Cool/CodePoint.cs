@@ -72,6 +72,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public static string operator +(string s, CodePoint cp) => string.Concat(s, cp.ToString());
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string operator +(CodePoint cp, string s) => string.Concat(cp.ToString(), s);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe string operator *(CodePoint cp, int count)
     {
         if (count <= 0) return string.Empty;
@@ -96,29 +97,26 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         }
         else
         {
-            char[] array = ArrayPool<char>.Shared.Rent(size);
-            try
-            {
-                fixed (char* buf = array) return Repeat(buf, v, size);
-            }
-            finally
-            {
-                ArrayPool<char>.Shared.Return(array);
-            }
+            using var owner = new RentedArrayOwner<char>(size);
+            char[] array = owner.Array!;
+            fixed (char* buf = array) return Repeat(buf, v, size);
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe string Repeat(char* buf, uint v, int size)
     {
-        v -= 0x10000u;
-        char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
-        char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
+        // Hint to the compiler that `size` is always even; the JIT can enable combined 32/64-bit register copy optimizations.
+        if ((size & 1) != 0) throw new ArgumentException("UTF-16 surrogate pairs string size must be even.");
 
         // size is guaranteed to be > 0 here, but we check it anyway to avoid
         // reflecting the logic of the caller and to handle any future changes
         // to the code that might affect this assumption.
         if (size <= 0) return string.Empty;
+
+        v -= 0x10000u;
+        char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
+        char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
 
         // writing the first pair
         buf[0] = highSurrogate;
@@ -138,11 +136,15 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
 
         // exponential copy: each time copy the written area to the next, until filled
         int written = 2;
+        long totalBytes = (long)size * sizeof(char);
+
         while (written < size)
         {
             int copy = Math.Min(written, size - written);
-            // Buffer.MemoryCopy(source, destination, destSizeInBytes, bytesToCopy)
-            Buffer.MemoryCopy(buf, buf + written, (long)(size - written) * sizeof(char), (long)copy * sizeof(char));
+            long currentOffsetBytes = (long)written * sizeof(char);
+            long remainingBytes = totalBytes - currentOffsetBytes;
+
+            Buffer.MemoryCopy(buf, buf + written, remainingBytes, (long)copy * sizeof(char));
             written += copy;
         }
 
