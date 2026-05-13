@@ -215,13 +215,20 @@ namespace Cool.Benchmarks
         }
 
         [Benchmark]
-        public int Operator_Multiply_Count()
+        public int Operator_Multiply10_Count()
         {
             int sum = 0;
-            for (int i = 0; i < 50_000; i++) sum += (cpEmoji * 3).Length;
+            for (int i = 0; i < 50_000; i++) sum += (cpEmoji * 10).Length;
             return sum;
         }
 
+        [Benchmark]
+        public int Operator_Multiply1000_Count()
+        {
+            int sum = 0;
+            for (int i = 0; i < 50_000; i++) sum += (cpEmoji * 1000).Length;
+            return sum;
+        }
         [Benchmark]
         public int Conversions_Implicit_Explicit()
         {

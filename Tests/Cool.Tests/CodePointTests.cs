@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Text;
+using System.Linq;
 using Xunit;
 using Cool;
 
@@ -173,6 +174,9 @@ namespace Cool.Tests
 
                 string rep = cp * 3;
                 Assert.Equal(string.Concat(expected, expected, expected), rep);
+
+                string rep2 = cp * 4096;
+                Assert.Equal(string.Concat(Enumerable.Repeat(expected, 4096)), rep2);
 
                 // Append and AppendUnicode helpers
                 var sb = new StringBuilder();

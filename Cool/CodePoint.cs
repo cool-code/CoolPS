@@ -1,6 +1,9 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Buffers;
+using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace Cool;
 
@@ -72,31 +75,52 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public static string operator +(string s, CodePoint cp) => string.Concat(s, cp.ToString());
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string operator +(CodePoint cp, string s) => string.Concat(cp.ToString(), s);
-    public static string operator *(CodePoint cp, int count)
+    public static unsafe string operator *(CodePoint cp, int count)
     {
         if (count <= 0) return string.Empty;
+
+        long total = (long)count * cp.CharCount;
+        if (total > int.MaxValue) throw new ArgumentOutOfRangeException(nameof(count));
+
         uint v = cp._value;
         if (v <= 0xFFFFu) return new string((char)v, count);
         // For invalid code points, return the standard replacement character repeated 'count' times
         if (!cp.IsValid) return new string('\uFFFD', count);
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
-        StringBuilder sb = StringBuilderPool.Shared.Rent(count << 1);
-        try
+
+        int size = (int)total;
+        if (size <= 1024) // threshold chosen to avoid large stack allocations, can be adjusted based on performance testing
         {
-            v -= 0x10000u;
-            char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
-            char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
-            for (int i = 0; i < count; i++)
+            char* buf = stackalloc char[size];
+            return Repeat(buf, v, size);
+        }
+        else
+        {
+            char[] array = ArrayPool<char>.Shared.Rent(size);
+            try
             {
-                sb.Append(highSurrogate);
-                sb.Append(lowSurrogate);
+                fixed (char* buf = array) return Repeat(buf, v, size);
             }
-            return sb.ToString();
+            finally
+            {
+                ArrayPool<char>.Shared.Return(array);
+            }
         }
-        finally
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static unsafe string Repeat(char* buf, uint v, int size)
+    {
+        v -= 0x10000u;
+        char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
+        char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
+        int i = 0;
+        while (i < size)
         {
-            StringBuilderPool.Shared.Return(sb);
+            buf[i++] = highSurrogate;
+            buf[i++] = lowSurrogate;
         }
+        return new string(buf, 0, size);
     }
     #endregion
 
