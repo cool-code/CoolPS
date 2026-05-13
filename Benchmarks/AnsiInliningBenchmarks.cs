@@ -11,9 +11,9 @@ namespace Cool.Benchmarks
     [DisassemblyDiagnoser]
     public class AnsiInliningBenchmarks
     {
-        private int[] colors256;
-        private int[] colors16;
-        private (int r, int g, int b)[] rgbs;
+        private int[] colors256 = [];
+        private int[] colors16 = [];
+        private (int r, int g, int b)[] rgbs = [];
 
         [GlobalSetup]
         public void Setup()
