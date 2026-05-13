@@ -27,57 +27,127 @@ public static class Ansi
     public static readonly string NoStrikethrough = C0_CSI + "29" + SGR;
     public static readonly string DefaultForeground = C0_CSI + "39" + SGR;
     public static readonly string DefaultBackground = C0_CSI + "49" + SGR;
-    private static readonly string[] _fg256Cache = Init256ColorCache(true);
-    private static readonly string[] _bg256Cache = Init256ColorCache(false);
-    private static readonly string[] _fg16Cache = Init16ColorCache(true);
-    private static readonly string[] _bg16Cache = Init16ColorCache(false);
-
-    private static string[] Init256ColorCache(bool isForeground)
+    private static readonly string[] _fg256Cache = AnsiCacheBridge.Init256ColorCache(true);
+    private static readonly string[] _bg256Cache = AnsiCacheBridge.Init256ColorCache(false);
+    private static readonly string[] _fg16Cache = AnsiCacheBridge.Init16ColorCache(true);
+    private static readonly string[] _bg16Cache = AnsiCacheBridge.Init16ColorCache(false);
+    private static class AnsiCacheBridge
     {
-        string control = isForeground ? "38;5;" : "48;5;";
-        string[] cache = new string[256];
-        for (int i = 0; i < 256; i++) cache[i] = C0_CSI + control + i + "m";
-        return cache;
-    }
-
-    private static string[] Init16ColorCache(bool isForeground)
-    {
-        string[] cache = new string[16];
-        int baseCode = isForeground ? 30 : 40;
-        for (int i = 0; i < 16; i++)
+        internal static string[] Init256ColorCache(bool isForeground)
         {
-            // foreground color: i < 8 is standard color (30-37)，i >= 8 is bright color (90-97)
-            // background color: i < 8 is standard color (40-47)，i >= 8 is bright color (100-107)
-            int code = (i < 8) ? (baseCode + i) : (baseCode + 60 + (i - 8));
-            cache[i] = C0_CSI + code + "m";
+            string control = isForeground ? "38;5;" : "48;5;";
+            string[] cache = new string[256];
+            for (int i = 0; i < 256; i++) cache[i] = C0_CSI + control + i + "m";
+            return cache;
         }
-        return cache;
-    }
 
-    private static unsafe readonly char* _onesPlaceCache = InitPlaceCache(i => i % 10);
-    private static unsafe readonly char* _tensPlaceCache = InitPlaceCache(i => i / 10 % 10);
-    private static unsafe readonly char* _hundredsPlaceCache = InitPlaceCache(i => i / 100 % 10);
-    private static unsafe char* InitPlaceCache(Func<int, int> getValue)
-    {
-        char[] array = new char[256];
-        GCHandle gcHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
-        AppDomain.CurrentDomain.DomainUnload += (s, e) => gcHandle.Free();
-        char* cache = (char*)gcHandle.AddrOfPinnedObject();
-        for (int i = 0; i < 256; i++)
+        internal static string[] Init16ColorCache(bool isForeground)
         {
-            cache[i] = (char)('0' + getValue(i));
+            string[] cache = new string[16];
+            int baseCode = isForeground ? 30 : 40;
+            for (int i = 0; i < 16; i++)
+            {
+                // foreground color: i < 8 is standard color (30-37)，i >= 8 is bright color (90-97)
+                // background color: i < 8 is standard color (40-47)，i >= 8 is bright color (100-107)
+                int code = (i < 8) ? (baseCode + i) : (baseCode + 60 + (i - 8));
+                cache[i] = C0_CSI + code + "m";
+            }
+            return cache;
         }
-        return cache;
+    }
+    private static readonly byte[] _opData = [
+        48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53,
+        54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49,
+        50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55,
+        56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51,
+        52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+        48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53,
+        54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49,
+        50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55,
+        56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51,
+        52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+        48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53,
+        54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49,
+        50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55,
+        56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51,
+        52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+        48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53,
+    ];
+
+    private static readonly byte[] _tpData = [
+        48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 51, 51,
+        51, 51, 51, 51, 51, 51, 51, 51, 52, 52, 52, 52, 52, 52, 52, 52,
+        52, 52, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 54, 54, 54, 54,
+        54, 54, 54, 54, 54, 54, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55,
+        56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 57, 57, 57, 57, 57, 57,
+        57, 57, 57, 57, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 52, 52, 52, 52,
+        52, 52, 52, 52, 52, 52, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53,
+        54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 55, 55, 55, 55, 55, 55,
+        55, 55, 55, 55, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 57, 57,
+        57, 57, 57, 57, 57, 57, 57, 57, 48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51,
+        52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 53, 53, 53, 53, 53, 53,
+    ];
+
+    private static readonly byte[] _hpData = [
+        48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48,
+        48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49,
+        49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+        50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+    ];
+
+    private static readonly unsafe byte* _opCache = SafePointerBridge.GetOpPtr(_opData);
+
+    private static readonly unsafe byte* _tpCache = SafePointerBridge.GetTpPtr(_tpData);
+
+    private static readonly unsafe byte* _hpCache = SafePointerBridge.GetHpPtr(_hpData);
+
+    private static unsafe class SafePointerBridge
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static byte* GetOpPtr(byte[] array)
+        {
+            fixed (byte* p = array) return (byte*)((IntPtr)p).ToPointer();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static byte* GetTpPtr(byte[] array)
+        {
+            fixed (byte* p = array) return (byte*)((IntPtr)p).ToPointer();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static byte* GetHpPtr(byte[] array)
+        {
+            fixed (byte* p = array) return (byte*)((IntPtr)p).ToPointer();
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void WriteInt(char* buffer, int pos, int value)
     {
-        value &= 0xFF;
-        buffer[pos++] = _hundredsPlaceCache[value];
-        buffer[pos++] = _tensPlaceCache[value];
-        buffer[pos++] = _onesPlaceCache[value];
+        byte b = (byte)(value & 0xFF);
+        buffer[pos++] = (char)_hpCache[b];
+        buffer[pos++] = (char)_tpCache[b];
+        buffer[pos++] = (char)_opCache[b];
     }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe void FillForegroundRGB(char* buffer, int r, int g, int b)
     {
@@ -95,11 +165,15 @@ public static class Ansi
         WriteInt(buffer, 15, b);
         buffer[18] = 'm';
     }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe string Foreground(int r, int g, int b)
     {
-        char* buffer = stackalloc char[20];
-        FillForegroundRGB(buffer, r, g, b);
-        return new(buffer, 0, 19);
+        string result = new('\0', 19);
+        fixed (char* buffer = result)
+        {
+            FillForegroundRGB(buffer, r, g, b);
+        }
+        return result;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe void FillBackgroundRGB(char* buffer, int r, int g, int b)
@@ -118,11 +192,15 @@ public static class Ansi
         WriteInt(buffer, 15, b);
         buffer[18] = 'm';
     }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe string Background(int r, int g, int b)
     {
-        char* buffer = stackalloc char[20];
-        FillBackgroundRGB(buffer, r, g, b);
-        return new(buffer, 0, 19);
+        string result = new('\0', 19);
+        fixed (char* buffer = result)
+        {
+            FillBackgroundRGB(buffer, r, g, b);
+        }
+        return result;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Foreground(Xterm256 color) => _fg256Cache[(int)color];

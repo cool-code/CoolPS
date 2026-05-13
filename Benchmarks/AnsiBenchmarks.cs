@@ -9,7 +9,7 @@ namespace Cool.Benchmarks
 {
     [MemoryDiagnoser]
     [DisassemblyDiagnoser]
-    public class AnsiInliningBenchmarks
+    public class AnsiBenchmarks
     {
         private int[] colors256 = null!;
         private int[] colors16 = null!;
