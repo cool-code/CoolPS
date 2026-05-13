@@ -11,15 +11,15 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator CodePoint(uint value) => new(value);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator uint(CodePoint cp) => cp._value;
+    public static explicit operator uint(CodePoint cp) => cp._value;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator CodePoint(int value) => new((uint)value);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator int(CodePoint cp) => (int)cp._value;
+    public static explicit operator int(CodePoint cp) => (int)cp._value;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator CodePoint(char value) => new(value);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator char(CodePoint cp) => (char)cp._value;
+    public static explicit operator char(CodePoint cp) => (char)cp._value;
     #endregion
 
     #region comparisons and equality
@@ -106,7 +106,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         uint v = _value;
         if (v <= 0xFFFFu) return new string((char)v, 1);
         // For invalid code points, return the standard replacement character
-        if (IsValid) return "\uFFFD";
+        if (!IsValid) return "\uFFFD";
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
         v -= 0x10000u;
         char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
@@ -426,7 +426,7 @@ public static class CodePointExtensions
 {
     public static StringBuilder Append(this StringBuilder sb, CodePoint cp)
     {
-        uint v = cp;
+        uint v = (uint)cp;
         if (v <= 0xFFFFu) return sb.Append((char)v);
         // For invalid code points, return the standard replacement character
         if (!cp.IsValid) return sb.Append('\uFFFD');
@@ -442,24 +442,28 @@ public static class CodePointExtensions
         return sb;
     }
     private static readonly string _hexDigits = "0123456789ABCDEF";
-    public static StringBuilder AppendUnicode(this StringBuilder sb, CodePoint cp)
+    public static unsafe StringBuilder AppendUnicode(this StringBuilder sb, CodePoint cp)
     {
         // For invalid code points, append "U+FFFD" which is the standard replacement character
         // used to represent invalid or unrepresentable code points in Unicode.
         if (!cp.IsValid) return sb.Append("U+FFFD");
 
-        uint v = cp;
+        uint v = (uint)cp;
 
         // Compute minimal hex digits for general uint values
         int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
 
-        sb.Append("U+");
+        int len = 2 + digits;
+        char* buf = stackalloc char[len];
+        buf[0] = 'U'; buf[1] = '+';
 
-        for (int j = digits - 1; j >= 0; j--)
+        for (int j = len - 1; j >= 2; j--)
         {
-            sb.Append(_hexDigits[(int)(v & 0xF)]);
+            buf[j] = _hexDigits[(int)(v & 0xF)];
             v >>= 4;
         }
+
+        sb.Append(buf, len);
         return sb;
     }
     public static StringBuilder AppendUnicode(this StringBuilder sb, params CodePoint[] cp)
