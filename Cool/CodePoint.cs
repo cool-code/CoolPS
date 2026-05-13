@@ -206,7 +206,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public int CharCount
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ((_value - 0xFFFFu) <= (0x10FFFFu - 0xFFFFu)) ? 2 : 1;
+        get => IsBetween(0x10000, 0x10FFFF) ? 2 : 1;
     }
 
     /// <summary>
@@ -244,7 +244,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsC1Control
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (_value - 0x80u) <= (0x9Fu - 0x80u);
+        get => IsBetween(0x80u, 0x9Fu);
     }
 
     /// <summary>
@@ -253,7 +253,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsAsciiDigit
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _value - '0' <= 9;
+        get => IsBetween('0', '9');
     }
 
     /// <summary>
@@ -262,7 +262,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsAsciiHexDigit
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (_value - '0' <= 9) | ((_value | 0x20u) - 'a' <= 5);
+        get => IsAsciiDigit || (((_value | 0x20u) - 'a') <= ('f' - 'a'));
     }
 
     /// <summary>
@@ -271,7 +271,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsAsciiHexDigitUpper
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (_value - '0' <= 9) | (_value - 'A' <= ('F' - 'A'));
+        get => IsAsciiDigit || IsBetween('A', 'F');
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsAsciiHexDigitLower
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (_value - '0' <= 9) | (_value - 'a' <= ('f' - 'a'));
+        get => IsAsciiDigit || IsBetween('a', 'f');
     }
 
     /// <summary>
@@ -299,7 +299,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsAsciiLetterUpper
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _value - 'A' <= 'Z' - 'A';
+        get => IsBetween('A', 'Z');
     }
 
     /// <summary> 
@@ -308,7 +308,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsAsciiLetterLower
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _value - 'a' <= 'z' - 'a';
+        get => IsBetween('a', 'z');
     }
     #endregion
 
@@ -378,7 +378,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsZeroWidth
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => zeroBitmap.GetBit(_value) || (_value - 0xE0000u <= 0xE007Fu - 0xE0000u) || (_value - 0xE0100u <= 0xE01EFu - 0xE0100u);
+        get => zeroBitmap.GetBit(_value) || IsBetween(0xE0000u, 0xE007Fu) || IsBetween(0xE0100u, 0xE01EFu);
     }
 
     /// <summary>
@@ -396,7 +396,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsEmojiModifier
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (_value - 0x1F3FBu) <= (0x1F3FFu - 0x1F3FBu);
+        get => IsBetween(0x1F3FBu, 0x1F3FFu);
     }
     #endregion
 
@@ -409,17 +409,17 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsHighSurrogate
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (_value - HighSurrogateStart) <= (HighSurrogateEnd - HighSurrogateStart);
+        get => IsBetween(HighSurrogateStart, HighSurrogateEnd);
     }
     public bool IsLowSurrogate
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (_value - LowSurrogateStart) <= (LowSurrogateEnd - LowSurrogateStart);
+        get => IsBetween(LowSurrogateStart, LowSurrogateEnd);
     }
     public bool IsSurrogate
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => (_value - HighSurrogateStart) <= (LowSurrogateEnd - HighSurrogateStart);
+        get => IsBetween(HighSurrogateStart, LowSurrogateEnd);
     }
 
     public static CodePoint FromSurrogatePair(char highSurrogate, char lowSurrogate)

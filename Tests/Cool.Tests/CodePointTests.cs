@@ -44,7 +44,7 @@ namespace Cool.Tests
                 }
 
                 // CharCount: match the same arithmetic expression used in CodePoint
-                int expectedCharCount = ((v - 0xFFFFu) <= (0x10FFFFu - 0xFFFFu)) ? 2 : 1;
+                int expectedCharCount = (v >= 0x10000u && v <= 0x10FFFFu) ? 2 : 1;
                 if (cp.CharCount != expectedCharCount)
                 {
                     mismatchesCharCount++;
