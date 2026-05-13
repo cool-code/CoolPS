@@ -87,24 +87,16 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
 
         int size = (int)total;
-        // For small sizes, we can use stack allocation to avoid the overhead of renting from the array pool.
-        // The threshold of 512 is chosen somewhat arbitrarily as a balance between avoiding stack overflow
-        // and minimizing heap allocations. It can be adjusted based on performance testing and typical use cases.
-        if (size <= 512)
+        string result = new('\0', size);
+        fixed (char* buf = result)
         {
-            char* buf = stackalloc char[size];
-            return Repeat(buf, v, size);
+            FillRepeatData(buf, v, size);
         }
-        else
-        {
-            using var owner = new RentedArrayOwner<char>(size);
-            char[] array = owner.Array!;
-            fixed (char* buf = array) return Repeat(buf, v, size);
-        }
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe string Repeat(char* buf, uint v, int size)
+    private static unsafe void FillRepeatData(char* buf, uint v, int size)
     {
         // Hint to the compiler that `size` is always even; the JIT can enable combined 32/64-bit register copy optimizations.
         if ((size & 1) != 0) throw new ArgumentException("UTF-16 surrogate pairs string size must be even.");
@@ -112,7 +104,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         // size is guaranteed to be > 0 here, but we check it anyway to avoid
         // reflecting the logic of the caller and to handle any future changes
         // to the code that might affect this assumption.
-        if (size <= 0) return string.Empty;
+        if (size <= 0) return;
 
         v -= 0x10000u;
         char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
@@ -131,7 +123,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
                 buf[i++] = highSurrogate;
                 buf[i++] = lowSurrogate;
             }
-            return new string(buf, 0, size);
+            return;
         }
 
         // exponential copy: each time copy the written area to the next, until filled
@@ -148,7 +140,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
             written += copy;
         }
 
-        return new string(buf, 0, size);
+        return;
     }
     #endregion
 
