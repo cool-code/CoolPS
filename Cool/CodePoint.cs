@@ -2,8 +2,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Buffers;
-using System.Runtime.InteropServices;
-using System.Drawing;
 
 namespace Cool;
 
@@ -89,7 +87,10 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
 
         int size = (int)total;
-        if (size <= 1024) // threshold chosen to avoid large stack allocations, can be adjusted based on performance testing
+        // For small sizes, we can use stack allocation to avoid the overhead of renting from the array pool.
+        // The threshold of 512 is chosen somewhat arbitrarily as a balance between avoiding stack overflow
+        // and minimizing heap allocations. It can be adjusted based on performance testing and typical use cases.
+        if (size <= 512)
         {
             char* buf = stackalloc char[size];
             return Repeat(buf, v, size);
@@ -114,12 +115,38 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         v -= 0x10000u;
         char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
         char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
-        int i = 0;
-        while (i < size)
+
+        // size is guaranteed to be > 0 here, but we check it anyway to avoid
+        // reflecting the logic of the caller and to handle any future changes
+        // to the code that might affect this assumption.
+        if (size <= 0) return string.Empty;
+
+        // writing the first pair
+        buf[0] = highSurrogate;
+        buf[1] = lowSurrogate;
+
+        // small size can be handled by simple loop without calling MemoryCopy, which has more overhead for small sizes.
+        if (size < 64)
         {
-            buf[i++] = highSurrogate;
-            buf[i++] = lowSurrogate;
+            int i = 2;
+            while (i < size)
+            {
+                buf[i++] = highSurrogate;
+                buf[i++] = lowSurrogate;
+            }
+            return new string(buf, 0, size);
         }
+
+        // exponential copy: each time copy the written area to the next, until filled
+        int written = 2;
+        while (written < size)
+        {
+            int copy = Math.Min(written, size - written);
+            // Buffer.MemoryCopy(source, destination, destSizeInBytes, bytesToCopy)
+            Buffer.MemoryCopy(buf, buf + written, (long)(size - written) * sizeof(char), (long)copy * sizeof(char));
+            written += copy;
+        }
+
         return new string(buf, 0, size);
     }
     #endregion
