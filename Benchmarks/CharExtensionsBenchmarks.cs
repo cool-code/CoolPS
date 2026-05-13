@@ -10,7 +10,7 @@ namespace Cool.Benchmarks
     [DisassemblyDiagnoser]
     public class CharExtensionsBenchmarks
     {
-        private char[] chars = [];
+        private char[] chars = null!;
 
         [GlobalSetup]
         public void Setup()

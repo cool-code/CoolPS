@@ -16,8 +16,8 @@ namespace Cool.Benchmarks
         private CodePoint cpInvalid;
         private CodePoint cpHigh;
         private CodePoint cpLow;
-        private CodePoint[] cpSamples = [];
-        private StringBuilder sb = new();
+        private CodePoint[] cpSamples = null!;
+        private StringBuilder sb = null!;
 
         [GlobalSetup]
         public void Setup()
