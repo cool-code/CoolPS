@@ -71,6 +71,7 @@ public unsafe sealed class Bitmap : IDisposable
             bool first = true;
             bool inRange = false;
             uint rangeStart = 0, rangeEnd = 0;
+            char* buf = stackalloc char[8];
 
             for (int wi = 0; wi < words; wi++)
             {
@@ -94,7 +95,7 @@ public unsafe sealed class Bitmap : IDisposable
                     else
                     {
                         if (!first) { sb.Append(','); } else { first = false; }
-                        AppendRange(sb, rangeStart, rangeEnd);
+                        AppendRange(sb, rangeStart, rangeEnd, buf);
 
                         rangeStart = rangeEnd = pos;
                     }
@@ -107,7 +108,7 @@ public unsafe sealed class Bitmap : IDisposable
             if (inRange)
             {
                 if (!first) sb.Append(',');
-                AppendRange(sb, rangeStart, rangeEnd);
+                AppendRange(sb, rangeStart, rangeEnd, buf);
             }
 
             return sb.ToString();
@@ -119,23 +120,23 @@ public unsafe sealed class Bitmap : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AppendRange(StringBuilder sb, uint rangeStart, uint rangeEnd)
+    private static void AppendRange(StringBuilder sb, uint rangeStart, uint rangeEnd, char* buf)
     {
         if (rangeStart == rangeEnd)
         {
-            AppendHex(sb, rangeStart);
+            AppendHex(sb, rangeStart, buf);
         }
         else
         {
-            AppendHex(sb, rangeStart);
+            AppendHex(sb, rangeStart, buf);
             sb.Append('-');
-            AppendHex(sb, rangeEnd);
+            AppendHex(sb, rangeEnd, buf);
         }
     }
 
     private static readonly string _hexDigits = "0123456789ABCDEF";
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AppendHex(StringBuilder sb, uint value)
+    private static void AppendHex(StringBuilder sb, uint value, char* buf)
     {
         if (value == 0u)
         {
@@ -143,11 +144,9 @@ public unsafe sealed class Bitmap : IDisposable
             return;
         }
 
-        const int buflen = 8;
         // max 8 hex digits for a uint
-        char* buf = stackalloc char[buflen];
         // fill from the end backwards so digits end up in correct order
-        int i = buflen;
+        int i = 8;
         while (value != 0u)
         {
             uint nibble = value & 0xFu;
@@ -156,7 +155,7 @@ public unsafe sealed class Bitmap : IDisposable
         }
 
         // bulk append the prepared range
-        sb.Append(buf + i, buflen - i);
+        sb.Append(buf + i, 8 - i);
     }
 
     private static readonly int[] _multiplyDeBruijnBitPosition = [
