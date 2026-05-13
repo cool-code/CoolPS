@@ -56,6 +56,7 @@ public unsafe sealed class Bitmap : IDisposable
         if (_gcHandle.IsAllocated) _gcHandle.Free();
         GC.SuppressFinalize(this);
     }
+    ~Bitmap() => Dispose();
 
     public override string ToString()
     {
