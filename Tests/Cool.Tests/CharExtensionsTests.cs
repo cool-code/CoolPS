@@ -6,91 +6,190 @@ namespace Cool.Tests
 {
     public class CharExtensionsTests
     {
-        [Theory]
-        [InlineData('d', 'a', 'f', true)]
-        [InlineData('a', 'a', 'z', true)]
-        [InlineData('z', 'a', 'y', false)]
-        [InlineData('A', 'A', 'Z', true)]
-        public void IsBetween_Works(char c, char start, char end, bool expected)
+        [Fact]
+        public void AllChars_IsBetween_BasicRanges()
         {
-            Assert.Equal(expected, c.IsBetween(start, end));
+            var ranges = new (char start, char end)[] { ('0', '9'), ('A', 'Z'), ('a', 'z') };
+            foreach (var (start, end) in ranges)
+            {
+                int mismatches = 0;
+                for (int i = 0; i <= 0xFFFF; i++)
+                {
+                    char c = (char)i;
+                    bool actual = c.IsBetween(start, end);
+                    bool expected = c >= start && c <= end;
+                    if (actual != expected)
+                    {
+                        mismatches++;
+                        if (mismatches > 10) break;
+                    }
+                }
+                Assert.Equal(0, mismatches);
+            }
         }
 
         [Fact]
-        public void IsAscii_IdentifiesAscii()
+        public void AllChars_IsAscii_Exhaustive()
         {
-            Assert.True(((char)127).IsAscii());
-            Assert.False(((char)128).IsAscii());
-            Assert.True('A'.IsAscii());
-            Assert.True(' '.IsAscii());
+            int mismatches = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actual = c.IsAscii();
+                bool expected = i <= 127;
+                if (actual != expected)
+                {
+                    mismatches++;
+                    if (mismatches > 10) break;
+                }
+            }
+            Assert.Equal(0, mismatches);
         }
 
         [Fact]
-        public void IsControl_IdentifiesC0Control()
+        public void AllChars_IsControl_Exhaustive()
         {
-            Assert.True('\n'.IsControl());
-            Assert.True(((char)0).IsControl());
-            Assert.True(((char)0x1Fu).IsControl());
-            Assert.False(' '.IsControl());
+            int mismatches = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actual = c.IsControl();
+                bool expected = (i <= 0x1F) || (i >= 0x7F && i <= 0x9F);
+                if (actual != expected)
+                {
+                    mismatches++;
+                    if (mismatches > 10) break;
+                }
+            }
+            Assert.Equal(0, mismatches);
         }
 
         [Fact]
-        public void IsC1Control_IdentifiesRange()
+        public void AllChars_IsC1Control_Exhaustive()
         {
-            Assert.True(((char)0x80u).IsC1Control());
-            Assert.True(((char)0x9Fu).IsC1Control());
-            Assert.False(((char)0xA0u).IsC1Control());
+            int mismatches = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actual = c.IsC1Control();
+                bool expected = (i >= 0x80 && i <= 0x9F);
+                if (actual != expected)
+                {
+                    mismatches++;
+                    if (mismatches > 10) break;
+                }
+            }
+            Assert.Equal(0, mismatches);
         }
 
         [Fact]
-        public void IsAsciiDigit_Works()
+        public void AllChars_IsAsciiDigit_Exhaustive()
         {
-            Assert.True('0'.IsAsciiDigit());
-            Assert.True('9'.IsAsciiDigit());
-            Assert.False('a'.IsAsciiDigit());
+            int mismatches = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actual = c.IsAsciiDigit();
+                bool expected = (i >= '0' && i <= '9');
+                if (actual != expected)
+                {
+                    mismatches++;
+                    if (mismatches > 10) break;
+                }
+            }
+            Assert.Equal(0, mismatches);
         }
 
         [Fact]
-        public void IsAsciiHexDigit_Works()
+        public void AllChars_IsAsciiHexDigit_Exhaustive()
         {
-            foreach (var ch in new[] { '0', '9', 'a', 'f', 'A', 'F' })
-                Assert.True(ch.IsAsciiHexDigit());
-
-            Assert.False('g'.IsAsciiHexDigit());
-            Assert.False('/'.IsAsciiHexDigit());
+            int mismatches = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actual = c.IsAsciiHexDigit();
+                bool expected = (i >= '0' && i <= '9') || (i >= 'a' && i <= 'f') || (i >= 'A' && i <= 'F');
+                if (actual != expected)
+                {
+                    mismatches++;
+                    if (mismatches > 10) break;
+                }
+            }
+            Assert.Equal(0, mismatches);
         }
 
         [Fact]
-        public void IsAsciiHexDigitUpper_And_Lower_Work()
+        public void AllChars_IsAsciiHexDigitUpper_Exhaustive()
         {
-            Assert.True('A'.IsAsciiHexDigitUpper());
-            Assert.True('F'.IsAsciiHexDigitUpper());
-            Assert.True('0'.IsAsciiHexDigitUpper());
-            Assert.False('a'.IsAsciiHexDigitUpper());
-
-            Assert.True('a'.IsAsciiHexDigitLower());
-            Assert.True('f'.IsAsciiHexDigitLower());
-            Assert.True('0'.IsAsciiHexDigitLower());
-            Assert.False('A'.IsAsciiHexDigitLower());
+            int mismatches = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actual = c.IsAsciiHexDigitUpper();
+                bool expected = (i >= '0' && i <= '9') || (i >= 'A' && i <= 'F');
+                if (actual != expected)
+                {
+                    mismatches++;
+                    if (mismatches > 10) break;
+                }
+            }
+            Assert.Equal(0, mismatches);
         }
 
         [Fact]
-        public void IsAsciiLetter_Varieties()
+        public void AllChars_IsAsciiHexDigitLower_Exhaustive()
         {
-            Assert.True('a'.IsAsciiLetter());
-            Assert.True('Z'.IsAsciiLetter());
-            Assert.False('1'.IsAsciiLetter());
-            Assert.False('\u00F1'.IsAsciiLetter()); // ñ should not be ASCII letter
+            int mismatches = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actual = c.IsAsciiHexDigitLower();
+                bool expected = (i >= '0' && i <= '9') || (i >= 'a' && i <= 'f');
+                if (actual != expected)
+                {
+                    mismatches++;
+                    if (mismatches > 10) break;
+                }
+            }
+            Assert.Equal(0, mismatches);
         }
 
         [Fact]
-        public void IsAsciiLetterUpper_And_Lower_Work()
+        public void AllChars_IsAsciiLetter_Exhaustive()
         {
-            Assert.True('A'.IsAsciiLetterUpper());
-            Assert.False('a'.IsAsciiLetterUpper());
+            int mismatches = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actual = c.IsAsciiLetter();
+                bool expected = (i >= 'a' && i <= 'z') || (i >= 'A' && i <= 'Z');
+                if (actual != expected)
+                {
+                    mismatches++;
+                    if (mismatches > 10) break;
+                }
+            }
+            Assert.Equal(0, mismatches);
+        }
 
-            Assert.True('a'.IsAsciiLetterLower());
-            Assert.False('A'.IsAsciiLetterLower());
+        [Fact]
+        public void AllChars_IsAsciiLetterUpperLower_Exhaustive()
+        {
+            int mismatchesUpper = 0, mismatchesLower = 0;
+            for (int i = 0; i <= 0xFFFF; i++)
+            {
+                char c = (char)i;
+                bool actualU = c.IsAsciiLetterUpper();
+                bool expectedU = (i >= 'A' && i <= 'Z');
+                if (actualU != expectedU && mismatchesUpper++ == 0) Assert.True(false, $"IsAsciiLetterUpper mismatch at U+{i:X4}");
+
+                bool actualL = c.IsAsciiLetterLower();
+                bool expectedL = (i >= 'a' && i <= 'z');
+                if (actualL != expectedL && mismatchesLower++ == 0) Assert.True(false, $"IsAsciiLetterLower mismatch at U+{i:X4}");
+                if (mismatchesUpper > 10 || mismatchesLower > 10) break;
+            }
+            Assert.Equal(0, mismatchesUpper);
+            Assert.Equal(0, mismatchesLower);
         }
     }
 }

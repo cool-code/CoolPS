@@ -14,26 +14,26 @@ public static class CharExtensions
     public static bool IsControl(this char c) => (uint)((c + 1) & ~0x80u) <= 0x20u;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsC1Control(this char c) => (c - 0x80u) <= (0x9Fu - 0x80u);
+    public static bool IsC1Control(this char c) => c.IsBetween((char)0x80, (char)0x9F);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiDigit(this char c) => (uint)(c - '0') <= 9;
+    public static bool IsAsciiDigit(this char c) => c.IsBetween('0', '9');
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiHexDigit(this char c) => ((uint)(c - '0') <= 9) | (((c | 0x20u) - 'a') <= 5);
+    public static bool IsAsciiHexDigit(this char c) => c.IsAsciiDigit() || (((c | 0x20u) - 'a') <= ('f' - 'a'));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiHexDigitUpper(this char c) => ((uint)(c - '0') <= 9) | ((uint)(c - 'A') <= ('F' - 'A'));
+    public static bool IsAsciiHexDigitUpper(this char c) => c.IsAsciiDigit() || c.IsBetween('A', 'F');
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiHexDigitLower(this char c) => ((uint)(c - '0') <= 9) | ((uint)(c - 'a') <= ('f' - 'a'));
+    public static bool IsAsciiHexDigitLower(this char c) => c.IsAsciiDigit() || c.IsBetween('a', 'f');
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiLetter(this char c) => ((c | 0x20u) - 'a') <= ('z' - 'a');
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiLetterUpper(this char c) => (uint)(c - 'A') <= ('Z' - 'A');
+    public static bool IsAsciiLetterUpper(this char c) => c.IsBetween('A', 'Z');
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiLetterLower(this char c) => (uint)(c - 'a') <= ('z' - 'a');
+    public static bool IsAsciiLetterLower(this char c) => c.IsBetween('a', 'z');
 }
