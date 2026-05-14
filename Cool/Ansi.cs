@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Cool;
@@ -112,32 +110,11 @@ public static class Ansi
         50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
     ];
 
-    private static readonly unsafe byte* _opCache = SafePointerBridge.GetOpPtr(_opData);
+    private static readonly unsafe byte* _opCache = (byte*)Unsafe.AsPointer(ref _opData[0]);
 
-    private static readonly unsafe byte* _tpCache = SafePointerBridge.GetTpPtr(_tpData);
+    private static readonly unsafe byte* _tpCache = (byte*)Unsafe.AsPointer(ref _tpData[0]);
 
-    private static readonly unsafe byte* _hpCache = SafePointerBridge.GetHpPtr(_hpData);
-
-    private static unsafe class SafePointerBridge
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* GetOpPtr(byte[] array)
-        {
-            fixed (byte* p = array) return (byte*)((IntPtr)p).ToPointer();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* GetTpPtr(byte[] array)
-        {
-            fixed (byte* p = array) return (byte*)((IntPtr)p).ToPointer();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* GetHpPtr(byte[] array)
-        {
-            fixed (byte* p = array) return (byte*)((IntPtr)p).ToPointer();
-        }
-    }
+    private static readonly unsafe byte* _hpCache = (byte*)Unsafe.AsPointer(ref _hpData[0]);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void WriteInt(char* buffer, int pos, int value)

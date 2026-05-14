@@ -12,4 +12,10 @@
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="InlineIL.Fody" Version="1.10.2" PrivateAssets="All" />
+    <PackageReference Include="Fody" Version="6.9.3" PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>
