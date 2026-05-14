@@ -11,15 +11,15 @@ public sealed class ArrayPool<T>
 {
     public static readonly ArrayPool<T> Shared = new();
 
-    private class Bucket
+    private sealed class Bucket
     {
         // Slot struct: encapsulates the array and its version number, using a struct array for memory contiguity
         private struct Slot
         {
             // no need for volatile, as it's protected by the sequencing of Sequence
-            public T[]? Array;
+            internal T[]? Array;
             // The key to perfectly solving the timing issue: using volatile to ensure memory visibility of the version number
-            public volatile int Sequence;
+            internal volatile int Sequence;
         }
 
         private readonly Slot[] _slots;
@@ -27,7 +27,7 @@ public sealed class ArrayPool<T>
         private int _head = 0;
         private int _tail = 0;
 
-        public Bucket(int capacity)
+        internal Bucket(int capacity)
         {
             _slots = new Slot[capacity];
             _mask = capacity - 1;
@@ -39,7 +39,7 @@ public sealed class ArrayPool<T>
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryPush(T[] array)
+        internal bool TryPush(T[] array)
         {
             SpinWait spin = new();
             while (true)
@@ -74,7 +74,7 @@ public sealed class ArrayPool<T>
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T[]? TryPop()
+        internal T[]? TryPop()
         {
             SpinWait spin = new();
             while (true)
@@ -113,13 +113,19 @@ public sealed class ArrayPool<T>
     }
 
     private readonly Bucket[] _buckets;
-
-    public ArrayPool()
+    public ArrayPool(int maxArrayLength = 1024 * 1024, int maxArraysPerBucket = 16)
     {
-        _buckets = new Bucket[32];
+        if (maxArrayLength <= 0) throw new ArgumentOutOfRangeException(nameof(maxArrayLength));
+        if (maxArraysPerBucket <= 0) throw new ArgumentOutOfRangeException(nameof(maxArraysPerBucket));
+
+        var maxBucketIndex = SelectBucketIndex((uint)maxArrayLength);
+        int capacity = 1;
+        while (capacity < maxArraysPerBucket) capacity <<= 1;
+
+        _buckets = new Bucket[maxBucketIndex + 1];
         for (int i = 0; i < _buckets.Length; i++)
         {
-            _buckets[i] = new Bucket(16);
+            _buckets[i] = new Bucket(capacity);
         }
     }
 
