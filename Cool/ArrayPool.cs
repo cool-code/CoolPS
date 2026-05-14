@@ -1,9 +1,6 @@
 using System;
 using System.Threading;
 using System.Runtime.CompilerServices;
-#if NETCOREAPP
-using System.Numerics;
-#endif
 
 namespace Cool;
 
@@ -163,10 +160,6 @@ public sealed class ArrayPool<T>
     {
         if (value <= 1) return 0;
         value--;
-
-#if NETCOREAPP
-        return 32 - BitOperations.LeadingZeroCount(value);
-#else
         int c = 0;
         if (value >= 1 << 16) { value >>= 16; c += 16; }
         if (value >= 1 << 8) { value >>= 8; c += 8; }
@@ -174,6 +167,5 @@ public sealed class ArrayPool<T>
         if (value >= 1 << 2) { value >>= 2; c += 2; }
         if (value >= 1 << 1) { value >>= 1; c += 1; }
         return c + (int)value;
-#endif
     }
 }
