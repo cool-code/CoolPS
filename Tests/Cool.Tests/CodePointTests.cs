@@ -13,10 +13,10 @@ namespace Cool.Tests
         public void AllCodePoints_BasicProperties_Exhaustive()
         {
             // reflect private bitmaps used by CodePoint to build expected values
-            var wideBitmap = (Bitmap)typeof(CodePoint).GetField("wideBitmap", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-            var ambigBitmap = (Bitmap)typeof(CodePoint).GetField("ambigBitmap", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-            var zeroBitmap = (Bitmap)typeof(CodePoint).GetField("zeroBitmap", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-            var emojiBitmap = (Bitmap)typeof(CodePoint).GetField("emojiBitmap", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+            var wideBitmap = Bitmap.CreateStatic(0x1FFFFu, (string)typeof(CodePoint).GetField("_wideRange", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!);
+            var ambigBitmap = Bitmap.CreateStatic(0x1FFFFu, (string)typeof(CodePoint).GetField("_ambigRange", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!);
+            var zeroBitmap = Bitmap.CreateStatic(0x1FFFFu, (string)typeof(CodePoint).GetField("_zeroRange", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!);
+            var emojiBitmap = Bitmap.CreateStatic(0x1FFFFu, (string)typeof(CodePoint).GetField("_emojiRange", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!);
 
             int mismatchesConv = 0;
             int mismatchesCharCount = 0;
