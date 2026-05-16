@@ -37,19 +37,19 @@ public unsafe sealed class BitSet : IDisposable
     ~BitSet() => Dispose();
 
     /// <summary>
-    /// Sets the bits specified by the input range string. The range string can contain individual bit positions or ranges of bit positions, separated by commas.
-    /// For example, the range string "0-3,5,7-FF" would set bits 0 through 3, bit 5, and bits 7 through 255 (0xFF). 
-    /// The method parses the range string, determines which bits to set based on the specified ranges, and updates the bitmap accordingly.
+    /// Sets the bits specified by the input range string.
+    /// For example, the range string "0~3,5,7~FF" would set bits 0 through 3, bit 5, and bits 7 through 255 (0xFF). 
+    /// The method parses the range string, determines which bits to set based on the specified ranges, and updates the bitset accordingly.
     /// </summary>
     /// <param name="range">
     /// A string representing the range of bits to set. 
     /// The format of the range string should be a comma-separated list of individual bit positions or ranges of bit positions.
     /// Each range can be specified in hexadecimal format.
     /// Examples of valid range strings include:
-    /// - "0-3,5,7-FF": Sets bits 0 through 3, bit 5, and bits 7 through 255 (0xFF).
-    /// - "10,20-2F": Sets bit 10 and bits 20 through 47 (0x2F).
-    /// - "1-1F": Sets bits 1 through 31 (0x1F).
-    /// The method will parse the range string, determine which bits to set based on the specified ranges, and update the bitmap accordingly.
+    /// - "0~3,5,7~FF": Sets bits 0 through 3, bit 5, and bits 7 through 255 (0xFF).
+    /// - "10,20~2F": Sets bit 10 and bits 20 through 47 (0x2F).
+    /// - "1~1F": Sets bits 1 through 31 (0x1F).
+    /// The method will parse the range string, determine which bits to set based on the specified ranges, and update the bitset accordingly.
     /// </param>
     /// <returns>The current BitSet instance with the specified bits set.</returns>
     public BitSet SetRange(string range)
@@ -243,7 +243,7 @@ public unsafe sealed class BitSet : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int CountTrailingZeros(uint v)
     {
-        return _multiplyDeBruijnBitPosition[((uint)((v & -v) * 0x077CB531U)) >> 27];
+        return Unsafe.ReadNoBoundsCheck(_multiplyDeBruijnBitPosition, (int)(((uint)((v & -v) * 0x077CB531U)) >> 27));
     }
 
     /// <summary>

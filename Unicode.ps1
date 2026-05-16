@@ -60,14 +60,14 @@ function Get-OptimizedString($bits) {
         elseif ($inRange) {
             $end = $i - 1
             if ($start -eq $end) { $result.Add("{0:X}" -f $start) }
-            else { $result.Add(("{0:X}-{1:X}" -f $start, $end)) }
+            else { $result.Add(("{0:X}~{1:X}" -f $start, $end)) }
             $inRange = $false
         }
     }
     if ($inRange) {
         $end = 0x20000 - 1
         if ($start -eq $end) { $result.Add("{0:X}" -f $start) }
-        else { $result.Add(("{0:X}-{1:X}" -f $start, $end)) }
+        else { $result.Add(("{0:X}~{1:X}" -f $start, $end)) }
     }
     return $result -join ","
 }

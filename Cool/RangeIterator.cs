@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Cool.NumberDrivers;
@@ -10,6 +9,7 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
     where TNumberDriver : struct, INumberDriver<T>
 {
     private readonly int _length;
+    private readonly T _highLimit;
     private readonly TNumberDriver _driver;
     private GCHandle _gcHandle;
     private readonly char* _ptr;
@@ -22,22 +22,10 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
     public readonly T Current => _currentValue;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal RangeIterator(string rangeStr, T HighLimit)
+    internal RangeIterator(string rangeStr, T highLimit)
     {
-        if (typeof(T) == typeof(uint) && typeof(TNumberDriver) == typeof(UIntDriver))
-        {
-            var driver = new UIntDriver(Unsafe.As<T, uint>(ref HighLimit));
-            _driver = Unsafe.As<UIntDriver, TNumberDriver>(ref driver);
-        }
-        else if (typeof(T) == typeof(ulong) && typeof(TNumberDriver) == typeof(ULongDriver))
-        {
-            var driver = new ULongDriver(Unsafe.As<T, ulong>(ref HighLimit));
-            _driver = Unsafe.As<ULongDriver, TNumberDriver>(ref driver);
-        }
-        else
-        {
-            throw new NotSupportedException($"The type '{typeof(T).Name}' is not supported by RangeIterator.");
-        }
+        _highLimit = highLimit;
+        _driver = default;
         _length = rangeStr.Length;
         _gcHandle = GCHandle.Alloc(rangeStr, GCHandleType.Pinned);
         _ptr = (char*)_gcHandle.AddrOfPinnedObject().ToPointer();
@@ -55,7 +43,7 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
         {
             if (_driver.LessThan(_currentValue, _endValue))
             {
-                _currentValue = _driver.Increment(_currentValue);
+                _driver.Increment(ref _currentValue);
                 return true;
             }
             _inRangeMode = false;
@@ -70,46 +58,16 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
 
         if (_index >= _length) return false;
 
-        T startVal = _driver.Zero;
-        bool hasStart = false;
-        while (_index < _length)
-        {
-            char c = _ptr[_index];
-            if (c == ',' || c == '-') break;
-
-            if (c != ' ')
-            {
-                T hexChar = _driver.ParseHexChar(c);
-                startVal = _driver.AccumulateHex(startVal, hexChar);
-                hasStart = true;
-            }
-            _index++;
-        }
-
+        T startVal = ParseNextNumber(out bool hasStart);
         if (!hasStart) return false;
 
-        if (_index < _length && _ptr[_index] == '-')
+        if (_index < _length && _ptr[_index] == '~')
         {
             _index++;
 
-            T endVal = _driver.Zero;
-            bool hasEnd = false;
-            while (_index < _length)
-            {
-                char c = _ptr[_index];
-                if (c == ',') break;
-
-                if (c != ' ')
-                {
-                    T hexChar = _driver.ParseHexChar(c);
-                    endVal = _driver.AccumulateHex(endVal, hexChar);
-                    hasEnd = true;
-                }
-                _index++;
-            }
-
+            T endVal = ParseNextNumber(out bool hasEnd);
             _currentValue = startVal;
-            _endValue = hasEnd ? _driver.Min(_driver.HighLimit, endVal) : startVal;
+            _endValue = hasEnd ? _driver.Min(_highLimit, endVal) : startVal;
 
             if (_driver.LessThan(_currentValue, _endValue))
             {
@@ -125,11 +83,55 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private T ParseNextNumber(out bool success)
+    {
+        success = false;
+        if (_index >= _length) return _driver.Zero;
+
+        while (_index < _length && _ptr[_index] == ' ') _index++;
+
+        bool isNegative = false;
+        if (_index < _length)
+        {
+            char c = _ptr[_index];
+            if (c == '-')
+            {
+                isNegative = true;
+                _index++;
+            }
+            else if (c == '+')
+            {
+                _index++;
+            }
+        }
+
+        T val = _driver.Zero;
+        while (_index < _length)
+        {
+            char c = _ptr[_index];
+
+            if (c == ',' || c == '~') break;
+
+            if (c != ' ')
+            {
+                T hexChar = _driver.ParseHexChar(c);
+                val = _driver.AccumulateHex(val, hexChar);
+                success = true;
+            }
+            _index++;
+        }
+
+        if (isNegative && success)
+        {
+            val = _driver.Negate(val);
+        }
+
+        return val;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Dispose()
     {
-        if (_gcHandle.IsAllocated)
-        {
-            _gcHandle.Free();
-        }
+        if (_gcHandle.IsAllocated) _gcHandle.Free();
     }
 }
