@@ -153,9 +153,10 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         if (!IsValid) return "\uFFFD";
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
         v -= 0x10000u;
-        char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
-        char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
-        return new string([highSurrogate, lowSurrogate]);
+        string result = new('\0', 2);
+        Unsafe.WriteNoBoundsCheck(result, 0, (char)((v >> 10) + HighSurrogateStart));
+        Unsafe.WriteNoBoundsCheck(result, 1, (char)((v & 0x3FFu) + LowSurrogateStart));
+        return result;
     }
 
     private const string _hexDigits = "0123456789ABCDEF";
