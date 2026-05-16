@@ -19,6 +19,6 @@ internal static class Hex
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte Lookup(char c)
     {
-        return c.IsAsciiHexDigit() ? Unsafe.ReadNoBoundsCheck(_hexTable, c) : (byte)0;
+        return c.IsAsciiHexDigit() ? Unsafe.Read(_hexTable, c) : (byte)0;
     }
 }
