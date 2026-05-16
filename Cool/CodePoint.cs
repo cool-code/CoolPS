@@ -158,8 +158,8 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         return new string([highSurrogate, lowSurrogate]);
     }
 
-    private static readonly string _hexDigits = "0123456789ABCDEF";
-    public unsafe string ToUnicode()
+    private const string _hexDigits = "0123456789ABCDEF";
+    public string ToUnicode()
     {
         // For invalid code points, return "U+FFFD" which is the standard replacement character
         // used to represent invalid or unrepresentable code points in Unicode.
@@ -171,16 +171,16 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
 
         int len = 2 + digits;
-        char* buf = stackalloc char[len];
-        buf[0] = 'U'; buf[1] = '+';
-
+        string result = new('\0', len);
+        var hexDigits = _hexDigits;
+        Unsafe.WriteNoBoundsCheck(result, 0, 'U');
+        Unsafe.WriteNoBoundsCheck(result, 1, '+');
         for (int j = len - 1; j >= 2; j--)
         {
-            buf[j] = _hexDigits[(int)(v & 0xF)];
+            Unsafe.WriteNoBoundsCheck(result, j, Unsafe.ReadNoBoundsCheck(hexDigits, (int)(v & 0xF)));
             v >>= 4;
         }
-
-        return new string(buf, 0, len);
+        return result;
     }
     #endregion
 
@@ -485,7 +485,7 @@ public static class CodePointExtensions
         foreach (var c in cp) sb.Append(c);
         return sb;
     }
-    private static readonly string _hexDigits = "0123456789ABCDEF";
+    private const string _hexDigits = "0123456789ABCDEF";
     public static unsafe StringBuilder AppendUnicode(this StringBuilder sb, CodePoint cp)
     {
         // For invalid code points, append "U+FFFD" which is the standard replacement character
@@ -500,10 +500,11 @@ public static class CodePointExtensions
         int len = 2 + digits;
         char* buf = stackalloc char[len];
         buf[0] = 'U'; buf[1] = '+';
+        var hexDigits = _hexDigits;
 
         for (int j = len - 1; j >= 2; j--)
         {
-            buf[j] = _hexDigits[(int)(v & 0xF)];
+            buf[j] = Unsafe.ReadNoBoundsCheck(hexDigits, (int)(v & 0xF));
             v >>= 4;
         }
 
