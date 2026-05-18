@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Cool.NumberDrivers;
 
@@ -10,7 +11,7 @@ public ref struct RangeIterator<T, TNumberDriver>
     private readonly int _length;
     private readonly T _highLimit;
     private readonly TNumberDriver _driver;
-    private readonly string _rangeStr;
+    private readonly ReadOnlySpan<char> _range;
 
     private int _index;
     private T _currentValue;
@@ -25,7 +26,7 @@ public ref struct RangeIterator<T, TNumberDriver>
         _highLimit = highLimit;
         _driver = default;
         _length = rangeStr.Length;
-        _rangeStr = rangeStr;
+        _range = rangeStr.AsSpan();
 
         _index = 0;
         _currentValue = _driver.Zero;
@@ -48,7 +49,7 @@ public ref struct RangeIterator<T, TNumberDriver>
 
         if (_index >= _length) return false;
 
-        while (_index < _length && (_rangeStr[_index] == ',' || _rangeStr[_index] == ' '))
+        while (_index < _length && (_range[_index] == ',' || _range[_index] == ' '))
         {
             _index++;
         }
@@ -58,7 +59,7 @@ public ref struct RangeIterator<T, TNumberDriver>
         T startVal = ParseNextNumber(out bool hasStart);
         if (!hasStart) return false;
 
-        if (_index < _length && _rangeStr[_index] == '~')
+        if (_index < _length && _range[_index] == '~')
         {
             _index++;
 
@@ -85,12 +86,12 @@ public ref struct RangeIterator<T, TNumberDriver>
         success = false;
         if (_index >= _length) return _driver.Zero;
 
-        while (_index < _length && _rangeStr[_index] == ' ') _index++;
+        while (_index < _length && _range[_index] == ' ') _index++;
 
         bool isNegative = false;
         if (_index < _length)
         {
-            char c = _rangeStr[_index];
+            char c = _range[_index];
             if (c == '-')
             {
                 isNegative = true;
@@ -105,7 +106,7 @@ public ref struct RangeIterator<T, TNumberDriver>
         T val = _driver.Zero;
         while (_index < _length)
         {
-            char c = _rangeStr[_index];
+            char c = _range[_index];
 
             if (c == ',' || c == '~') break;
 
