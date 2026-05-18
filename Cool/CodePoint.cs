@@ -324,10 +324,10 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     ///   <field name="_emojiPtr">Bitmap for emoji characters</field>
     /// </summary>
     private const uint MaxCodePoint = 0x1FFFF;
-    private static readonly BitSet wideBitSet = BitSet.CreateStatic(_wideRange, MaxCodePoint);
-    private static readonly BitSet ambigBitSet = BitSet.CreateStatic(_ambigRange, MaxCodePoint);
-    private static readonly BitSet zeroBitSet = BitSet.CreateStatic(_zeroRange, MaxCodePoint);
-    private static readonly BitSet emojiBitSet = BitSet.CreateStatic(_emojiRange, MaxCodePoint);
+    private static readonly BitSet wideBitSet = new(MaxCodePoint, _wideRange);
+    private static readonly BitSet ambigBitSet = new(MaxCodePoint, _ambigRange);
+    private static readonly BitSet zeroBitSet = new(MaxCodePoint, _zeroRange);
+    private static readonly BitSet emojiBitSet = new(MaxCodePoint, _emojiRange);
 
     /// <summary>
     /// Check if the code point is in the bitmap for wide characters, which allows for O(1) checks for code points up to 0x1FFFF.
@@ -344,7 +344,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsWideWidth
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => wideBitSet.GetBit(_value) || (((_value - 0x20000u) & ~0x10000u) <= 0xFFFDu);
+        get => wideBitSet.Contains(_value) || (((_value - 0x20000u) & ~0x10000u) <= 0xFFFDu);
     }
 
 
@@ -362,7 +362,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsAmbiguousWidth
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ambigBitSet.GetBit(_value) || (((_value - 0xF0000u) & ~0x10000u) <= 0xFFFDu);
+        get => ambigBitSet.Contains(_value) || (((_value - 0xF0000u) & ~0x10000u) <= 0xFFFDu);
     }
 
     /// <summary>
@@ -373,7 +373,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsZeroWidth
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => zeroBitSet.GetBit(_value) || IsBetween(0xE0000u, 0xE007Fu) || IsBetween(0xE0100u, 0xE01EFu);
+        get => zeroBitSet.Contains(_value) || IsBetween(0xE0000u, 0xE007Fu) || IsBetween(0xE0100u, 0xE01EFu);
     }
 
     /// <summary>
@@ -382,7 +382,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     public bool IsEmoji
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => emojiBitSet.GetBit(_value);
+        get => emojiBitSet.Contains(_value);
     }
 
     /// <summary>
