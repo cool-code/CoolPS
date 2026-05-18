@@ -1,72 +1,122 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Cool;
 
-public unsafe sealed class BitSet : IDisposable
+public unsafe sealed class BitSet : IEquatable<BitSet>
 {
     #region Fields
     public readonly uint BitHighLimit;
     public readonly int AllocatedSize;
     private readonly int _wordCount;
     private readonly uint _tailMask;
-    private uint* _pBitMap;
+    private readonly uint[] _bitmap;
     #endregion
 
     #region Constructors and Disposal
+    public BitSet(uint bitHighLimit, string range) : this(bitHighLimit) { Set(range); }
     public BitSet(uint bitHighLimit)
     {
         BitHighLimit = bitHighLimit;
         _wordCount = (int)((bitHighLimit >> 5) + 1);
         AllocatedSize = _wordCount * sizeof(uint);
         int remainingBits = (int)(bitHighLimit & 31);
-        _tailMask = (remainingBits == 31) ? 0xFFFFFFFFu : (1u << (remainingBits + 1)) - 1u;
-        _pBitMap = (uint*)Marshal.AllocHGlobal(AllocatedSize).ToPointer();
-        ClearAll();
+        _tailMask = (remainingBits == 31) ? uint.MaxValue : (1u << (remainingBits + 1)) - 1u;
+        _bitmap = new uint[_wordCount];
     }
-    public void Dispose()
-    {
-        if (_pBitMap != null)
-        {
-            Marshal.FreeHGlobal((IntPtr)_pBitMap);
-            _pBitMap = null;
-        }
-        GC.SuppressFinalize(this);
-    }
-    ~BitSet() => Dispose();
     #endregion
 
     #region Operator Overloads
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void operator |=(BitSet other) => Union(other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void operator &=(BitSet other) => Intersect(other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void operator ^=(BitSet other) => SymmetricDifference(other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void operator -=(BitSet other) => Difference(other);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BitSet operator |(BitSet left, BitSet right) => left.Clone().Union(right);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BitSet operator &(BitSet left, BitSet right) => left.Clone().Intersect(right);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BitSet operator ^(BitSet left, BitSet right) => left.Clone().SymmetricDifference(right);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BitSet operator -(BitSet left, BitSet right) => left.Clone().Difference(right);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BitSet operator ~(BitSet set) => set.Invert();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BitSet operator |(BitSet left, BitSet right) => left.Union(right);
+    public static bool operator <(BitSet left, BitSet right) => left.IsProperSubsetOf(right);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BitSet operator &(BitSet left, BitSet right) => left.Intersect(right);
+    public static bool operator <=(BitSet left, BitSet right) => left.IsSubsetOf(right);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BitSet operator ^(BitSet left, BitSet right) => left.SymmetricDifference(right);
+    public static bool operator >(BitSet left, BitSet right) => left.IsProperSupersetOf(right);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BitSet operator -(BitSet left, BitSet right) => left.Difference(right);
+    public static bool operator >=(BitSet left, BitSet right) => left.IsSupersetOf(right);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(BitSet? left, BitSet? right)
+    {
+        if (ReferenceEquals(left, right)) return true;
+        if (left is null || right is null) return false;
+        return left.SetEquals(right);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(BitSet? left, BitSet? right) => !(left == right);
+    #endregion
+
+    #region Indexer
+    public bool this[uint pos]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Contains(pos);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set
+        {
+            if (value) Set(pos);
+            else Clear(pos);
+        }
+    }
     #endregion
 
     #region Bit Access Methods
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetBit(uint pos) { if (pos <= BitHighLimit) { _pBitMap[pos >> 5] |= 1u << (int)(pos & 31); } }
+    private void Set(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[(int)(pos >> 5)] |= 1u << (int)(pos & 31); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool GetBit(uint pos) => (pos <= BitHighLimit) && ((_pBitMap[pos >> 5] & (1u << (int)(pos & 31))) != 0);
+    private bool Contains(uint* pbitmap, uint pos) => (pos <= BitHighLimit) && ((pbitmap[pos >> 5] & (1u << (int)(pos & 31))) != 0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ClearBit(uint pos) { if (pos <= BitHighLimit) { _pBitMap[pos >> 5] &= ~(1u << (int)(pos & 31)); } }
+    private void Clear(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[(int)(pos >> 5)] &= ~(1u << (int)(pos & 31)); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void InvertBit(uint pos) { if (pos <= BitHighLimit) { _pBitMap[pos >> 5] ^= 1u << (int)(pos & 31); } }
+    private void Invert(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[(int)(pos >> 5)] ^= 1u << (int)(pos & 31); } }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Set(uint pos) { if (pos <= BitHighLimit) { _bitmap[(int)(pos >> 5)] |= 1u << (int)(pos & 31); } }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Contains(uint pos) => (pos <= BitHighLimit) && ((_bitmap[pos >> 5] & (1u << (int)(pos & 31))) != 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Clear(uint pos) { if (pos <= BitHighLimit) { _bitmap[pos >> 5] &= ~(1u << (int)(pos & 31)); } }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Invert(uint pos) { if (pos <= BitHighLimit) { _bitmap[pos >> 5] ^= 1u << (int)(pos & 31); } }
     #endregion
 
     #region Bit Manipulation Methods
@@ -86,97 +136,126 @@ public unsafe sealed class BitSet : IDisposable
     /// The method will parse the range string, determine which bits to set based on the specified ranges, and update the bitset accordingly.
     /// </param>
     /// <returns>The current BitSet instance with the specified bits set.</returns>
-    public BitSet SetRange(string range)
+    public BitSet Set(string range)
     {
         if (string.IsNullOrWhiteSpace(range)) return this;
-        foreach (uint pos in Range.Create(range, BitHighLimit)) SetBit(pos);
+        fixed (uint* ptr = _bitmap)
+        {
+            foreach (uint pos in Range.Create(range, BitHighLimit)) Set(ptr, pos);
+        }
         return this;
     }
 
-    public BitSet ClearRange(string range)
+    public BitSet Clear(string range)
     {
         if (string.IsNullOrWhiteSpace(range)) return this;
-        foreach (uint pos in Range.Create(range, BitHighLimit)) ClearBit(pos);
+        fixed (uint* ptr = _bitmap)
+        {
+            foreach (uint pos in Range.Create(range, BitHighLimit)) Clear(ptr, pos);
+        }
         return this;
     }
 
-    public BitSet InvertRange(string range)
+    public BitSet Invert(string range)
     {
         if (string.IsNullOrWhiteSpace(range)) return this;
-        foreach (uint pos in Range.Create(range, BitHighLimit)) InvertBit(pos);
+        fixed (uint* ptr = _bitmap)
+        {
+            foreach (uint pos in Range.Create(range, BitHighLimit)) Invert(ptr, pos);
+        }
         return this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BitSet SetAll()
     {
-        Unsafe.InitBlock(_pBitMap, 0xFF, (uint)AllocatedSize);
-        // Mask off unused bits in the last word to ensure they remain 0
-        _pBitMap[_wordCount - 1] &= _tailMask;
+        fixed (uint* ptr = _bitmap)
+        {
+            Unsafe.InitBlock(ptr, 0xFF, (uint)AllocatedSize);
+            // Mask off unused bits in the last word to ensure they remain 0
+            ptr[_wordCount - 1] &= _tailMask;
+        }
         return this;
     }
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public BitSet ClearAll()
+    public BitSet Clear()
     {
-        Unsafe.InitBlock(_pBitMap, 0, (uint)AllocatedSize);
+        fixed (uint* ptr = _bitmap)
+        {
+            Unsafe.InitBlock(ptr, 0, (uint)AllocatedSize);
+        }
         return this;
     }
     #endregion
 
     #region Set Operations
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BitSet Invert()
     {
-        uint* ptr = _pBitMap;
-        int i = 0;
-        int count = _wordCount;
-        // Process 8 uints at a time to leverage CPU's instruction-level parallelism (ILP)
-        // for maximum performance when inverting large bitsets.
-        for (; i <= count - 8; i += 8)
+        fixed (uint* ptr = _bitmap)
         {
-            ptr[i] = ~ptr[i];
-            ptr[i + 1] = ~ptr[i + 1];
-            ptr[i + 2] = ~ptr[i + 2];
-            ptr[i + 3] = ~ptr[i + 3];
-            ptr[i + 4] = ~ptr[i + 4];
-            ptr[i + 5] = ~ptr[i + 5];
-            ptr[i + 6] = ~ptr[i + 6];
-            ptr[i + 7] = ~ptr[i + 7];
+            int i = 0;
+            int count = _wordCount;
+            if (IntPtr.Size == 8)
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    ulong* p = (ulong*)(ptr + i);
+                    p[0] = ~p[0]; p[1] = ~p[1]; p[2] = ~p[2]; p[3] = ~p[3];
+                }
+            }
+            else
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    uint* p = ptr + i;
+                    p[0] = ~p[0]; p[1] = ~p[1]; p[2] = ~p[2]; p[3] = ~p[3];
+                    p[4] = ~p[4]; p[5] = ~p[5]; p[6] = ~p[6]; p[7] = ~p[7];
+                }
+            }
+
+            for (; i < count; i++) ptr[i] = ~ptr[i];
+            ptr[_wordCount - 1] &= _tailMask;
         }
-        // Clean up the remaining tail slots (less than 8)
-        for (; i < count; i++)
-        {
-            ptr[i] = ~ptr[i];
-        }
-        // Mask off unused bits in the last word to ensure they remain 0 after inversion
-        ptr[count - 1] &= _tailMask;
         return this;
     }
 
     public BitSet Union(BitSet other)
     {
         if (other.BitHighLimit != BitHighLimit) throw new ArgumentException("BitHighLimit mismatch", nameof(other));
-        uint* ptr = _pBitMap;
-        uint* otherPtr = other._pBitMap;
-        int i = 0;
-        int count = _wordCount;
-        // Similar ILP optimization as in Invert method, processing 8 uints at a time for maximum performance.
-        for (; i <= count - 8; i += 8)
+        fixed (uint* ptr = _bitmap, otherPtr = other._bitmap)
         {
-            ptr[i] |= otherPtr[i];
-            ptr[i + 1] |= otherPtr[i + 1];
-            ptr[i + 2] |= otherPtr[i + 2];
-            ptr[i + 3] |= otherPtr[i + 3];
-            ptr[i + 4] |= otherPtr[i + 4];
-            ptr[i + 5] |= otherPtr[i + 5];
-            ptr[i + 6] |= otherPtr[i + 6];
-            ptr[i + 7] |= otherPtr[i + 7];
-        }
-        // Clean up the remaining tail slots (less than 8)
-        for (; i < count; i++)
-        {
-            ptr[i] |= otherPtr[i];
+            int i = 0;
+            int count = _wordCount;
+            if (IntPtr.Size == 8)
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    ulong* p = (ulong*)(ptr + i);
+                    ulong* o = (ulong*)(otherPtr + i);
+                    p[0] |= o[0]; p[1] |= o[1]; p[2] |= o[2]; p[3] |= o[3];
+                }
+            }
+            else
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    uint* p = ptr + i;
+                    uint* o = otherPtr + i;
+                    p[0] |= o[0];
+                    p[1] |= o[1];
+                    p[2] |= o[2];
+                    p[3] |= o[3];
+                    p[4] |= o[4];
+                    p[5] |= o[5];
+                    p[6] |= o[6];
+                    p[7] |= o[7];
+                }
+
+            }
+            for (; i < count; i++) ptr[i] |= otherPtr[i];
         }
         return this;
     }
@@ -184,26 +263,39 @@ public unsafe sealed class BitSet : IDisposable
     public BitSet Intersect(BitSet other)
     {
         if (other.BitHighLimit != BitHighLimit) throw new ArgumentException("BitHighLimit mismatch", nameof(other));
-        uint* ptr = _pBitMap;
-        uint* otherPtr = other._pBitMap;
-        int i = 0;
-        int count = _wordCount;
-        // Similar ILP optimization as in Invert method, processing 8 uints at a time for maximum performance.
-        for (; i <= count - 8; i += 8)
+        fixed (uint* ptr = _bitmap, otherPtr = other._bitmap)
         {
-            ptr[i] &= otherPtr[i];
-            ptr[i + 1] &= otherPtr[i + 1];
-            ptr[i + 2] &= otherPtr[i + 2];
-            ptr[i + 3] &= otherPtr[i + 3];
-            ptr[i + 4] &= otherPtr[i + 4];
-            ptr[i + 5] &= otherPtr[i + 5];
-            ptr[i + 6] &= otherPtr[i + 6];
-            ptr[i + 7] &= otherPtr[i + 7];
-        }
-        // Clean up the remaining tail slots (less than 8)
-        for (; i < count; i++)
-        {
-            ptr[i] &= otherPtr[i];
+            int i = 0;
+            int count = _wordCount;
+            if (IntPtr.Size == 8)
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    ulong* p = (ulong*)(ptr + i);
+                    ulong* o = (ulong*)(otherPtr + i);
+                    p[0] &= o[0]; p[1] &= o[1]; p[2] &= o[2]; p[3] &= o[3];
+                }
+            }
+            else
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    uint* p = ptr + i;
+                    uint* o = otherPtr + i;
+                    p[0] &= o[0];
+                    p[1] &= o[1];
+                    p[2] &= o[2];
+                    p[3] &= o[3];
+                    p[4] &= o[4];
+                    p[5] &= o[5];
+                    p[6] &= o[6];
+                    p[7] &= o[7];
+                }
+            }
+            for (; i < count; i++)
+            {
+                ptr[i] &= otherPtr[i];
+            }
         }
         return this;
     }
@@ -211,26 +303,39 @@ public unsafe sealed class BitSet : IDisposable
     public BitSet Difference(BitSet other)
     {
         if (other.BitHighLimit != BitHighLimit) throw new ArgumentException("BitHighLimit mismatch", nameof(other));
-        uint* ptr = _pBitMap;
-        uint* otherPtr = other._pBitMap;
-        int i = 0;
-        int count = _wordCount;
-        // Similar ILP optimization as in Invert method, processing 8 uints at a time for maximum performance.
-        for (; i <= count - 8; i += 8)
+        fixed (uint* ptr = _bitmap, otherPtr = other._bitmap)
         {
-            ptr[i] &= ~otherPtr[i];
-            ptr[i + 1] &= ~otherPtr[i + 1];
-            ptr[i + 2] &= ~otherPtr[i + 2];
-            ptr[i + 3] &= ~otherPtr[i + 3];
-            ptr[i + 4] &= ~otherPtr[i + 4];
-            ptr[i + 5] &= ~otherPtr[i + 5];
-            ptr[i + 6] &= ~otherPtr[i + 6];
-            ptr[i + 7] &= ~otherPtr[i + 7];
-        }
-        // Clean up the remaining tail slots (less than 8)
-        for (; i < count; i++)
-        {
-            ptr[i] &= ~otherPtr[i];
+            int i = 0;
+            int count = _wordCount;
+            if (IntPtr.Size == 8)
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    ulong* p = (ulong*)(ptr + i);
+                    ulong* o = (ulong*)(otherPtr + i);
+                    p[0] &= ~o[0]; p[1] &= ~o[1]; p[2] &= ~o[2]; p[3] &= ~o[3];
+                }
+            }
+            else
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    uint* p = ptr + i;
+                    uint* o = otherPtr + i;
+                    p[0] &= ~o[0];
+                    p[1] &= ~o[1];
+                    p[2] &= ~o[2];
+                    p[3] &= ~o[3];
+                    p[4] &= ~o[4];
+                    p[5] &= ~o[5];
+                    p[6] &= ~o[6];
+                    p[7] &= ~o[7];
+                }
+            }
+            for (; i < count; i++)
+            {
+                ptr[i] &= ~otherPtr[i];
+            }
         }
         return this;
     }
@@ -238,26 +343,39 @@ public unsafe sealed class BitSet : IDisposable
     public BitSet SymmetricDifference(BitSet other)
     {
         if (other.BitHighLimit != BitHighLimit) throw new ArgumentException("BitHighLimit mismatch", nameof(other));
-        uint* ptr = _pBitMap;
-        uint* otherPtr = other._pBitMap;
-        int i = 0;
-        int count = _wordCount;
-        // Similar ILP optimization as in Invert method, processing 8 uints at a time for maximum performance.
-        for (; i <= count - 8; i += 8)
+        fixed (uint* ptr = _bitmap, otherPtr = other._bitmap)
         {
-            ptr[i] ^= otherPtr[i];
-            ptr[i + 1] ^= otherPtr[i + 1];
-            ptr[i + 2] ^= otherPtr[i + 2];
-            ptr[i + 3] ^= otherPtr[i + 3];
-            ptr[i + 4] ^= otherPtr[i + 4];
-            ptr[i + 5] ^= otherPtr[i + 5];
-            ptr[i + 6] ^= otherPtr[i + 6];
-            ptr[i + 7] ^= otherPtr[i + 7];
-        }
-        // Clean up the remaining tail slots (less than 8)
-        for (; i < count; i++)
-        {
-            ptr[i] ^= otherPtr[i];
+            int i = 0;
+            int count = _wordCount;
+            if (IntPtr.Size == 8)
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    ulong* p = (ulong*)(ptr + i);
+                    ulong* o = (ulong*)(otherPtr + i);
+                    p[0] ^= o[0]; p[1] ^= o[1]; p[2] ^= o[2]; p[3] ^= o[3];
+                }
+            }
+            else
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    uint* p = ptr + i;
+                    uint* o = otherPtr + i;
+                    p[0] ^= o[0];
+                    p[1] ^= o[1];
+                    p[2] ^= o[2];
+                    p[3] ^= o[3];
+                    p[4] ^= o[4];
+                    p[5] ^= o[5];
+                    p[6] ^= o[6];
+                    p[7] ^= o[7];
+                }
+            }
+            for (; i < count; i++)
+            {
+                ptr[i] ^= otherPtr[i];
+            }
         }
         return this;
     }
@@ -268,23 +386,45 @@ public unsafe sealed class BitSet : IDisposable
     // which is also known as the population count or Hamming weight.
     public int Cardinality()
     {
-        uint* ptr = _pBitMap;
-        int count = _wordCount;
-        int total = 0;
-        int i = 0;
-        // It iterates through the bitmap and uses a helper method PopCount
-        // to count the number of set bits in each uint word.
-        // The method processes 8 uints at a time for performance optimization,
-        // leveraging CPU's instruction-level parallelism (ILP) when counting bits in large bitsets.
-        for (; i <= count - 8; i += 8)
+        fixed (uint* ptr = _bitmap)
         {
-            total += PopCount(ptr[i]) + PopCount(ptr[i + 1]) +
-                     PopCount(ptr[i + 2]) + PopCount(ptr[i + 3]) +
-                     PopCount(ptr[i + 4]) + PopCount(ptr[i + 5]) +
-                     PopCount(ptr[i + 6]) + PopCount(ptr[i + 7]);
+            int count = _wordCount;
+            int total = 0;
+            int i = 0;
+            if (IntPtr.Size == 8)
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    ulong* p = (ulong*)(ptr + i);
+                    total += PopCount(p[0]) +
+                             PopCount(p[1]) +
+                             PopCount(p[2]) +
+                             PopCount(p[3]);
+                }
+            }
+            else
+            {
+                for (; i <= count - 8; i += 8)
+                {
+                    uint* p = ptr + i;
+                    total += PopCount(p[0]) + PopCount(p[1]) +
+                         PopCount(p[2]) + PopCount(p[3]) +
+                         PopCount(p[4]) + PopCount(p[5]) +
+                         PopCount(p[6]) + PopCount(p[7]);
+                }
+            }
+            for (; i < count; i++) total += PopCount(ptr[i]);
+            return total;
         }
-        for (; i < count; i++) total += PopCount(ptr[i]);
-        return total;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int PopCount(ulong x)
+    {
+        x -= (x >> 1) & 0x5555555555555555UL;
+        x = (x & 0x3333333333333333UL) + ((x >> 2) & 0x3333333333333333UL);
+        x = (x + (x >> 4)) & 0x0F0F0F0F0F0F0F0FUL;
+        return (int)((x * 0x0101010101010101UL) >> 56);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -301,42 +441,204 @@ public unsafe sealed class BitSet : IDisposable
     public bool IsSubsetOf(BitSet other)
     {
         if (other.BitHighLimit != BitHighLimit) throw new ArgumentException("BitHighLimit mismatch");
-        uint* ptr = _pBitMap;
-        uint* otherPtr = other._pBitMap;
-        for (int i = 0; i < _wordCount; i++) if ((ptr[i] & ~otherPtr[i]) != 0) return false;
+        fixed (uint* ptr = _bitmap, otherPtr = other._bitmap)
+        {
+            int i = 0;
+            int count = _wordCount;
+
+            for (; i <= count - 8; i += 8)
+            {
+                uint* p = ptr + i;
+                uint* o = otherPtr + i;
+                if (((p[0] & ~o[0]) |
+                     (p[1] & ~o[1]) |
+                     (p[2] & ~o[2]) |
+                     (p[3] & ~o[3]) |
+                     (p[4] & ~o[4]) |
+                     (p[5] & ~o[5]) |
+                     (p[6] & ~o[6]) |
+                     (p[7] & ~o[7])) != 0)
+                {
+                    return false;
+                }
+            }
+            for (; i < count; i++) if ((ptr[i] & ~otherPtr[i]) != 0) return false;
+        }
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsSupersetOf(BitSet other) => other.IsSubsetOf(this);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsProperSubsetOf(BitSet other)
+    {
+        if (other.BitHighLimit != BitHighLimit) throw new ArgumentException("BitHighLimit mismatch");
+
+        fixed (uint* ptr = _bitmap, otherPtr = other._bitmap)
+        {
+            int i = 0;
+            int count = _wordCount;
+
+            uint strictConflictBucket = 0;
+
+            for (; i <= count - 8; i += 8)
+            {
+                uint* p = ptr + i;
+                uint* o = otherPtr + i;
+                uint subsetConflict = (p[0] & ~o[0]) |
+                                     (p[1] & ~o[1]) |
+                                     (p[2] & ~o[2]) |
+                                     (p[3] & ~o[3]) |
+                                     (p[4] & ~o[4]) |
+                                     (p[5] & ~o[5]) |
+                                     (p[6] & ~o[6]) |
+                                     (p[7] & ~o[7]);
+
+                if (subsetConflict != 0) return false;
+
+                strictConflictBucket |= (o[0] & ~p[0]) |
+                                        (o[1] & ~p[1]) |
+                                        (o[2] & ~p[2]) |
+                                        (o[3] & ~p[3]) |
+                                        (o[4] & ~p[4]) |
+                                        (o[5] & ~p[5]) |
+                                        (o[6] & ~p[6]) |
+                                        (o[7] & ~p[7]);
+            }
+
+            for (; i < count; i++)
+            {
+                if ((ptr[i] & ~otherPtr[i]) != 0) return false;
+                strictConflictBucket |= (otherPtr[i] & ~ptr[i]);
+            }
+            return strictConflictBucket != 0;
+        }
+    }
+
+    public bool IsProperSupersetOf(BitSet other) => other.IsProperSubsetOf(this);
+
     public bool Overlaps(BitSet other)
     {
         if (other.BitHighLimit != BitHighLimit) throw new ArgumentException("BitHighLimit mismatch");
-        uint* ptr = _pBitMap;
-        uint* otherPtr = other._pBitMap;
-        for (int i = 0; i < _wordCount; i++) if ((ptr[i] & otherPtr[i]) != 0) return true;
+        fixed (uint* ptr = _bitmap, otherPtr = other._bitmap)
+        {
+            int i = 0;
+            int count = _wordCount;
+
+            for (; i <= count - 8; i += 8)
+            {
+                uint* p = ptr + i;
+                uint* o = otherPtr + i;
+                if (((p[0] & o[0]) |
+                     (p[1] & o[1]) |
+                     (p[2] & o[2]) |
+                     (p[3] & o[3]) |
+                     (p[4] & o[4]) |
+                     (p[5] & o[5]) |
+                     (p[6] & o[6]) |
+                     (p[7] & o[7])) != 0)
+                {
+                    return true;
+                }
+            }
+            for (; i < count; i++) if ((ptr[i] & otherPtr[i]) != 0) return true;
+        }
         return false;
     }
 
     public bool SetEquals(BitSet other)
     {
         if (other.BitHighLimit != BitHighLimit) throw new ArgumentException("BitHighLimit mismatch");
-        uint* ptr = _pBitMap;
-        uint* otherPtr = other._pBitMap;
-        for (int i = 0; i < _wordCount; i++) if (ptr[i] != otherPtr[i]) return false;
+        fixed (uint* ptr = _bitmap, otherPtr = other._bitmap)
+        {
+            int i = 0;
+            int count = _wordCount;
+
+            for (; i <= count - 8; i += 8)
+            {
+                uint* p = ptr + i;
+                uint* o = otherPtr + i;
+                if (((p[0] ^ o[0]) |
+                     (p[1] ^ o[1]) |
+                     (p[2] ^ o[2]) |
+                     (p[3] ^ o[3]) |
+                     (p[4] ^ o[4]) |
+                     (p[5] ^ o[5]) |
+                     (p[6] ^ o[6]) |
+                     (p[7] ^ o[7])) != 0)
+                {
+                    return false;
+                }
+            }
+            for (; i < count; i++) if (ptr[i] != otherPtr[i]) return false;
+        }
         return true;
     }
 
     public bool IsEmpty()
     {
-        uint* ptr = _pBitMap;
-        for (int i = 0; i < _wordCount; i++) if (ptr[i] != 0) return false;
+        fixed (uint* ptr = _bitmap)
+        {
+            int i = 0;
+            int count = _wordCount;
+
+            for (; i <= count - 8; i += 8)
+            {
+                uint* p = ptr + i;
+                if ((p[0] | p[1] | p[2] | p[3] | p[4] | p[5] | p[6] | p[7]) != 0)
+                {
+                    return false;
+                }
+            }
+            for (; i < count; i++) if (ptr[i] != 0) return false;
+        }
         return true;
     }
     #endregion
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(BitSet? other) => this == other;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public BitSet Clone()
+    {
+        var clone = new BitSet(BitHighLimit);
+        fixed (uint* ptr = _bitmap, clonePtr = clone._bitmap)
+        {
+            Unsafe.CopyBlock(clonePtr, ptr, (uint)AllocatedSize);
+        }
+        return clone;
+    }
+
     #region Overrides
+    public override bool Equals(object? obj) => obj is BitSet other && Equals(other);
+    public override int GetHashCode()
+    {
+        fixed (uint* ptr = _bitmap)
+        {
+            int count = _wordCount;
+            uint hash = 17;
+            int i = 0;
+            for (; i < count - 8; i += 8)
+            {
+                uint* p = ptr + i;
+                hash = hash * 31 + p[0];
+                hash = hash * 31 + p[1];
+                hash = hash * 31 + p[2];
+                hash = hash * 31 + p[3];
+                hash = hash * 31 + p[4];
+                hash = hash * 31 + p[5];
+                hash = hash * 31 + p[6];
+                hash = hash * 31 + p[7];
+            }
+            for (; i < count; i++)
+            {
+                hash = hash * 31 + ptr[i];
+            }
+            return (int)hash;
+        }
+    }
     public override string ToString()
     {
         // Build ranges in the same hex format used by the constructor: "START-END,POS,..."
@@ -351,7 +653,7 @@ public unsafe sealed class BitSet : IDisposable
 
             for (int wi = 0; wi < _wordCount; wi++)
             {
-                uint w = _pBitMap[wi];
+                uint w = _bitmap[wi];
                 if (wi == _wordCount - 1) w &= _tailMask; // mask off unused bits in the last word
 
                 while (w != 0u)
@@ -408,7 +710,7 @@ public unsafe sealed class BitSet : IDisposable
         else
         {
             AppendHex(sb, rangeStart, buf);
-            sb.Append('-');
+            sb.Append('~');
             AppendHex(sb, rangeEnd, buf);
         }
     }
@@ -448,28 +750,4 @@ public unsafe sealed class BitSet : IDisposable
         return Unsafe.Read(_multiplyDeBruijnBitPosition, (int)(((uint)((v & -v) * 0x077CB531U)) >> 27));
     }
     #endregion
-
-    #region Static Factory Methods
-    /// <summary>
-    /// Creates a BitSet instance that will be automatically disposed when the current AppDomain is unloaded.
-    /// This is useful for caching bitsets that are intended to live for the duration of the application without needing explicit disposal.
-    /// Note: 
-    ///     Do not call Dispose on the returned BitSet, as it will be automatically cleaned up on AppDomain unload.
-    ///     Calling Dispose manually may lead to ObjectDisposedException if accessed afterward.
-    /// </summary>
-    /// <param name="bitHighLimit">The highest bit position that the bitset will support.</param>
-    /// <param name="range">A string representing the range of bits to set initially.</param>
-    /// <returns>A BitSet instance that will be automatically disposed when the current AppDomain is unloaded.</returns>
-    public static BitSet CreateStatic(string range, uint bitHighLimit)
-    {
-        return CreateStatic(bitHighLimit).SetRange(range);
-    }
-    public static BitSet CreateStatic(uint bitHighLimit)
-    {
-        BitSet bitSet = new(bitHighLimit);
-        AppDomain.CurrentDomain.DomainUnload += (s, e) => bitSet.Dispose();
-        return bitSet;
-    }
-    #endregion
-
 }
