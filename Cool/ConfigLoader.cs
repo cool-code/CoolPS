@@ -56,7 +56,7 @@ public class ConfigLoader
             if ((val == "*") || (val == "") || filters.Contains(key)) continue;
 
             string finalKey;
-            if (_translateMap.TryGetValue(key, out string translated))
+            if (_translateMap.TryGetValue(key, out string? translated))
             {
                 finalKey = translated;
             }
