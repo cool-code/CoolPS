@@ -9,14 +9,12 @@ public readonly struct Range<T, TNumberDriver>(string range, T highLimit)
     where T : struct
     where TNumberDriver : struct, INumberDriver<T>
 {
-    internal readonly string RangeString = range ?? string.Empty;
-    internal readonly T HighLimit = highLimit;
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly RangeIterator<T, TNumberDriver> GetEnumerator()
     {
-        return new RangeIterator<T, TNumberDriver>(RangeString, HighLimit);
+        return new RangeIterator<T, TNumberDriver>(range, highLimit);
     }
+    public override string ToString() => range;
 }
 
 public static class Range
