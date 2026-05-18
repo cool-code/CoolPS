@@ -154,8 +154,8 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
         v -= 0x10000u;
         string result = new('\0', 2);
-        Unsafe.Write(result, 0, (char)((v >> 10) + HighSurrogateStart));
-        Unsafe.Write(result, 1, (char)((v & 0x3FFu) + LowSurrogateStart));
+        NoBoundCheck.Write(result, 0, (char)((v >> 10) + HighSurrogateStart));
+        NoBoundCheck.Write(result, 1, (char)((v & 0x3FFu) + LowSurrogateStart));
         return result;
     }
 
@@ -174,11 +174,11 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         int len = 2 + digits;
         string result = new('\0', len);
         var hexDigits = _hexDigits;
-        Unsafe.Write(result, 0, 'U');
-        Unsafe.Write(result, 1, '+');
+        NoBoundCheck.Write(result, 0, 'U');
+        NoBoundCheck.Write(result, 1, '+');
         for (int j = len - 1; j >= 2; j--)
         {
-            Unsafe.Write(result, j, Unsafe.Read(hexDigits, (int)(v & 0xF)));
+            NoBoundCheck.Write(result, j, NoBoundCheck.Read(hexDigits, (int)(v & 0xF)));
             v >>= 4;
         }
         return result;
@@ -505,7 +505,7 @@ public static class CodePointExtensions
 
         for (int j = len - 1; j >= 2; j--)
         {
-            buf[j] = Unsafe.Read(hexDigits, (int)(v & 0xF));
+            buf[j] = NoBoundCheck.Read(hexDigits, (int)(v & 0xF));
             v >>= 4;
         }
 
