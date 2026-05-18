@@ -1,6 +1,6 @@
 namespace Cool.NumberDrivers;
 
-public interface INumberDriver<T> where T : unmanaged
+public interface INumberDriver<T> where T : struct
 {
     T Zero { get; }
     T ParseHexChar(char c);

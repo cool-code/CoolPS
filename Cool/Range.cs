@@ -6,7 +6,7 @@ namespace Cool;
 
 [method: MethodImpl(MethodImplOptions.AggressiveInlining)]
 public readonly struct Range<T, TNumberDriver>(string range, T highLimit)
-    where T : unmanaged
+    where T : struct
     where TNumberDriver : struct, INumberDriver<T>
 {
     internal readonly string RangeString = range ?? string.Empty;
