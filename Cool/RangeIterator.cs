@@ -1,18 +1,16 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Cool.NumberDrivers;
 
 namespace Cool;
 
-public unsafe ref struct RangeIterator<T, TNumberDriver>
-    where T : unmanaged
+public ref struct RangeIterator<T, TNumberDriver>
+    where T : struct
     where TNumberDriver : struct, INumberDriver<T>
 {
     private readonly int _length;
     private readonly T _highLimit;
     private readonly TNumberDriver _driver;
-    private GCHandle _gcHandle;
-    private readonly char* _ptr;
+    private readonly string _rangeStr;
 
     private int _index;
     private T _currentValue;
@@ -27,8 +25,7 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
         _highLimit = highLimit;
         _driver = default;
         _length = rangeStr.Length;
-        _gcHandle = GCHandle.Alloc(rangeStr, GCHandleType.Pinned);
-        _ptr = (char*)_gcHandle.AddrOfPinnedObject().ToPointer();
+        _rangeStr = rangeStr;
 
         _index = 0;
         _currentValue = _driver.Zero;
@@ -51,7 +48,7 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
 
         if (_index >= _length) return false;
 
-        while (_index < _length && (_ptr[_index] == ',' || _ptr[_index] == ' '))
+        while (_index < _length && (_rangeStr[_index] == ',' || _rangeStr[_index] == ' '))
         {
             _index++;
         }
@@ -61,7 +58,7 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
         T startVal = ParseNextNumber(out bool hasStart);
         if (!hasStart) return false;
 
-        if (_index < _length && _ptr[_index] == '~')
+        if (_index < _length && _rangeStr[_index] == '~')
         {
             _index++;
 
@@ -88,12 +85,12 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
         success = false;
         if (_index >= _length) return _driver.Zero;
 
-        while (_index < _length && _ptr[_index] == ' ') _index++;
+        while (_index < _length && _rangeStr[_index] == ' ') _index++;
 
         bool isNegative = false;
         if (_index < _length)
         {
-            char c = _ptr[_index];
+            char c = _rangeStr[_index];
             if (c == '-')
             {
                 isNegative = true;
@@ -108,7 +105,7 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
         T val = _driver.Zero;
         while (_index < _length)
         {
-            char c = _ptr[_index];
+            char c = _rangeStr[_index];
 
             if (c == ',' || c == '~') break;
 
@@ -127,11 +124,5 @@ public unsafe ref struct RangeIterator<T, TNumberDriver>
         }
 
         return val;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Dispose()
-    {
-        if (_gcHandle.IsAllocated) _gcHandle.Free();
     }
 }
