@@ -5,7 +5,7 @@ using static InlineIL.IL.Emit;
 
 namespace Cool;
 
-public static class NoBoundCheck
+public static partial class NoBoundCheck
 {
     #region String and Array Accessors
     // 32 bit and 64 bit systems have different sizes for the string object header,
@@ -175,5 +175,4 @@ public static class NoBoundCheck
         Stobj(typeof(T));
     }
     #endregion
-
 }
