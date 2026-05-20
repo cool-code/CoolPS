@@ -83,7 +83,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         uint v = cp._value;
         if (v <= 0xFFFFu) return new string((char)v, count);
         // For invalid code points, return the standard replacement character repeated 'count' times
-        if (!cp.IsValid) return new string('\uFFFD', count);
+        if (!cp.IsValid()) return new string('\uFFFD', count);
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
 
         int size = (int)total;
@@ -150,7 +150,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         uint v = _value;
         if (v <= 0xFFFFu) return new string((char)v, 1);
         // For invalid code points, return the standard replacement character
-        if (!IsValid) return "\uFFFD";
+        if (!IsValid()) return "\uFFFD";
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
         v -= 0x10000u;
         string result = new('\0', 2);
@@ -164,7 +164,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     {
         // For invalid code points, return "U+FFFD" which is the standard replacement character
         // used to represent invalid or unrepresentable code points in Unicode.
-        if (!IsValid) return "U+FFFD";
+        if (!IsValid()) return "U+FFFD";
 
         uint v = _value;
 
@@ -197,114 +197,82 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     #endregion
 
     #region properties
-
     public int CharCount
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => IsBetween(0x10000, 0x10FFFF) ? 2 : 1;
     }
+    #endregion
 
+    #region ASCII and control character checks
     /// <summary>
     /// Check if the code point is an ASCII character by simply checking if its value is less than or equal to 127, which is the maximum code point for ASCII characters.
     /// </summary>
-    public bool IsAscii
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _value <= 127u;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAscii() => _value <= 127u;
 
     /// <summary>
     /// Check if the code point is a valid Unicode code point by checking if its value is less than or equal to 0x10FFFF, which is the maximum valid code point defined in the Unicode standard.
     /// </summary>
-    public bool IsValid
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _value <= 0x10FFFFu;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsValid() => _value <= 0x10FFFFu;
 
     /// <summary>
     /// Check if the code point is a control character by using a bitwise operation to check if it falls within the ranges of control characters defined in the Unicode standard (U+0000 to U+001F and U+007F to U+009F).
     /// 00..1F (+1) => 01..20 (&~80) => 01..20
     /// 7F..9F (+1) => 80..A0 (&~80) => 00..20
     /// </summary>
-    public bool IsControl
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ((_value + 1) & ~0x80u) <= 0x20u;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsControl() => ((_value + 1) & ~0x80u) <= 0x20u;
 
     /// <summary>
     /// Check if the code point is a C1 control character.
     /// </summary>
-    public bool IsC1Control
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsBetween(0x80u, 0x9Fu);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsC1Control() => IsBetween(0x80u, 0x9Fu);
 
     /// <summary>
     /// Check if the code point is an ASCII digit.
     /// </summary>
-    public bool IsAsciiDigit
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsBetween('0', '9');
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAsciiDigit() => IsBetween('0', '9');
 
     /// <summary>
     /// Check if the code point is an ASCII hexadecimal digit.
     /// </summary>
-    public bool IsAsciiHexDigit
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsAsciiDigit || (((_value | 0x20u) - 'a') <= ('f' - 'a'));
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAsciiHexDigit() => IsAsciiDigit() || (((_value | 0x20u) - 'a') <= ('f' - 'a'));
 
     /// <summary>
     /// Check if the code point is an ASCII uppercase hexadecimal digit.
     /// </summary>
-    public bool IsAsciiHexDigitUpper
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsAsciiDigit || IsBetween('A', 'F');
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAsciiHexDigitUpper() => IsAsciiDigit() || IsBetween('A', 'F');
 
     /// <summary>
     /// Check if the code point is an ASCII lowercase hexadecimal digit.
     /// </summary>
-    public bool IsAsciiHexDigitLower
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsAsciiDigit || IsBetween('a', 'f');
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAsciiHexDigitLower() => IsAsciiDigit() || IsBetween('a', 'f');
 
     /// <summary>
     /// Check if the code point is an ASCII letter by using a bitwise operation to check if it falls within the range of ASCII letters defined in the Unicode standard (U+0041 to U+005A for uppercase and U+0061 to U+007A for lowercase).
     /// The bitwise operation `_value | 0x20u` converts uppercase letters to lowercase by setting the 6th bit, so both uppercase and lowercase letters will satisfy the condition if they are in the range of ASCII letters.
     /// </summary>
-    public bool IsAsciiLetter
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ((_value | 0x20u) - 'a') <= ('z' - 'a');
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAsciiLetter() => ((_value | 0x20u) - 'a') <= ('z' - 'a');
 
     /// <summary>
     /// Check if the code point is an ASCII uppercase letter
     /// </summary>
-    public bool IsAsciiLetterUpper
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsBetween('A', 'Z');
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAsciiLetterUpper() => IsBetween('A', 'Z');
 
     /// <summary> 
     /// Check if the code point is an ASCII lowercase letter
     /// </summary>
-    public bool IsAsciiLetterLower
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsBetween('a', 'z');
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAsciiLetterLower() => IsBetween('a', 'z');
     #endregion
 
     #region wide/ambiguous/zero width and emoji checks
@@ -341,11 +309,8 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     /// other values will not satisfy the condition and return false, which is correct since they are not considered wide width characters.
     /// 
     /// </summary>
-    public bool IsWideWidth
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => wideBitSet.Contains(_value) || (((_value - 0x20000u) & ~0x10000u) <= 0xFFFDu);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsWideWidth() => wideBitSet.Contains(_value) || (((_value - 0x20000u) & ~0x10000u) <= 0xFFFDu);
 
 
     /// <summary>
@@ -359,40 +324,28 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     /// other values will not satisfy the condition and return false, which is correct since they are not considered ambiguous width characters.
     /// 
     /// </summary>
-    public bool IsAmbiguousWidth
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ambigBitSet.Contains(_value) || (((_value - 0xF0000u) & ~0x10000u) <= 0xFFFDu);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsAmbiguousWidth() => ambigBitSet.Contains(_value) || (((_value - 0xF0000u) & ~0x10000u) <= 0xFFFDu);
 
     /// <summary>
     /// Check if the code point is in the bitmap for zero-width characters, which allows for O(1) checks for code points up to 0x1FFFF.
     /// For code points above 0x1FFFF, we check if they are in the range of the zero-width characters in the Unicode standard,
     /// specifically those in the range of U+E0000 to U+E007F (tags) and U+E0100 to U+E01EF (variation selectors).
     /// </summary>
-    public bool IsZeroWidth
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => zeroBitSet.Contains(_value) || IsBetween(0xE0000u, 0xE007Fu) || IsBetween(0xE0100u, 0xE01EFu);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsZeroWidth() => zeroBitSet.Contains(_value) || IsBetween(0xE0000u, 0xE007Fu) || IsBetween(0xE0100u, 0xE01EFu);
 
     /// <summary>
     /// Check if the code point is in the bitmap for emoji characters, which allows for O(1) checks for code points up to 0x1FFFF.
     /// </summary>
-    public bool IsEmoji
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => emojiBitSet.Contains(_value);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsEmoji() => emojiBitSet.Contains(_value);
 
     /// <summary>
     /// Check if the code point is an emoji modifier by checking if it falls within the range of emoji modifiers defined in the Unicode standard (U+1F3FB to U+1F3FF).
     /// </summary>
-    public bool IsEmojiModifier
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsBetween(0x1F3FBu, 0x1F3FFu);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsEmojiModifier() => IsBetween(0x1F3FBu, 0x1F3FFu);
     #endregion
 
     #region surrogate checks and conversions
@@ -401,21 +354,14 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     internal const uint LowSurrogateStart = 0xDC00;
     internal const uint LowSurrogateEnd = 0xDFFF;
 
-    public bool IsHighSurrogate
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsBetween(HighSurrogateStart, HighSurrogateEnd);
-    }
-    public bool IsLowSurrogate
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsBetween(LowSurrogateStart, LowSurrogateEnd);
-    }
-    public bool IsSurrogate
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => IsBetween(HighSurrogateStart, LowSurrogateEnd);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsHighSurrogate() => IsBetween(HighSurrogateStart, HighSurrogateEnd);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsLowSurrogate() => IsBetween(LowSurrogateStart, LowSurrogateEnd);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool IsSurrogate() => IsBetween(HighSurrogateStart, LowSurrogateEnd);
 
     public static CodePoint FromSurrogatePair(char highSurrogate, char lowSurrogate)
     {
@@ -474,7 +420,7 @@ public static class CodePointExtensions
         uint v = (uint)cp;
         if (v <= 0xFFFFu) return sb.Append((char)v);
         // For invalid code points, return the standard replacement character
-        if (!cp.IsValid) return sb.Append('\uFFFD');
+        if (!cp.IsValid()) return sb.Append('\uFFFD');
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
         v -= 0x10000u;
         char highSurrogate = (char)((v >> 10) + CodePoint.HighSurrogateStart);
@@ -491,7 +437,7 @@ public static class CodePointExtensions
     {
         // For invalid code points, append "U+FFFD" which is the standard replacement character
         // used to represent invalid or unrepresentable code points in Unicode.
-        if (!cp.IsValid) return sb.Append("U+FFFD");
+        if (!cp.IsValid()) return sb.Append("U+FFFD");
 
         uint v = (uint)cp;
 

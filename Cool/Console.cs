@@ -126,7 +126,7 @@ public static class Console
             while (i < len)
             {
                 // Update prevcp only if the current code point is not zero-width, so that variation selectors can correctly modify the preceding non-zero-width character
-                if (!cp.IsZeroWidth) prevcp = cp;
+                if (!cp.IsZeroWidth()) prevcp = cp;
 
                 // Read the current character and move to the next index immediately for better performance in the common case
                 cp = pStr[i++];
@@ -138,7 +138,7 @@ public static class Console
                 }
 
                 // --- 1. Core control sequence interception logic ---
-                if (cp.IsControl)
+                if (cp.IsControl())
                 {
                     int start = i;
                     switch ((char)cp)
@@ -194,7 +194,7 @@ public static class Console
                 // --- 2. Handle zero-width joiner (ZWJ) ---
                 if (_zwjSupported && cp == ZWJ)
                 {
-                    if (!prevcp.IsValid)
+                    if (!prevcp.IsValid())
                     {
                         // If ZWJ is at the start of the string,
                         // we treat it as a normal character to avoid losing width information
@@ -205,10 +205,10 @@ public static class Console
                     if (i < len)
                     {
                         CodePoint nextcp = pStr[i++];
-                        if (nextcp.IsHighSurrogate)
+                        if (nextcp.IsHighSurrogate())
                         {
                             CodePoint lowSurrogate = (i < len) ? pStr[i] : 0;
-                            if (lowSurrogate.IsLowSurrogate)
+                            if (lowSurrogate.IsLowSurrogate())
                             {
                                 nextcp += lowSurrogate;
                                 i += 1; // Move to the next character after the surrogate pair
@@ -220,7 +220,7 @@ public static class Console
                         }
 
                         // If the next code point after ZWJ is an emoji, we treat the ZWJ and the emoji as zero-width to allow them to be joined together properly.
-                        if (nextcp.IsEmoji) continue;
+                        if (nextcp.IsEmoji()) continue;
                     }
                     continue;
                 }
@@ -229,29 +229,29 @@ public static class Console
 
                 if (cp == VS16)
                 {
-                    totalWidth += (prevcp.IsWideWidth || (_ambiguousWidth > 1) && prevcp.IsAmbiguousWidth) ? _zeroWidth : 1;
+                    totalWidth += (prevcp.IsWideWidth() || (_ambiguousWidth > 1) && prevcp.IsAmbiguousWidth()) ? _zeroWidth : 1;
                     continue;
                 }
 
                 if (i >= len)
                 {
                     // If we reached the end after processing the current character, we can determine its width and break out of the loop
-                    if (cp.IsZeroWidth) totalWidth += _zeroWidth;
-                    if (cp.IsWideWidth) totalWidth += 2;
-                    else if (cp.IsAmbiguousWidth) totalWidth += _ambiguousWidth;
+                    if (cp.IsZeroWidth()) totalWidth += _zeroWidth;
+                    if (cp.IsWideWidth()) totalWidth += 2;
+                    else if (cp.IsAmbiguousWidth()) totalWidth += _ambiguousWidth;
                     else totalWidth += 1;
                     break;
                 }
 
                 // --- 4. Handle surrogate pairs and bitmap lookup ---
-                if (cp.IsHighSurrogate)
+                if (cp.IsHighSurrogate())
                 {
                     CodePoint lowSurrogate = pStr[i];
-                    if (lowSurrogate.IsLowSurrogate)
+                    if (lowSurrogate.IsLowSurrogate())
                     {
                         cp += lowSurrogate;
                         i += 1; // Move to the next character after the surrogate pair
-                        if (cp.IsEmojiModifier)
+                        if (cp.IsEmojiModifier())
                         {
                             totalWidth += _emojiModifierWidth;
                             continue;
@@ -260,9 +260,9 @@ public static class Console
                 }
 
                 // If it's zero-width, add zero-width for each character in the code point (1 for BMP, 2 for supplementary)
-                if (cp.IsZeroWidth) totalWidth += _zeroWidth * cp.CharCount;
-                else if (cp.IsWideWidth) totalWidth += 2;
-                else if (cp.IsAmbiguousWidth) totalWidth += _ambiguousWidth;
+                if (cp.IsZeroWidth()) totalWidth += _zeroWidth * cp.CharCount;
+                else if (cp.IsWideWidth()) totalWidth += 2;
+                else if (cp.IsAmbiguousWidth()) totalWidth += _ambiguousWidth;
                 else totalWidth += 1;
             }
         }

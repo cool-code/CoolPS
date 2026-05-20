@@ -120,7 +120,7 @@ namespace Cool.Benchmarks
         public int IsAscii_Property()
         {
             int sum = 0;
-            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsAscii) sum++;
+            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsAscii()) sum++;
             return sum;
         }
 
@@ -128,7 +128,7 @@ namespace Cool.Benchmarks
         public int IsValid_Property()
         {
             int sum = 0;
-            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsValid) sum++;
+            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsValid()) sum++;
             return sum;
         }
 
@@ -136,7 +136,7 @@ namespace Cool.Benchmarks
         public int IsControl_Property()
         {
             int sum = 0;
-            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsControl) sum++;
+            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsControl()) sum++;
             return sum;
         }
 
@@ -144,7 +144,7 @@ namespace Cool.Benchmarks
         public int IsWideWidth_Property()
         {
             int sum = 0;
-            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsWideWidth) sum++;
+            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsWideWidth()) sum++;
             return sum;
         }
 
@@ -152,7 +152,7 @@ namespace Cool.Benchmarks
         public int IsEmoji_Property()
         {
             int sum = 0;
-            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsEmoji) sum++;
+            for (int i = 0; i < cpSamples.Length; i++) if (cpSamples[i].IsEmoji()) sum++;
             return sum;
         }
 

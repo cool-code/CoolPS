@@ -58,7 +58,7 @@ namespace Cool.Tests
 
                 // ASCII and ascii-related properties
                 bool expectedIsAscii = v <= 127u;
-                if (cp.IsAscii != expectedIsAscii)
+                if (cp.IsAscii() != expectedIsAscii)
                 {
                     mismatchesAscii++;
                     if (mismatchesAscii > 20) break;
@@ -68,7 +68,7 @@ namespace Cool.Tests
                 bool expectedIsAsciiHex = expectedIsAsciiDigit || (v >= 'a' && v <= 'f') || (v >= 'A' && v <= 'F');
                 bool expectedIsAsciiUpper = v >= 'A' && v <= 'Z';
                 bool expectedIsAsciiLower = v >= 'a' && v <= 'z';
-                if (cp.IsAsciiDigit != expectedIsAsciiDigit || cp.IsAsciiHexDigit != expectedIsAsciiHex || cp.IsAsciiLetterUpper != expectedIsAsciiUpper || cp.IsAsciiLetterLower != expectedIsAsciiLower || cp.IsAsciiLetter != (expectedIsAsciiUpper || expectedIsAsciiLower))
+                if (cp.IsAsciiDigit() != expectedIsAsciiDigit || cp.IsAsciiHexDigit() != expectedIsAsciiHex || cp.IsAsciiLetterUpper() != expectedIsAsciiUpper || cp.IsAsciiLetterLower() != expectedIsAsciiLower || cp.IsAsciiLetter() != (expectedIsAsciiUpper || expectedIsAsciiLower))
                 {
                     mismatchesAsciiProps++;
                     if (mismatchesAsciiProps > 20) break;
@@ -77,7 +77,7 @@ namespace Cool.Tests
                 // control characters
                 bool expectedIsControl = (v <= 0x1Fu) || (v >= 0x7Fu && v <= 0x9Fu);
                 bool expectedIsC1 = v >= 0x80u && v <= 0x9Fu;
-                if (cp.IsControl != expectedIsControl || cp.IsC1Control != expectedIsC1)
+                if (cp.IsControl() != expectedIsControl || cp.IsC1Control() != expectedIsC1)
                 {
                     mismatchesControl++;
                     if (mismatchesControl > 20) break;
@@ -87,7 +87,7 @@ namespace Cool.Tests
                 bool expectedHigh = v >= 0xD800u && v <= 0xDBFFu;
                 bool expectedLow = v >= 0xDC00u && v <= 0xDFFFu;
                 bool expectedSur = v >= 0xD800u && v <= 0xDFFFu;
-                if (cp.IsHighSurrogate != expectedHigh || cp.IsLowSurrogate != expectedLow || cp.IsSurrogate != expectedSur)
+                if (cp.IsHighSurrogate() != expectedHigh || cp.IsLowSurrogate() != expectedLow || cp.IsSurrogate() != expectedSur)
                 {
                     mismatchesSurrogate++;
                     if (mismatchesSurrogate > 20) break;
@@ -95,35 +95,35 @@ namespace Cool.Tests
 
                 // wide/ambiguous/zero/emoji expectations via the same bitmap+range logic used in CodePoint
                 bool expectedWide = wideBitmap.GetBit(v) || ((v - 0x20000u) & ~0x10000u) <= 0xFFFDu;
-                if (cp.IsWideWidth != expectedWide)
+                if (cp.IsWideWidth() != expectedWide)
                 {
                     mismatchesWide++;
                     if (mismatchesWide > 20) break;
                 }
 
                 bool expectedAmbig = ambigBitmap.GetBit(v) || ((v - 0xF0000u) & ~0x10000u) <= 0xFFFDu;
-                if (cp.IsAmbiguousWidth != expectedAmbig)
+                if (cp.IsAmbiguousWidth() != expectedAmbig)
                 {
                     mismatchesAmbig++;
                     if (mismatchesAmbig > 20) break;
                 }
 
                 bool expectedZero = zeroBitmap.GetBit(v) || (v - 0xE0000u <= 0xE007Fu - 0xE0000u) || (v - 0xE0100u <= 0xE01EFu - 0xE0100u);
-                if (cp.IsZeroWidth != expectedZero)
+                if (cp.IsZeroWidth() != expectedZero)
                 {
                     mismatchesZero++;
                     if (mismatchesZero > 20) break;
                 }
 
                 bool expectedEmoji = emojiBitmap.GetBit(v);
-                if (cp.IsEmoji != expectedEmoji)
+                if (cp.IsEmoji() != expectedEmoji)
                 {
                     mismatchesEmoji++;
                     if (mismatchesEmoji > 20) break;
                 }
 
                 bool expectedEmojiMod = (v - 0x1F3FBu) <= (0x1F3FFu - 0x1F3FBu);
-                if (cp.IsEmojiModifier != expectedEmojiMod)
+                if (cp.IsEmojiModifier() != expectedEmojiMod)
                 {
                     mismatchesEmojiMod++;
                     if (mismatchesEmojiMod > 20) break;
