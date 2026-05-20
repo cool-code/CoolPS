@@ -7,23 +7,26 @@ namespace Cool;
 
 public static partial class NoBoundCheck
 {
-    #region Unsafe Read and Write for Span<T> and ReadOnlySpan<T>
+    #region No Bound Check ReadOnlySpan<T>
+    [StructLayout(LayoutKind.Sequential)]
     public readonly ref partial struct ReadOnlySpan<T>
     {
         #region Fields and Constructor
-        private readonly ref T _ref;
+        /// <summary>A byref or a native ptr.</summary>
+        internal readonly ref T _reference;
+        /// <summary>The number of elements this Span contains.</summary>
         private readonly int _length;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan(System.ReadOnlySpan<T> span)
         {
-            _ref = ref MemoryMarshal.GetReference(span);
+            _reference = ref MemoryMarshal.GetReference(span);
             _length = span.Length;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan(ref T reference, int length)
         {
-            _ref = ref reference;
+            _reference = ref reference;
             _length = length;
         }
         #endregion
@@ -43,7 +46,7 @@ public static partial class NoBoundCheck
         public readonly ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _ref, index);
+            get => ref Unsafe.Add(ref _reference, index);
         }
         #endregion
         #region Methods
@@ -63,7 +66,7 @@ public static partial class NoBoundCheck
         {
             if (_length != 0)
             {
-                return ref _ref;
+                return ref _reference;
             }
             return ref Unsafe.AsRef<T>(null);
         }

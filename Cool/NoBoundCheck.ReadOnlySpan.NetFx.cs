@@ -2,12 +2,14 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Cool;
 
 public static partial class NoBoundCheck
 {
     #region No Bound Check ReadOnlySpan<T>
+    [StructLayout(LayoutKind.Sequential)]
     public readonly ref partial struct ReadOnlySpan<T>
     {
         #region Fields and Constructor

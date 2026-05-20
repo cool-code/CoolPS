@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Cool;
 
@@ -9,6 +10,7 @@ public static partial class NoBoundCheck
 {
 
     #region No Bound Check Span<T>
+    [StructLayout(LayoutKind.Sequential)]
     public readonly ref partial struct Span<T>
     {
         #region Fields and Constructor

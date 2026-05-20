@@ -6,6 +6,38 @@ public static partial class NoBoundCheck
 {
     public readonly ref partial struct Span<T>
     {
+        #region implicit and explicit operators
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator Span<T>(in System.Span<T> span) => AsSpan(span);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator System.Span<T>(in Span<T> span) => AsSystemSpan(span);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator System.ReadOnlySpan<T>(in Span<T> span) => AsSystemReadOnlySpan(span);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator ReadOnlySpan<T>(in Span<T> span) => AsReadOnlySpan(span);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Span<T>(in System.ReadOnlySpan<T> span) => AsSpan(span);
+        #endregion
+
+        #region Common Methods
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public readonly void Clear() => AsSystemSpan<T>(this).Clear();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public readonly void Fill(T value) => AsSystemSpan<T>(this).Fill(value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public readonly void CopyTo(System.Span<T> destination) => AsSystemSpan<T>(this).CopyTo(destination);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public readonly bool TryCopyTo(System.Span<T> destination) => AsSystemSpan<T>(this).TryCopyTo(destination);
+        #endregion
+
+        #region Enumeration
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         /// <summary>Gets an enumerator for this span.</summary>
         public Enumerator GetEnumerator() => new(this);
@@ -48,5 +80,6 @@ public static partial class NoBoundCheck
                 get => ref _span[_index];
             }
         }
+        #endregion
     }
 }
