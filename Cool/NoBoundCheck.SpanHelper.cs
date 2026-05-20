@@ -8,10 +8,6 @@ namespace Cool;
 public static partial class NoBoundCheck
 {
     #region Span Helper
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(in Span<T> span) => ref span.DangerousGetPinnableReference();
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(in ReadOnlySpan<T> span) => ref span.DangerousGetPinnableReference();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static System.Span<T> AsSystemSpan<T>(in Span<T> source)

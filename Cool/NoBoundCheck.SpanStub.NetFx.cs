@@ -33,7 +33,7 @@ public static partial class NoBoundCheck
     }
     #region aggressive inlining Marshal.GetReference for .NET Framework
     [StructLayout(LayoutKind.Sequential)]
-    private sealed class Pinnable<T>
+    internal sealed class Pinnable<T>
     {
         public T Data = default!;
     }
