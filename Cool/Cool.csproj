@@ -15,14 +15,16 @@
 
   <!-- Debug Mode：net47 using low version System.Memory -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net47' AND '$(Configuration)' == 'Debug'">
-    <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.14" />
   </ItemGroup>
 
   <!-- Release Mode：net47 using high version System.Memory -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net47' AND '$(Configuration)' == 'Release'">
     <PackageReference Include="System.Memory" Version="4.6.3" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+    <PackageReference Include="Microsoft.Bcl.Memory" Version="10.0.8" />
   </ItemGroup>
 
   <ItemGroup>
