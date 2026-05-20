@@ -23,6 +23,20 @@ public static partial class NoBoundCheck
         public static explicit operator System.Span<T>(in ReadOnlySpan<T> span) => AsSystemSpan(span);
         #endregion
 
+        #region Static members and constructors
+        public static ReadOnlySpan<T> Empty => default;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan(T[] array) : this(new System.ReadOnlySpan<T>(array)) { }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan(T[] array, int start, int length) : this(new System.ReadOnlySpan<T>(array, start, length)) { }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe ReadOnlySpan(void* pointer, int length) : this(new System.ReadOnlySpan<T>(pointer, length)) { }
+        #endregion
+
+
         #region Equality Operators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(in ReadOnlySpan<T> left, in ReadOnlySpan<T> right) => AsSystemReadOnlySpan(left) == AsSystemReadOnlySpan(right);

@@ -60,13 +60,19 @@ public static partial class NoBoundCheck
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public unsafe ref readonly T GetPinnableReference()
+        public unsafe ref T GetPinnableReference()
         {
             if (_stub.Length != 0)
             {
                 return ref _stub.GetReference();
             }
             return ref Unsafe.AsRef<T>(null);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal ref T DangerousGetPinnableReference()
+        {
+            return ref _stub.GetReference();
         }
         #endregion
     }

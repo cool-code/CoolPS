@@ -78,6 +78,21 @@ public static partial class NoBoundCheck
         Ldarg(nameof(source));
         return ref IL.ReturnRef<SpanStub<T>>();
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ref SpanStub<T> AsSpanStub<T>(in Span<T> source)
+    {
+        Ldarg(nameof(source));
+        return ref IL.ReturnRef<SpanStub<T>>();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ref SpanStub<T> AsSpanStub<T>(in ReadOnlySpan<T> source)
+    {
+        Ldarg(nameof(source));
+        return ref IL.ReturnRef<SpanStub<T>>();
+    }
+
     #endregion
 }
 #endif

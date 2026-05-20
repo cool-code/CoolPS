@@ -23,6 +23,21 @@ public static partial class NoBoundCheck
         public static explicit operator Span<T>(in System.ReadOnlySpan<T> span) => AsSpan(span);
         #endregion
 
+        #region Static members and constructors
+        public static Span<T> Empty => default;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Span(T[] array) : this(new System.Span<T>(array)) { }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Span(T[] array, int start, int length) : this(new System.Span<T>(array, start, length)) { }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe Span(void* pointer, int length) : this(new System.Span<T>(pointer, length)) { }
+
+        #endregion
+
+
         #region Equality Operators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(in Span<T> left, in Span<T> right) => AsSystemSpan(left) == AsSystemSpan(right);
@@ -94,7 +109,7 @@ public static partial class NoBoundCheck
             }
 
             /// <summary>Gets the element at the current position of the enumerator.</summary>
-            public readonly ref readonly T Current
+            public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => ref _span[_index];
