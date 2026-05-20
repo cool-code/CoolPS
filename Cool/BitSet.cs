@@ -141,7 +141,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         if (string.IsNullOrWhiteSpace(range)) return this;
         fixed (uint* ptr = _bitmap)
         {
-            foreach (uint pos in Range.Create(range, BitHighLimit)) Set(ptr, pos);
+            foreach (uint pos in Range<uint>.Create(range, BitHighLimit)) Set(ptr, pos);
         }
         return this;
     }
@@ -151,7 +151,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         if (string.IsNullOrWhiteSpace(range)) return this;
         fixed (uint* ptr = _bitmap)
         {
-            foreach (uint pos in Range.Create(range, BitHighLimit)) Clear(ptr, pos);
+            foreach (uint pos in Range<uint>.Create(range, BitHighLimit)) Clear(ptr, pos);
         }
         return this;
     }
@@ -161,7 +161,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         if (string.IsNullOrWhiteSpace(range)) return this;
         fixed (uint* ptr = _bitmap)
         {
-            foreach (uint pos in Range.Create(range, BitHighLimit)) Invert(ptr, pos);
+            foreach (uint pos in Range<uint>.Create(range, BitHighLimit)) Invert(ptr, pos);
         }
         return this;
     }
