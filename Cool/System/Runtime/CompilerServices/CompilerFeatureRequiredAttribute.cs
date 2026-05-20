@@ -1,7 +1,7 @@
 #if !NET7_0_OR_GREATER
 namespace System.Runtime.CompilerServices
 {
-#if NETFRAMEWORK || !NET5_0_OR_GREATER
+#if NETFRAMEWORK
     internal static class IsExternalInit {}
 #endif
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
