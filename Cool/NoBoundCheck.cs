@@ -12,15 +12,15 @@ public static partial class NoBoundCheck
     public static void Write<T>(ref T reference, int index, in T value) => Unsafe.Add(ref reference, index) = value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static char Read(string str, int index) => Unsafe.Add(ref str.GetReference(), index);
+    public static char Read(string str, int index) => Unsafe.Add(ref GetReference(str), index);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Write(string str, int index, char value) => Unsafe.Add(ref str.GetReference(), index) = value;
+    public static void Write(string str, int index, char value) => Unsafe.Add(ref GetReference(str), index) = value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Read<T>(T[] array, int index) => Unsafe.Add(ref array.GetReference(), index);
+    public static T Read<T>(T[] array, int index) => Unsafe.Add(ref GetReference(array), index);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Write<T>(T[] array, int index, in T value) => Unsafe.Add(ref array.GetReference(), index) = value;
+    public static void Write<T>(T[] array, int index, in T value) => Unsafe.Add(ref GetReference(array), index) = value;
     #endregion
 }

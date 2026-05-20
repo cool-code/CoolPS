@@ -35,7 +35,7 @@ public static partial class NoBoundCheck
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref char GetReference(this string str)
+    public static ref char GetReference(string str)
     {
         Ldarg(nameof(str));
         Conv_U();
@@ -45,7 +45,7 @@ public static partial class NoBoundCheck
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(this T[] array)
+    public static ref T GetReference<T>(T[] array)
     {
         Ldarg(nameof(array));
         Conv_U();

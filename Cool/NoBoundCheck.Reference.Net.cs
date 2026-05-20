@@ -7,13 +7,13 @@ namespace Cool;
 public static partial class NoBoundCheck
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref char GetReference(this string str)
+    public static ref char GetReference(string str)
     {
         return ref Unsafe.AsRef(in str.GetPinnableReference());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(this T[] array)
+    public static ref T GetReference<T>(T[] array)
     {
         return ref MemoryMarshal.GetArrayDataReference(array);
     }
