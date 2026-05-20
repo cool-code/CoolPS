@@ -23,6 +23,20 @@ public static partial class NoBoundCheck
         public static explicit operator Span<T>(in System.ReadOnlySpan<T> span) => AsSpan(span);
         #endregion
 
+        #region Equality Operators
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(in Span<T> left, in Span<T> right) => AsSystemSpan(left) == AsSystemSpan(right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(in Span<T> left, in Span<T> right) => AsSystemSpan(left) != AsSystemSpan(right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override readonly bool Equals(object? o) => AsSystemSpan<T>(this).Equals(o);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override readonly int GetHashCode() => AsSystemSpan<T>(this).GetHashCode();
+        #endregion
+
         #region Common Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly void Clear() => AsSystemSpan<T>(this).Clear();
@@ -35,6 +49,12 @@ public static partial class NoBoundCheck
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly bool TryCopyTo(System.Span<T> destination) => AsSystemSpan<T>(this).TryCopyTo(destination);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public readonly T[] ToArray() => AsSystemSpan<T>(this).ToArray();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override readonly string ToString() => AsSystemSpan<T>(this).ToString();
         #endregion
 
         #region Enumeration
