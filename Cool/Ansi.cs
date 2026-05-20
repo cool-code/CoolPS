@@ -80,66 +80,60 @@ public static class Ansi
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void WriteInt(char* buffer, int pos, int value)
+    private static unsafe void WriteInt(ref char buffer, int pos, int value)
     {
         byte b = (byte)(value & 0xFF);
-        buffer[pos++] = (char)_hpCache[b];
-        buffer[pos++] = (char)_tpCache[b];
-        buffer[pos++] = (char)_opCache[b];
+        NoBoundCheck.Write(ref buffer, pos++, (char)_hpCache[b]);
+        NoBoundCheck.Write(ref buffer, pos++, (char)_tpCache[b]);
+        NoBoundCheck.Write(ref buffer, pos++, (char)_opCache[b]);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void FillForegroundRGB(char* buffer, int r, int g, int b)
+    internal static void FillForegroundRGB(ref char buffer, int r, int g, int b)
     {
-        buffer[0] = '\x1b';
-        buffer[1] = '[';
-        buffer[2] = '3';
-        buffer[3] = '8';
-        buffer[4] = ';';
-        buffer[5] = '2';
-        buffer[6] = ';';
-        WriteInt(buffer, 7, r);
-        buffer[10] = ';';
-        WriteInt(buffer, 11, g);
-        buffer[14] = ';';
-        WriteInt(buffer, 15, b);
-        buffer[18] = 'm';
+        NoBoundCheck.Write(ref buffer, 0, '\x1b');
+        NoBoundCheck.Write(ref buffer, 1, '[');
+        NoBoundCheck.Write(ref buffer, 2, '3');
+        NoBoundCheck.Write(ref buffer, 3, '8');
+        NoBoundCheck.Write(ref buffer, 4, ';');
+        NoBoundCheck.Write(ref buffer, 5, '2');
+        NoBoundCheck.Write(ref buffer, 6, ';');
+        WriteInt(ref buffer, 7, r);
+        NoBoundCheck.Write(ref buffer, 10, ';');
+        WriteInt(ref buffer, 11, g);
+        NoBoundCheck.Write(ref buffer, 14, ';');
+        WriteInt(ref buffer, 15, b);
+        NoBoundCheck.Write(ref buffer, 18, 'm');
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe string Foreground(int r, int g, int b)
+    public static string Foreground(int r, int g, int b)
     {
         string result = new('\0', 19);
-        fixed (char* buffer = result)
-        {
-            FillForegroundRGB(buffer, r, g, b);
-        }
+        FillForegroundRGB(ref NoBoundCheck.GetReference(result), r, g, b);
         return result;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void FillBackgroundRGB(char* buffer, int r, int g, int b)
+    internal static void FillBackgroundRGB(ref char buffer, int r, int g, int b)
     {
-        buffer[0] = '\x1b';
-        buffer[1] = '[';
-        buffer[2] = '4';
-        buffer[3] = '8';
-        buffer[4] = ';';
-        buffer[5] = '2';
-        buffer[6] = ';';
-        WriteInt(buffer, 7, r);
-        buffer[10] = ';';
-        WriteInt(buffer, 11, g);
-        buffer[14] = ';';
-        WriteInt(buffer, 15, b);
-        buffer[18] = 'm';
+        NoBoundCheck.Write(ref buffer, 0, '\x1b');
+        NoBoundCheck.Write(ref buffer, 1, '[');
+        NoBoundCheck.Write(ref buffer, 2, '4');
+        NoBoundCheck.Write(ref buffer, 3, '8');
+        NoBoundCheck.Write(ref buffer, 4, ';');
+        NoBoundCheck.Write(ref buffer, 5, '2');
+        NoBoundCheck.Write(ref buffer, 6, ';');
+        WriteInt(ref buffer, 7, r);
+        NoBoundCheck.Write(ref buffer, 10, ';');
+        WriteInt(ref buffer, 11, g);
+        NoBoundCheck.Write(ref buffer, 14, ';');
+        WriteInt(ref buffer, 15, b);
+        NoBoundCheck.Write(ref buffer, 18, 'm');
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe string Background(int r, int g, int b)
+    public static string Background(int r, int g, int b)
     {
         string result = new('\0', 19);
-        fixed (char* buffer = result)
-        {
-            FillBackgroundRGB(buffer, r, g, b);
-        }
+        FillBackgroundRGB(ref NoBoundCheck.GetReference(result), r, g, b);
         return result;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -186,14 +180,14 @@ public static class AnsiSGR
     #region StringBuilder extensions
     public static unsafe StringBuilder Foreground(this StringBuilder sb, int r, int g, int b)
     {
-        char* buffer = stackalloc char[20];
-        Ansi.FillForegroundRGB(buffer, r, g, b);
+        char* buffer = stackalloc char[19];
+        Ansi.FillForegroundRGB(ref NoBoundCheck.GetReference(buffer), r, g, b);
         return sb.Append(buffer, 19);
     }
     public static unsafe StringBuilder Background(this StringBuilder sb, int r, int g, int b)
     {
-        char* buffer = stackalloc char[20];
-        Ansi.FillBackgroundRGB(buffer, r, g, b);
+        char* buffer = stackalloc char[19];
+        Ansi.FillBackgroundRGB(ref NoBoundCheck.GetReference(buffer), r, g, b);
         return sb.Append(buffer, 19);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
