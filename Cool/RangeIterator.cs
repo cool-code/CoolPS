@@ -11,7 +11,7 @@ public ref struct RangeIterator<T, TNumberDriver>
     private readonly int _length;
     private readonly T _highLimit;
     private readonly TNumberDriver _driver;
-    private readonly NoBoundCheck.ReadOnlySpan<char> _range;
+    private readonly Unchecked.ReadOnlySpan<char> _range;
 
     private int _index;
     private T _currentValue;
@@ -26,7 +26,7 @@ public ref struct RangeIterator<T, TNumberDriver>
         _highLimit = highLimit;
         _driver = default;
         _length = range.Length;
-        _range = new NoBoundCheck.ReadOnlySpan<char>(range);
+        _range = new Unchecked.ReadOnlySpan<char>(range);
 
         _index = 0;
         _currentValue = _driver.Zero;

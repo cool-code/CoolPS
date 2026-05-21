@@ -8,7 +8,7 @@ using static InlineIL.IL.Emit;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IntPtr Add<T>(this IntPtr start, int index)

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace Cool;
 
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T GetReference<T>(in Span<T> span) => ref span.DangerousGetPinnableReference();

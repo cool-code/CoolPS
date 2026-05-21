@@ -1,72 +1,68 @@
-#if NET7_0_OR_GREATER
+#if NETFRAMEWORK
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
-    #region No Bound Check Span<T>
+    #region No Bound Check ReadOnlySpan<T>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly ref partial struct Span<T>
+    public readonly ref partial struct ReadOnlySpan<T>
     {
         #region Fields and Constructor
-        /// <summary>A byref or a native ptr.</summary>
-        internal readonly ref T _reference;
-        /// <summary>The number of elements this Span contains.</summary>
-        private readonly int _length;
+        private readonly SpanStub<T> _stub;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Span(System.Span<T> span)
+        public ReadOnlySpan(System.ReadOnlySpan<T> span)
         {
-            _reference = ref MemoryMarshal.GetReference(span);
-            _length = span.Length;
+            _stub = AsSpanStub(span);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Span(ref T reference, int length)
+        private ReadOnlySpan(Pinnable<T> pinnable, IntPtr intPtr, int value)
         {
-            _reference = ref reference;
-            _length = length;
+            _stub = new SpanStub<T>(pinnable, intPtr, value);
         }
         #endregion
         #region Properties and Indexer
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _length;
+            get => _stub.Length;
         }
 
         public bool IsEmpty
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _length == 0;
+            get => _stub.Length == 0;
         }
 
-        public readonly ref T this[int index]
+        public ref readonly T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _reference, index);
+            get => ref Unsafe.Add(ref _stub.GetReference(), index);
         }
         #endregion
         #region Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Span<T> Slice(int start)
+        public ReadOnlySpan<T> Slice(int start)
         {
-            return new Span<T>(ref this[start], _length - start);
+            return new ReadOnlySpan<T>(_stub.Pinnable, _stub.ByteOffset.Add<T>(start), _stub.Length - start);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Span<T> Slice(int start, int length)
+        public ReadOnlySpan<T> Slice(int start, int length)
         {
-            return new Span<T>(ref this[start], length);
+            return new ReadOnlySpan<T>(_stub.Pinnable, _stub.ByteOffset.Add<T>(start), length);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public unsafe ref T GetPinnableReference()
+        public unsafe ref readonly T GetPinnableReference()
         {
-            if (_length != 0)
+            if (_stub.Length != 0)
             {
-                return ref _reference;
+                return ref _stub.GetReference();
             }
             return ref Unsafe.AsRef<T>(null);
         }
@@ -74,11 +70,12 @@ public static partial class NoBoundCheck
         [EditorBrowsable(EditorBrowsableState.Never)]
         internal ref T DangerousGetPinnableReference()
         {
-            return ref _reference;
+            return ref _stub.GetReference();
         }
         #endregion
     }
 
     #endregion
+
 }
 #endif

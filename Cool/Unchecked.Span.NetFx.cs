@@ -6,22 +6,23 @@ using System.Runtime.InteropServices;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
-    #region No Bound Check ReadOnlySpan<T>
+
+    #region No Bound Check Span<T>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly ref partial struct ReadOnlySpan<T>
+    public readonly ref partial struct Span<T>
     {
         #region Fields and Constructor
         private readonly SpanStub<T> _stub;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan(System.ReadOnlySpan<T> span)
+        public Span(System.Span<T> span)
         {
             _stub = AsSpanStub(span);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan(Pinnable<T> pinnable, IntPtr intPtr, int value)
+        private Span(Pinnable<T> pinnable, IntPtr intPtr, int value)
         {
             _stub = new SpanStub<T>(pinnable, intPtr, value);
         }
@@ -39,26 +40,27 @@ public static partial class NoBoundCheck
             get => _stub.Length == 0;
         }
 
-        public ref readonly T this[int index]
+        public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref Unsafe.Add(ref _stub.GetReference(), index);
+
         }
         #endregion
         #region Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<T> Slice(int start)
+        public Span<T> Slice(int start)
         {
-            return new ReadOnlySpan<T>(_stub.Pinnable, _stub.ByteOffset.Add<T>(start), _stub.Length - start);
+            return new Span<T>(_stub.Pinnable, _stub.ByteOffset.Add<T>(start), _stub.Length - start);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<T> Slice(int start, int length)
+        public Span<T> Slice(int start, int length)
         {
-            return new ReadOnlySpan<T>(_stub.Pinnable, _stub.ByteOffset.Add<T>(start), length);
+            return new Span<T>(_stub.Pinnable, _stub.ByteOffset.Add<T>(start), length);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public unsafe ref readonly T GetPinnableReference()
+        public unsafe ref T GetPinnableReference()
         {
             if (_stub.Length != 0)
             {
@@ -76,6 +78,5 @@ public static partial class NoBoundCheck
     }
 
     #endregion
-
 }
 #endif

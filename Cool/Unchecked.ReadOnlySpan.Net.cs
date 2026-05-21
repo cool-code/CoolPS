@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
     #region No Bound Check ReadOnlySpan<T>
     [StructLayout(LayoutKind.Sequential)]
