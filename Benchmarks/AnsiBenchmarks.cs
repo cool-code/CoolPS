@@ -67,7 +67,7 @@ namespace Cool.Benchmarks
             for (int i = 0; i < rgbs.Length; i++)
             {
                 var (r, g, b) = rgbs[i];
-                sum += sb.Foreground(r, g, b).Length;
+                sum += sb.AppendForeground(r, g, b).Length;
                 sb.Clear();
             }
             return sum;
@@ -78,7 +78,7 @@ namespace Cool.Benchmarks
         {
             int sum = 0;
             for (int i = 0; i < colors16.Length; i++)
-                sum += AnsiSGR.Escape("0;1").Length;
+                sum += "0;1".ToSGR().Length;
             return sum;
         }
 
@@ -87,7 +87,7 @@ namespace Cool.Benchmarks
         {
             int sum = 0;
             for (int i = 0; i < 100_000; i++)
-                sum += AnsiSGR.Bold("text").Length;
+                sum += "text".ToBold().Length;
             return sum;
         }
     }

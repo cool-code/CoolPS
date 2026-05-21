@@ -190,7 +190,7 @@ public class ConfigLoader
             if (kv.Length != 2) continue;
 
             string key = kv[0];
-            string val = (envVarName == "LS_COLORS") ? AnsiSGR.Escape(kv[1]) : kv[1];
+            string val = (envVarName == "LS_COLORS") ? kv[1].ToSGR() : kv[1];
 
             // extraction logic:
             // if key matches "PREFIX[0-9]{0,3}", extract "PREFIX" and "3",
