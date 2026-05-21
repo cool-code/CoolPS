@@ -8,19 +8,19 @@ public static partial class NoBoundCheck
     {
         #region implicit and explicit operators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator ReadOnlySpan<T>(in System.ReadOnlySpan<T> span) => AsReadOnlySpan(span);
+        public static implicit operator ReadOnlySpan<T>(System.ReadOnlySpan<T> span) => AsReadOnlySpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator System.ReadOnlySpan<T>(in ReadOnlySpan<T> span) => AsSystemReadOnlySpan(span);
+        public static implicit operator System.ReadOnlySpan<T>(ReadOnlySpan<T> span) => AsSystemReadOnlySpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator ReadOnlySpan<T>(in System.Span<T> span) => AsReadOnlySpan(span);
+        public static implicit operator ReadOnlySpan<T>(System.Span<T> span) => AsReadOnlySpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator Span<T>(in ReadOnlySpan<T> span) => AsSpan(span);
+        public static explicit operator Span<T>(ReadOnlySpan<T> span) => AsSpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator System.Span<T>(in ReadOnlySpan<T> span) => AsSystemSpan(span);
+        public static explicit operator System.Span<T>(ReadOnlySpan<T> span) => AsSystemSpan(ref span);
         #endregion
 
         #region Static members and constructors
@@ -36,33 +36,32 @@ public static partial class NoBoundCheck
         public unsafe ReadOnlySpan(void* pointer, int length) : this(new System.ReadOnlySpan<T>(pointer, length)) { }
         #endregion
 
-
         #region Equality Operators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(in ReadOnlySpan<T> left, in ReadOnlySpan<T> right) => AsSystemReadOnlySpan(left) == AsSystemReadOnlySpan(right);
+        public static bool operator ==(ReadOnlySpan<T> left, ReadOnlySpan<T> right) => AsSystemReadOnlySpan(ref left) == AsSystemReadOnlySpan(ref right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(in ReadOnlySpan<T> left, in ReadOnlySpan<T> right) => AsSystemReadOnlySpan(left) != AsSystemReadOnlySpan(right);
+        public static bool operator !=(ReadOnlySpan<T> left, ReadOnlySpan<T> right) => AsSystemReadOnlySpan(ref left) != AsSystemReadOnlySpan(ref right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly bool Equals(object? o) => AsSystemReadOnlySpan<T>(this).Equals(o);
+        public override readonly bool Equals(object? o) => AsSystemReadOnlySpanRef(in this).Equals(o);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly int GetHashCode() => AsSystemReadOnlySpan<T>(this).GetHashCode();
+        public override readonly int GetHashCode() => AsSystemReadOnlySpanRef(in this).GetHashCode();
         #endregion
 
         #region Common Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly void CopyTo(System.Span<T> destination) => AsSystemReadOnlySpan<T>(this).CopyTo(destination);
+        public readonly void CopyTo(System.Span<T> destination) => AsSystemReadOnlySpanRef(in this).CopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly bool TryCopyTo(System.Span<T> destination) => AsSystemReadOnlySpan<T>(this).TryCopyTo(destination);
+        public readonly bool TryCopyTo(System.Span<T> destination) => AsSystemReadOnlySpanRef(in this).TryCopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly T[] ToArray() => AsSystemReadOnlySpan<T>(this).ToArray();
+        public readonly T[] ToArray() => AsSystemReadOnlySpanRef(in this).ToArray();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly string ToString() => AsSystemReadOnlySpan<T>(this).ToString();
+        public override readonly string ToString() => AsSystemReadOnlySpanRef(in this).ToString();
         #endregion
 
         #region Enumeration

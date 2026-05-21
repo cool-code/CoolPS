@@ -8,19 +8,19 @@ public static partial class NoBoundCheck
     {
         #region implicit and explicit operators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator Span<T>(in System.Span<T> span) => AsSpan(span);
+        public static implicit operator Span<T>(System.Span<T> span) => AsSpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator System.Span<T>(in Span<T> span) => AsSystemSpan(span);
+        public static implicit operator System.Span<T>(Span<T> span) => AsSystemSpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator System.ReadOnlySpan<T>(in Span<T> span) => AsSystemReadOnlySpan(span);
+        public static implicit operator System.ReadOnlySpan<T>(Span<T> span) => AsSystemReadOnlySpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator ReadOnlySpan<T>(in Span<T> span) => AsReadOnlySpan(span);
+        public static implicit operator ReadOnlySpan<T>(Span<T> span) => AsReadOnlySpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator Span<T>(in System.ReadOnlySpan<T> span) => AsSpan(span);
+        public static explicit operator Span<T>(System.ReadOnlySpan<T> span) => AsSpan(ref span);
         #endregion
 
         #region Static members and constructors
@@ -34,42 +34,40 @@ public static partial class NoBoundCheck
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe Span(void* pointer, int length) : this(new System.Span<T>(pointer, length)) { }
-
         #endregion
-
 
         #region Equality Operators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(in Span<T> left, in Span<T> right) => AsSystemSpan(left) == AsSystemSpan(right);
+        public static bool operator ==(Span<T> left, Span<T> right) => AsSystemSpan(ref left) == AsSystemSpan(ref right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(in Span<T> left, in Span<T> right) => AsSystemSpan(left) != AsSystemSpan(right);
+        public static bool operator !=(Span<T> left, Span<T> right) => AsSystemSpan(ref left) != AsSystemSpan(ref right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly bool Equals(object? o) => AsSystemSpan<T>(this).Equals(o);
+        public override readonly bool Equals(object? o) => AsSystemSpanRef(in this).Equals(o);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly int GetHashCode() => AsSystemSpan<T>(this).GetHashCode();
+        public override readonly int GetHashCode() => AsSystemSpanRef(in this).GetHashCode();
         #endregion
 
         #region Common Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly void Clear() => AsSystemSpan<T>(this).Clear();
+        public readonly void Clear() => AsSystemSpanRef(in this).Clear();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly void Fill(T value) => AsSystemSpan<T>(this).Fill(value);
+        public readonly void Fill(T value) => AsSystemSpanRef(in this).Fill(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly void CopyTo(System.Span<T> destination) => AsSystemSpan<T>(this).CopyTo(destination);
+        public readonly void CopyTo(System.Span<T> destination) => AsSystemSpanRef(in this).CopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly bool TryCopyTo(System.Span<T> destination) => AsSystemSpan<T>(this).TryCopyTo(destination);
+        public readonly bool TryCopyTo(System.Span<T> destination) => AsSystemSpanRef(in this).TryCopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly T[] ToArray() => AsSystemSpan<T>(this).ToArray();
+        public readonly T[] ToArray() => AsSystemSpanRef(in this).ToArray();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly string ToString() => AsSystemSpan<T>(this).ToString();
+        public override readonly string ToString() => AsSystemSpanRef(in this).ToString();
         #endregion
 
         #region Enumeration
