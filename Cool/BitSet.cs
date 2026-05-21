@@ -747,7 +747,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int CountTrailingZeros(uint v)
     {
-        return NoBoundCheck.Read(_multiplyDeBruijnBitPosition, (int)(((uint)((v & -v) * 0x077CB531U)) >> 27));
+        return Unchecked.Read(_multiplyDeBruijnBitPosition, (int)(((uint)((v & -v) * 0x077CB531U)) >> 27));
     }
     #endregion
 }

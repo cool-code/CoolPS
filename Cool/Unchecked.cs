@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
     #region String and Array Accessors
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

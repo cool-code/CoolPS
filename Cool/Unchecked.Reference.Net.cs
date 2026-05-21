@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
     /// <summary>
     /// Return a managed reference to the first character of <paramref name="str"/>.

@@ -2,72 +2,66 @@ using System.Runtime.CompilerServices;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
-    public readonly ref partial struct Span<T>
+    public readonly ref partial struct ReadOnlySpan<T>
     {
         #region implicit and explicit operators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator Span<T>(System.Span<T> span) => AsSpan(ref span);
+        public static implicit operator ReadOnlySpan<T>(System.ReadOnlySpan<T> span) => AsReadOnlySpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator System.Span<T>(Span<T> span) => AsSystemSpan(ref span);
+        public static implicit operator System.ReadOnlySpan<T>(ReadOnlySpan<T> span) => AsSystemReadOnlySpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator System.ReadOnlySpan<T>(Span<T> span) => AsSystemReadOnlySpan(ref span);
+        public static implicit operator ReadOnlySpan<T>(System.Span<T> span) => AsReadOnlySpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator ReadOnlySpan<T>(Span<T> span) => AsReadOnlySpan(ref span);
+        public static explicit operator Span<T>(ReadOnlySpan<T> span) => AsSpan(ref span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator Span<T>(System.ReadOnlySpan<T> span) => AsSpan(ref span);
+        public static explicit operator System.Span<T>(ReadOnlySpan<T> span) => AsSystemSpan(ref span);
         #endregion
 
         #region Static members and constructors
-        public static Span<T> Empty => default;
+        public static ReadOnlySpan<T> Empty => default;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Span(T[] array) : this(new System.Span<T>(array)) { }
+        public ReadOnlySpan(T[] array) : this(new System.ReadOnlySpan<T>(array)) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Span(T[] array, int start, int length) : this(new System.Span<T>(array, start, length)) { }
+        public ReadOnlySpan(T[] array, int start, int length) : this(new System.ReadOnlySpan<T>(array, start, length)) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe Span(void* pointer, int length) : this(new System.Span<T>(pointer, length)) { }
+        public unsafe ReadOnlySpan(void* pointer, int length) : this(new System.ReadOnlySpan<T>(pointer, length)) { }
         #endregion
 
         #region Equality Operators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Span<T> left, Span<T> right) => AsSystemSpan(ref left) == AsSystemSpan(ref right);
+        public static bool operator ==(ReadOnlySpan<T> left, ReadOnlySpan<T> right) => AsSystemReadOnlySpan(ref left) == AsSystemReadOnlySpan(ref right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Span<T> left, Span<T> right) => AsSystemSpan(ref left) != AsSystemSpan(ref right);
+        public static bool operator !=(ReadOnlySpan<T> left, ReadOnlySpan<T> right) => AsSystemReadOnlySpan(ref left) != AsSystemReadOnlySpan(ref right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly bool Equals(object? o) => AsSystemSpanRef(in this).Equals(o);
+        public override readonly bool Equals(object? o) => AsSystemReadOnlySpanRef(in this).Equals(o);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly int GetHashCode() => AsSystemSpanRef(in this).GetHashCode();
+        public override readonly int GetHashCode() => AsSystemReadOnlySpanRef(in this).GetHashCode();
         #endregion
 
         #region Common Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly void Clear() => AsSystemSpanRef(in this).Clear();
+        public readonly void CopyTo(System.Span<T> destination) => AsSystemReadOnlySpanRef(in this).CopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly void Fill(T value) => AsSystemSpanRef(in this).Fill(value);
+        public readonly bool TryCopyTo(System.Span<T> destination) => AsSystemReadOnlySpanRef(in this).TryCopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly void CopyTo(System.Span<T> destination) => AsSystemSpanRef(in this).CopyTo(destination);
+        public readonly T[] ToArray() => AsSystemReadOnlySpanRef(in this).ToArray();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly bool TryCopyTo(System.Span<T> destination) => AsSystemSpanRef(in this).TryCopyTo(destination);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public readonly T[] ToArray() => AsSystemSpanRef(in this).ToArray();
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly string ToString() => AsSystemSpanRef(in this).ToString();
+        public override readonly string ToString() => AsSystemReadOnlySpanRef(in this).ToString();
         #endregion
 
         #region Enumeration
@@ -75,18 +69,18 @@ public static partial class NoBoundCheck
         /// <summary>Gets an enumerator for this span.</summary>
         public Enumerator GetEnumerator() => new(this);
 
-        /// <summary>Enumerates the elements of a <see cref="Span{T}"/>.</summary>
+        /// <summary>Enumerates the elements of a <see cref="ReadOnlySpan{T}"/>.</summary>
         public ref struct Enumerator
         {
             /// <summary>The span being enumerated.</summary>
-            private readonly Span<T> _span;
+            private readonly ReadOnlySpan<T> _span;
             /// <summary>The next index to yield.</summary>
             private int _index;
 
             /// <summary>Initialize the enumerator.</summary>
             /// <param name="span">The span to enumerate.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(Span<T> span)
+            internal Enumerator(ReadOnlySpan<T> span)
             {
                 _span = span;
                 _index = -1;
@@ -107,7 +101,7 @@ public static partial class NoBoundCheck
             }
 
             /// <summary>Gets the element at the current position of the enumerator.</summary>
-            public readonly ref T Current
+            public readonly ref readonly T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => ref _span[_index];

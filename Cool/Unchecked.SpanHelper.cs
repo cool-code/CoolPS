@@ -3,7 +3,7 @@ using static InlineIL.IL.Emit;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
     #region Span Helper
 

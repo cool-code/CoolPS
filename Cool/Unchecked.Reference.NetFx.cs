@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Cool;
 
-public static partial class NoBoundCheck
+public static partial class Unchecked
 {
     internal static readonly IntPtr StringAdjustment = MeasureStringAdjustment();
 
