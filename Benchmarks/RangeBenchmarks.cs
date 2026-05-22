@@ -38,7 +38,7 @@ namespace Cool.Benchmarks
         public int EnumerateCount_UInt()
         {
             int count = 0;
-            foreach (var v in Range<uint>.Create(longRange, HighLimit))
+            foreach (var v in new Range<uint>(longRange, HighLimit))
             {
                 count++;
             }
@@ -49,7 +49,7 @@ namespace Cool.Benchmarks
         public uint EnumerateSum_UInt()
         {
             uint sum = 0;
-            foreach (var v in Range<uint>.Create(longRange, HighLimit))
+            foreach (var v in new Range<uint>(longRange, HighLimit))
             {
                 sum += v;
             }
