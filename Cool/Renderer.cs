@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Management.Automation;
+using System.Runtime.CompilerServices;
 
 namespace Cool;
 
-public class Renderer
+public static class Renderer
 {
     private static volatile Dictionary<string, string> _colors = [];
     private static volatile Dictionary<string, string> _icons = [];
@@ -74,7 +74,7 @@ public class Renderer
                 case CommandTypes.Alias:
                     if (!string.IsNullOrEmpty(commandInfo.Definition))
                     {
-                        name = string.Concat(name, " -> ", commandInfo.Definition);
+                        name = $"{name} -> {commandInfo.Definition}";
                     }
                     break;
                 case CommandTypes.Function:
