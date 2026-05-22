@@ -29,12 +29,6 @@ public static class ReferenceExtensions
         public byte Data;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    private sealed class RawData
-    {
-        public byte Data;
-    }
-
     extension(MemoryMarshal)
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
