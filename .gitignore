@@ -8,6 +8,7 @@ project.lock.json
 /Packages/
 *.nuget.props
 /BenchmarkDotNet.Artifacts/
+/Benchmarks/AggregatedResults
 
 # VS auto-generated solution files for project.json solutions
 *.xproj
