@@ -69,16 +69,14 @@ public ref struct RangeIterator<T, TNumberDriver>
 
         if (_index >= _length) return false;
 
-        T startVal = ParseNextNumber(out bool hasStart);
-        if (!hasStart) return false;
+        if (!ParseNextNumber(out T startVal)) return false;
 
         if (_index < _length && _range[_index] == '~')
         {
             _index++;
 
-            T endVal = ParseNextNumber(out bool hasEnd);
             _currentValue = startVal;
-            _endValue = hasEnd ? _driver.Min(_highLimit, endVal) : startVal;
+            _endValue = ParseNextNumber(out T endVal) ? _driver.Min(_highLimit, endVal) : startVal;
 
             if (_driver.LessThan(_currentValue, _endValue))
             {
@@ -94,10 +92,10 @@ public ref struct RangeIterator<T, TNumberDriver>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private T ParseNextNumber(out bool success)
+    private bool ParseNextNumber(out T val)
     {
-        success = false;
-        if (_index >= _length) return _driver.Zero;
+        val = _driver.Zero;
+        if (_index >= _length) return false;
 
         while (_index < _length && _range[_index] == ' ') _index++;
 
@@ -116,7 +114,7 @@ public ref struct RangeIterator<T, TNumberDriver>
             }
         }
 
-        T val = _driver.Zero;
+        bool success = false;
         while (_index < _length)
         {
             char c = _range[_index];
@@ -138,6 +136,6 @@ public ref struct RangeIterator<T, TNumberDriver>
             val = _driver.Negate(val);
         }
 
-        return val;
+        return success;
     }
 }
