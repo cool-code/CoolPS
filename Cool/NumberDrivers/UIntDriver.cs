@@ -8,10 +8,10 @@ public readonly struct UIntDriver : INumberDriver<uint>
     public uint Zero => 0U;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint ParseHexChar(char c) => Hex.Lookup(c);
+    public uint ShiftLeft(uint value, int shift) => value << shift;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public uint AccumulateHex(uint current, uint hexValue) => (current << 4) + hexValue;
+    public uint AddByte(uint left, byte right) => left + right;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint Negate(uint value) => ~value + 1;

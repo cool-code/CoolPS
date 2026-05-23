@@ -8,10 +8,10 @@ public readonly struct LongDriver : INumberDriver<long>
     public long Zero => 0L;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public long ParseHexChar(char c) => Hex.Lookup(c);
+    public long ShiftLeft(long value, int shift) => value << shift;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public long AccumulateHex(long current, long hexValue) => (current << 4) + hexValue;
+    public long AddByte(long left, byte right) => left + right;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public long Negate(long value) => -value;

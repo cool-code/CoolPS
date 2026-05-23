@@ -18,6 +18,23 @@ public ref struct RangeIterator<T, TNumberDriver>
     private T _endValue;
     private bool _inRangeMode;
 
+    private static readonly byte[] _hexTable = CreateHexTable();
+    private static byte[] CreateHexTable()
+    {
+        var table = new byte[128];
+        for (char c = '0'; c <= '9'; c++)
+            table[c] = (byte)(c - '0');
+        for (char c = 'A'; c <= 'F'; c++)
+            table[c] = (byte)(c - 'A' + 10);
+        for (char c = 'a'; c <= 'f'; c++)
+            table[c] = (byte)(c - 'a' + 10);
+        return table;
+    }
+
+#if !NETFRAMEWORK
+    private readonly ref byte hexTable = ref _hexTable[0];
+#endif
+
     public readonly T Current => _currentValue;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -26,7 +43,7 @@ public ref struct RangeIterator<T, TNumberDriver>
         _highLimit = highLimit;
         _driver = default;
         _length = range.Length;
-        _range = new Unchecked.ReadOnlySpan<char>(range);
+        _range = range;
 
         _index = 0;
         _currentValue = _driver.Zero;
@@ -104,16 +121,20 @@ public ref struct RangeIterator<T, TNumberDriver>
         }
 
         T val = _driver.Zero;
+#if NETFRAMEWORK
+        ref byte hexTable = ref _hexTable[0];
+#endif
         while (_index < _length)
         {
             char c = _range[_index];
 
             if (c == ',' || c == '~') break;
 
-            if (c != ' ')
+            if (c.IsAsciiHexDigit())
             {
-                T hexChar = _driver.ParseHexChar(c);
-                val = _driver.AccumulateHex(val, hexChar);
+                byte hexValue = Unchecked.Read(ref hexTable, c);
+                val = _driver.ShiftLeft(val, 4);
+                val = _driver.AddByte(val, hexValue);
                 success = true;
             }
             _index++;

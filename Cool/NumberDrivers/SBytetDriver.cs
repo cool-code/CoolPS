@@ -8,10 +8,10 @@ public readonly struct SByteDriver : INumberDriver<sbyte>
     public sbyte Zero => 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public sbyte ParseHexChar(char c) => (sbyte)Hex.Lookup(c);
+    public sbyte ShiftLeft(sbyte value, int shift) => (sbyte)(value << shift);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public sbyte AccumulateHex(sbyte current, sbyte hexValue) => (sbyte)((current << 4) + hexValue);
+    public sbyte AddByte(sbyte left, byte right) => (sbyte)(left + right);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public sbyte Negate(sbyte value) => (sbyte)-value;

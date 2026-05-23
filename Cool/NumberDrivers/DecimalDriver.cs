@@ -8,10 +8,10 @@ public readonly struct DecimalDriver : INumberDriver<decimal>
     public decimal Zero => 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public decimal ParseHexChar(char c) => Hex.Lookup(c);
+    public decimal ShiftLeft(decimal value, int shift) => value * (1 << shift);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public decimal AccumulateHex(decimal current, decimal hexValue) => (current * 16) + hexValue;
+    public decimal AddByte(decimal left, byte right) => left + right;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public decimal Negate(decimal value) => -value;

@@ -8,10 +8,10 @@ public readonly struct ShortDriver : INumberDriver<short>
     public short Zero => 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public short ParseHexChar(char c) => Hex.Lookup(c);
+    public short ShiftLeft(short value, int shift) => (short)(value << shift);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public short AccumulateHex(short current, short hexValue) => (short)((current << 4) + hexValue);
+    public short AddByte(short left, byte right) => (short)(left + right);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public short Negate(short value) => (short)-value;

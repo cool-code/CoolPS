@@ -8,10 +8,10 @@ public readonly struct BigIntegerDriver : INumberDriver<BigInteger>
     public BigInteger Zero => BigInteger.Zero;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public BigInteger ParseHexChar(char c) => Hex.Lookup(c);
+    public BigInteger ShiftLeft(BigInteger value, int shift) => value << shift;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public BigInteger AccumulateHex(BigInteger current, BigInteger hexValue) => (current << 4) + hexValue;
+    public BigInteger AddByte(BigInteger left, byte right) => left + right;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BigInteger Negate(BigInteger value) => -value;

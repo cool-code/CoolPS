@@ -8,10 +8,10 @@ public readonly struct ULongDriver : INumberDriver<ulong>
     public ulong Zero => 0UL;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ulong ParseHexChar(char c) => Hex.Lookup(c);
+    public ulong ShiftLeft(ulong value, int shift) => value << shift;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ulong AccumulateHex(ulong current, ulong hexValue) => (current << 4) + hexValue;
+    public ulong AddByte(ulong left, byte right) => left + right;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong Negate(ulong value) => ~value + 1;
