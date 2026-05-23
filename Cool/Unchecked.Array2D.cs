@@ -48,6 +48,16 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref Unsafe.Add(ref _firstElement, index);
         }
+        public ref T this[int index1, int index2]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.Add(ref _firstElement, (index1 * _dim2.Length) + index2);
+        }
+        public ref T this[uint index1, uint index2]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.Add(ref _firstElement, (index1 * (uint)_dim2.Length) + index2);
+        }
         #endregion
 
         #region Methods
