@@ -18,7 +18,7 @@ public ref struct RangeIterator<T, TNumberDriver>
     private T _endValue;
     private bool _inRangeMode;
 
-    private static readonly byte[] _hexTable = CreateHexTable();
+    private static readonly Unchecked.Array<byte> _hexTable = CreateHexTable();
     private static byte[] CreateHexTable()
     {
         var table = new byte[128];
@@ -30,10 +30,6 @@ public ref struct RangeIterator<T, TNumberDriver>
             table[c] = (byte)(c - 'a' + 10);
         return table;
     }
-
-#if !NETFRAMEWORK
-    private readonly ref byte hexTable = ref _hexTable[0];
-#endif
 
     public readonly T Current => _currentValue;
 
@@ -121,9 +117,6 @@ public ref struct RangeIterator<T, TNumberDriver>
         }
 
         T val = _driver.Zero;
-#if NETFRAMEWORK
-        ref byte hexTable = ref _hexTable[0];
-#endif
         while (_index < _length)
         {
             char c = _range[_index];
@@ -132,7 +125,7 @@ public ref struct RangeIterator<T, TNumberDriver>
 
             if (c.IsAsciiHexDigit())
             {
-                byte hexValue = Unchecked.Read(ref hexTable, c);
+                byte hexValue = _hexTable[c];
                 val = _driver.ShiftLeft(val, 4);
                 val = _driver.AddByte(val, hexValue);
                 success = true;
