@@ -21,7 +21,7 @@ public static partial class Unchecked
             _stub = AsSpanStub(span);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan(Pinnable<T> pinnable, IntPtr intPtr, int value)
+        internal ReadOnlySpan(Pinnable<T> pinnable, IntPtr intPtr, int value)
         {
             _stub = new SpanStub<T>(pinnable, intPtr, value);
         }

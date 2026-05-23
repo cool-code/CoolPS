@@ -24,7 +24,7 @@ public static partial class Unchecked
             _length = span.Length;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Span(ref T reference, int length)
+        internal Span(ref T reference, int length)
         {
             _reference = ref reference;
             _length = length;

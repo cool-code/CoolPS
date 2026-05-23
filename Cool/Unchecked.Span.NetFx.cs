@@ -22,7 +22,7 @@ public static partial class Unchecked
             _stub = AsSpanStub(span);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Span(Pinnable<T> pinnable, IntPtr intPtr, int value)
+        internal Span(Pinnable<T> pinnable, IntPtr intPtr, int value)
         {
             _stub = new SpanStub<T>(pinnable, intPtr, value);
         }
