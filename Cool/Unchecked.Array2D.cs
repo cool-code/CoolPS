@@ -8,7 +8,7 @@ namespace Cool;
 public static partial class Unchecked
 {
     [StructLayout(LayoutKind.Explicit)]
-    internal readonly struct Dimension
+    private readonly struct Dimension
     {
         [FieldOffset(0)]
         public readonly int Length;
@@ -22,8 +22,8 @@ public static partial class Unchecked
     {
         #region Fields and Constructor
         private readonly LengthAndPadding _length_and_padding = default;
-        internal readonly Dimension _dim1 = default;
-        internal readonly Dimension _dim2 = default;
+        private readonly Dimension _dim1 = default;
+        private readonly Dimension _dim2 = default;
         private T _firstElement = default!;
 
         // The constructor is private to prevent external instantiation,
