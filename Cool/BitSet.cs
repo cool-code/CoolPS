@@ -11,7 +11,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
     public readonly int AllocatedSize;
     private readonly int _wordCount;
     private readonly uint _tailMask;
-    private readonly uint[] _bitmap;
+    private readonly Unchecked.Array<uint> _bitmap;
     #endregion
 
     #region Constructors and Disposal
@@ -95,19 +95,19 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
 
     #region Bit Access Methods
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void Set(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[(int)(pos >> 5)] |= 1u << (int)(pos & 31); } }
+    private void Set(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[pos >> 5] |= 1u << (int)(pos & 31); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool Contains(uint* pbitmap, uint pos) => (pos <= BitHighLimit) && ((pbitmap[pos >> 5] & (1u << (int)(pos & 31))) != 0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void Clear(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[(int)(pos >> 5)] &= ~(1u << (int)(pos & 31)); } }
+    private void Clear(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[pos >> 5] &= ~(1u << (int)(pos & 31)); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void Invert(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[(int)(pos >> 5)] ^= 1u << (int)(pos & 31); } }
+    private void Invert(uint* pbitmap, uint pos) { if (pos <= BitHighLimit) { pbitmap[pos >> 5] ^= 1u << (int)(pos & 31); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Set(uint pos) { if (pos <= BitHighLimit) { _bitmap[(int)(pos >> 5)] |= 1u << (int)(pos & 31); } }
+    public void Set(uint pos) { if (pos <= BitHighLimit) { _bitmap[pos >> 5] |= 1u << (int)(pos & 31); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Contains(uint pos) => (pos <= BitHighLimit) && ((_bitmap[pos >> 5] & (1u << (int)(pos & 31))) != 0);
@@ -715,7 +715,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         }
     }
 
-    private static readonly string _hexDigits = "0123456789ABCDEF";
+    private const string _hexDigits = "0123456789ABCDEF";
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AppendHex(StringBuilder sb, uint value, char* buf)
     {
