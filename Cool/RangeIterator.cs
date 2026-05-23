@@ -38,8 +38,8 @@ public ref struct RangeIterator<T, TNumberDriver>
     {
         _highLimit = highLimit;
         _driver = default;
-        _length = range.Length;
-        _range = range;
+        _length = range?.Length ?? 0;
+        _range = range ?? string.Empty;
 
         _index = 0;
         _currentValue = _driver.Zero;
