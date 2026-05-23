@@ -11,7 +11,7 @@ public ref struct RangeIterator<T, TNumberDriver>
     private readonly int _length;
     private readonly T _highLimit;
     private readonly TNumberDriver _driver;
-    private readonly Unchecked.ReadOnlySpan<char> _range;
+    private readonly Unchecked.String _range;
 
     private int _index;
     private T _currentValue;
@@ -38,7 +38,7 @@ public ref struct RangeIterator<T, TNumberDriver>
     public readonly T Current => _currentValue;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal RangeIterator(ReadOnlySpan<char> range, T highLimit)
+    internal RangeIterator(string range, T highLimit)
     {
         _highLimit = highLimit;
         _driver = default;
