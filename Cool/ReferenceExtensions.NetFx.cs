@@ -38,7 +38,7 @@ public static class ReferenceExtensions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe ref byte GetArrayDataReference(Array array)
+        public static ref byte GetArrayDataReference(Array array)
         {
             int rank = array.Rank;
             ref byte baseRef = ref Unsafe.As<RawArrayData>(array).Data;
