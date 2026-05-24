@@ -21,7 +21,7 @@ public static partial class Unchecked
     public sealed class Array2D<T>
     {
         #region Fields and Constructor
-        private readonly LengthAndPadding _length_and_padding = default;
+        private readonly LengthAndPadding _lengthAndPadding = default;
         private readonly Dimension _dim1 = default;
         private readonly Dimension _dim2 = default;
         private T _firstElement = default!;
@@ -32,8 +32,8 @@ public static partial class Unchecked
         #endregion
         #region Properties and Indexer
         public int Rank => 2;
-        public int Length => _length_and_padding.Length;
-        public long LongLength => _length_and_padding.Length;
+        public int Length => (int)_lengthAndPadding.Length;
+        public long LongLength => _lengthAndPadding.Length;
         public bool IsFixedSize => true;
         public bool IsReadOnly => false;
         public bool IsSynchronized => false;
@@ -46,17 +46,17 @@ public static partial class Unchecked
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, index);
+            get => ref Unsafe.Add(ref _firstElement, (nint)index);
         }
         public ref T this[int index1, int index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, (index1 * _dim2.Length) + index2);
+            get => ref Unsafe.Add(ref _firstElement, (index1 * (nint)_dim2.Length) + index2);
         }
         public ref T this[uint index1, uint index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, (index1 * (uint)_dim2.Length) + index2);
+            get => ref Unsafe.Add(ref _firstElement, (index1 * (nuint)_dim2.Length) + index2);
         }
         #endregion
 
@@ -104,14 +104,14 @@ public static partial class Unchecked
         public Iterator GetEnumerator() => new(this);
         public ref struct Iterator(Array2D<T> array)
         {
-            private int _index = -1;
+            private uint _index = uint.MaxValue;
             public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => ref array[_index];
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < array.Length;
+            public bool MoveNext() => ++_index < array.LongLength;
         }
         #endregion
     }

@@ -11,9 +11,9 @@ public static partial class Unchecked
     private readonly struct LengthAndPadding
     {
         [FieldOffset(0)]
-        public readonly int Length;
+        public readonly uint Length;
         [FieldOffset(0)]
-        internal readonly UIntPtr length_and_padding;
+        internal readonly UIntPtr lengthAndPadding;
     }
 
     #region Unchecked Array
@@ -21,7 +21,7 @@ public static partial class Unchecked
     public sealed class Array<T>
     {
         #region Fields and Constructor
-        private readonly LengthAndPadding _length_and_padding = default;
+        private readonly LengthAndPadding _lengthAndPadding = default;
         private T _firstElement = default!;
 
         // The constructor is private to prevent external instantiation,
@@ -31,8 +31,8 @@ public static partial class Unchecked
 
         #region Properties and Indexer
         public int Rank => 1;
-        public int Length => _length_and_padding.Length;
-        public long LongLength => _length_and_padding.Length;
+        public int Length => (int)_lengthAndPadding.Length;
+        public long LongLength => _lengthAndPadding.Length;
         public bool IsFixedSize => true;
         public bool IsReadOnly => false;
         public bool IsSynchronized => false;
@@ -45,7 +45,7 @@ public static partial class Unchecked
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, index);
+            get => ref Unsafe.Add(ref _firstElement, (nint)index);
         }
         #endregion
 
@@ -58,7 +58,7 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetLength(int dimension) => dimension switch
         {
-            0 => _length_and_padding.Length,
+            0 => (int)_lengthAndPadding.Length,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -91,14 +91,14 @@ public static partial class Unchecked
         public Iterator GetEnumerator() => new(this);
         public ref struct Iterator(Array<T> array)
         {
-            private int _index = -1;
+            private uint _index = uint.MaxValue;
             public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => ref array[_index];
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < array.Length;
+            public bool MoveNext() => ++_index < array.LongLength;
         }
         #endregion
     }
