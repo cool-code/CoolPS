@@ -7,14 +7,6 @@ namespace Cool;
 
 public static partial class Unchecked
 {
-    [StructLayout(LayoutKind.Explicit)]
-    private readonly struct Dimension
-    {
-        [FieldOffset(0)]
-        public readonly int Length;
-        [FieldOffset(4)]
-        public readonly int LowerBound;
-    }
 
     #region Unchecked Array
     [StructLayout(LayoutKind.Sequential)]
@@ -22,8 +14,10 @@ public static partial class Unchecked
     {
         #region Fields and Constructor
         private readonly LengthAndPadding _lengthAndPadding = default;
-        private readonly Dimension _dim1 = default;
-        private readonly Dimension _dim2 = default;
+        public readonly int _dim1Length;
+        public readonly int _dim2Length;
+        public readonly int _dim1LowerBound;
+        public readonly int _dim2LowerBound;
         private T _firstElement = default!;
 
         // The constructor is private to prevent external instantiation,
@@ -51,12 +45,12 @@ public static partial class Unchecked
         public ref T this[int index1, int index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, (index1 * (nint)_dim2.Length) + index2);
+            get => ref Unsafe.Add(ref _firstElement, (index1 * (nint)_dim2Length) + index2);
         }
         public ref T this[uint index1, uint index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, (index1 * (nuint)_dim2.Length) + index2);
+            get => ref Unsafe.Add(ref _firstElement, (index1 * (nuint)_dim2Length) + index2);
         }
         #endregion
 
@@ -69,8 +63,8 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetLength(int dimension) => dimension switch
         {
-            0 => _dim1.Length,
-            1 => _dim2.Length,
+            0 => _dim1Length,
+            1 => _dim2Length,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -78,17 +72,18 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetLowerBound(int dimension) => dimension switch
         {
-            0 => _dim1.LowerBound,
-            1 => _dim2.LowerBound,
+            0 => _dim1LowerBound,
+            1 => _dim2LowerBound,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetUpperBound(int dimension) => GetLowerBound(dimension) + GetLength(dimension) - 1;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if NETFRAMEWORK
-        public Span<T> AsSpan() => new(Unsafe.As<Pinnable<T>>(this), (IntPtr)UIntPtr.Size, Length);
+        // Offset for 2D array is LengthAndPadding (4/8 bytes) + 2 lengths (2*4 bytes) + 2 lower bounds (2*4 bytes) = 20 bytes on 32-bit, 24 bytes on 64-bit
+        public Span<T> AsSpan() => new(Unsafe.As<Pinnable<T>>(this), (IntPtr)UIntPtr.Size + (2 * 2 * sizeof(int)), Length & int.MaxValue);
 #else
-        public Span<T> AsSpan() => new(ref _firstElement, Length);
+        public Span<T> AsSpan() => new(ref _firstElement, Length & int.MaxValue);
 #endif
         #endregion
 
