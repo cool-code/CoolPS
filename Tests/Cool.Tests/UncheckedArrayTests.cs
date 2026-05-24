@@ -131,5 +131,83 @@ namespace Cool.Tests
             Assert.Throws<IndexOutOfRangeException>(() => a2.GetLength(2));
             Assert.Throws<IndexOutOfRangeException>(() => a2.GetLowerBound(2));
         }
+
+        [Fact]
+        public void Array_Empty_EnumeratesNone()
+        {
+            int[] arr = new int[0];
+            Unchecked.Array<int> ua = arr;
+            Assert.Equal(arr.Length, ua.Length);
+
+            int count = 0;
+            foreach (ref int x in ua) count++;
+            Assert.Equal(0, count);
+
+            Assert.Throws<IndexOutOfRangeException>(() => ua.GetLength(1));
+        }
+
+        [Fact]
+        public void Array_Enumerator_ModifiesElements()
+        {
+            int[] arr = new int[10];
+            for (int i = 0; i < arr.Length; i++) arr[i] = i;
+            Unchecked.Array<int> ua = arr;
+
+            int cnt = 0;
+            foreach (ref int x in ua)
+            {
+                x += 5;
+                cnt++;
+            }
+            Assert.Equal(arr.Length, cnt);
+            for (int i = 0; i < arr.Length; i++) Assert.Equal(i + 5, arr[i]);
+        }
+
+        [Fact]
+        public void Array2D_EmptyDimension_AsSpanAndEnumerator()
+        {
+            int[,] arr2 = new int[0, 5];
+            Unchecked.Array2D<int> a2 = arr2;
+            Assert.Equal(arr2.Length, a2.Length);
+
+            var span = a2.AsSpan();
+            Assert.Equal(0, span.Length);
+
+            int count = 0;
+            foreach (ref int x in a2) count++;
+            Assert.Equal(0, count);
+
+            Assert.Same(arr2, a2.ToArray());
+        }
+
+        [Fact]
+        public void Array2D_Enumerator_ModifiesElements_And_LinearIndexing()
+        {
+            int rows = 3, cols = 4;
+            int[,] arr2 = new int[rows, cols];
+            int v = 1;
+            for (int i = 0; i < rows; i++)
+                for (int j = 0; j < cols; j++)
+                    arr2[i, j] = v++;
+
+            Unchecked.Array2D<int> a2 = arr2;
+
+            int cnt = 0;
+            foreach (ref int cur in a2)
+            {
+                cur += 10;
+                cnt++;
+            }
+            Assert.Equal(rows * cols, cnt);
+
+            for (int i = 0; i < rows; i++)
+                for (int j = 0; j < cols; j++)
+                    Assert.Equal((i * cols + j + 1) + 10, arr2[i, j]);
+
+            int linearIdx = 2 * cols + 1;
+            Assert.Equal(arr2[2, 1], a2[linearIdx]);
+            a2[linearIdx] = -99;
+            Assert.Equal(-99, arr2[2, 1]);
+        }
     }
 }

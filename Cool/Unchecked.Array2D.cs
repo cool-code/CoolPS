@@ -10,14 +10,24 @@ public static partial class Unchecked
 
     #region Unchecked Array
     [StructLayout(LayoutKind.Sequential)]
+    /// <summary>
+    /// Lightweight, unchecked wrapper over a managed two-dimensional array.
+    /// </summary>
+    /// <remarks>
+    /// - High-performance wrapper: intentionally omits bounds checks and other safety checks.
+    /// - Supports only zero-based, rectangular 2-D arrays; non-zero lower bounds are not supported.
+    /// - Intended for use on .NET Framework 4.7+ and .NET 7+ (PowerShell scenarios).
+    /// - The indexer mapping uses row-major order: offset = index1 * dim2Length + index2.
+    /// - Callers must ensure indices are valid; out-of-range accesses are undefined behavior.
+    /// </remarks>
     public sealed class Array2D<T>
     {
         #region Fields and Constructor
         private readonly LengthAndPadding _lengthAndPadding = default;
-        public readonly int _dim1Length;
-        public readonly int _dim2Length;
-        public readonly int _dim1LowerBound;
-        public readonly int _dim2LowerBound;
+        private readonly int _dim1Length;
+        private readonly int _dim2Length;
+        private readonly int _dim1LowerBound;
+        private readonly int _dim2LowerBound;
         private T _firstElement = default!;
 
         // The constructor is private to prevent external instantiation,
@@ -79,6 +89,16 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetUpperBound(int dimension) => GetLowerBound(dimension) + GetLength(dimension) - 1;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <summary>
+        /// Returns a <see cref="Span{T}"/> view over the array elements in row-major order.
+        /// </summary>
+        /// <remarks>
+        /// For performance reasons this method will truncate the returned span length to
+        /// <see cref="int.MaxValue"/> when the underlying total element count is larger than
+        /// <see cref="int.MaxValue"/>. No exception is thrown in that case. Accesses beyond
+        /// <see cref="int.MaxValue"/> may still be made through the indexer and enumerator which
+        /// operate on unsigned indices.
+        /// </remarks>
 #if NETFRAMEWORK
         // Offset for 2D array is LengthAndPadding (4/8 bytes) + 2 lengths (2*4 bytes) + 2 lower bounds (2*4 bytes) = 20 bytes on 32-bit, 24 bytes on 64-bit
         public Span<T> AsSpan() => new(Unsafe.As<Pinnable<T>>(this), (IntPtr)UIntPtr.Size + (2 * 2 * sizeof(int)), Length & int.MaxValue);
@@ -106,7 +126,7 @@ public static partial class Unchecked
                 get => ref array[_index];
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < array.LongLength;
+            public bool MoveNext() => ++_index < array._lengthAndPadding.Length;
         }
         #endregion
     }

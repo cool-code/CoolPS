@@ -18,6 +18,15 @@ public static partial class Unchecked
 
     #region Unchecked Array
     [StructLayout(LayoutKind.Sequential)]
+    /// <summary>
+    /// Lightweight, unchecked wrapper over a managed one-dimensional array.
+    /// </summary>
+    /// <remarks>
+    /// - High-performance wrapper: intentionally omits bounds checks and other safety checks.
+    /// - Supports only zero-based arrays; non-zero lower bounds are not supported.
+    /// - Intended for use on .NET Framework 4.7+ and .NET 7+ (PowerShell scenarios).
+    /// - Callers must ensure indices are valid; out-of-range accesses are undefined behavior.
+    /// </remarks>
     public sealed class Array<T>
     {
         #region Fields and Constructor
@@ -98,7 +107,7 @@ public static partial class Unchecked
                 get => ref array[_index];
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < array.LongLength;
+            public bool MoveNext() => ++_index < array._lengthAndPadding.Length;
         }
         #endregion
     }
