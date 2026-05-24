@@ -53,6 +53,22 @@ public static partial class Unchecked
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator string(String value) => Unsafe.As<string>(value);
+        #region Enumerator
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Iterator GetEnumerator() => new(this);
+        public ref struct Iterator(String str)
+        {
+            private int _index = -1;
+            public readonly char Current
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => str[_index];
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool MoveNext() => ++_index < str.Length;
+        }
+        #endregion
+
     }
     #endregion
 }
