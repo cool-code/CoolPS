@@ -35,8 +35,8 @@ namespace Cool.Tests
         [Fact]
         public void Array_GetArrayDataReference()
         {
-            int[] arr = { 1, 2, 3, 4, 5 };
-            ref int r = ref MemoryMarshal.GetArrayDataReference(arr);
+            int[] arr = [1, 2, 3, 4, 5];
+            ref int r = ref arr.GetReference();
             Assert.Equal(1, r);
         }
 
@@ -44,7 +44,7 @@ namespace Cool.Tests
         public void EmptyArray_GetArrayDataReference()
         {
             int[] arr = [];
-            ref int r = ref MemoryMarshal.GetArrayDataReference(arr);
+            ref int r = ref arr.GetReference();
             Assert.Equal(0, r); // GetArrayDataReference on empty array returns reference to default value
         }
 
@@ -52,14 +52,14 @@ namespace Cool.Tests
         public void NullArray_GetArrayDataReference()
         {
             int[]? arr = null;
-            Assert.Throws<NullReferenceException>(() => { ref int r = ref MemoryMarshal.GetArrayDataReference(arr); });
+            Assert.Throws<NullReferenceException>(() => { ref int r = ref arr.GetReference(); });
         }
 
         [Fact]
         public void MultiDimensionalArray_GetArrayDataReference()
         {
             int[,] arr = new int[2, 2] { { 1, 2 }, { 3, 4 } };
-            ref int r = ref Unsafe.As<byte, int>(ref MemoryMarshal.GetArrayDataReference(arr));
+            ref int r = ref arr.GetReference<int>();
             Assert.Equal(1, r);
             ref int r2 = ref Unsafe.Add(ref r, 1);
             Assert.Equal(2, r2);
@@ -77,7 +77,7 @@ namespace Cool.Tests
             Assert.Equal(13, arr[1, 1]);
 
             int[,,] arr3D = new int[2, 2, 2] { { { 1, 2 }, { 3, 4 } }, { { 5, 6 }, { 7, 8 } } };
-            ref int r3D = ref Unsafe.As<byte, int>(ref MemoryMarshal.GetArrayDataReference(arr3D));
+            ref int r3D = ref arr3D.GetReference<int>();
             Assert.Equal(1, r3D);
             Unchecked.Write(ref r3D, 0, 10);
             Assert.Equal(10, arr3D[0, 0, 0]);
@@ -89,7 +89,7 @@ namespace Cool.Tests
         public void NullMultiDimensionalArray_GetArrayDataReference()
         {
             int[,]? arr = null;
-            Assert.Throws<NullReferenceException>(() => { ref int r = ref Unsafe.As<byte, int>(ref MemoryMarshal.GetArrayDataReference(arr)); });
+            Assert.Throws<NullReferenceException>(() => { ref int r = ref arr.GetReference<int>(); });
         }
 
         [Fact]
@@ -103,7 +103,7 @@ namespace Cool.Tests
         [Fact]
         public void Array_GetReference()
         {
-            int[] arr = { 1, 2, 3, 4, 5 };
+            int[] arr = [1, 2, 3, 4, 5];
             ref int r = ref Unchecked.GetReference(arr);
             Assert.Equal(1, r);
         }
@@ -162,7 +162,7 @@ namespace Cool.Tests
         [Fact]
         public void ObjectArray_GetReference()
         {
-            object[] arr = { "Hello", 123, 3.14 };
+            object[] arr = ["Hello", 123, 3.14];
             ref object r = ref Unchecked.GetReference(arr);
             Assert.Equal("Hello", r);
             ref object r2 = ref Unsafe.Add(ref r, 1);
@@ -174,7 +174,7 @@ namespace Cool.Tests
         [Fact]
         public void ObjectArray_Null_GetReference()
         {
-            object?[] arr = { null, "Hello", 123 };
+            object?[] arr = [null, "Hello", 123];
             ref object? r = ref Unchecked.GetReference(arr);
             Assert.Null(r);
             ref object? r2 = ref Unsafe.Add(ref r, 1);
@@ -186,22 +186,22 @@ namespace Cool.Tests
         [Fact]
         public void NonZeroBasedOneDimensionalArray_BehaviorCheck()
         {
-            Array arr = Array.CreateInstance(typeof(int), new int[] { 2 }, new int[] { 5 });
+            Array arr = Array.CreateInstance(typeof(int), [2], [5]);
             arr.SetValue(42, 5);
             arr.SetValue(99, 6);
-            ref var r = ref MemoryMarshal.GetArrayDataReference(arr);
-            Assert.Equal(42, Unsafe.As<byte, int>(ref r));
+            ref var r = ref arr.GetReference<int>();
+            Assert.Equal(42, r);
         }
 
         [Fact]
         public void ZeroBasedOneDimensionalArray_BehaviorCheck()
         {
-            Array arr = Array.CreateInstance(typeof(int), new int[] { 2 }, new int[] { 0 });
+            Array arr = Array.CreateInstance(typeof(int), [2], [0]);
             arr.SetValue(42, 0);
             arr.SetValue(99, 1);
-            ref var r = ref MemoryMarshal.GetArrayDataReference(arr);
-            Assert.Equal(42, Unsafe.As<byte, int>(ref r));
+            ref var r = ref arr.GetReference<int>();
+            Assert.Equal(42, r);
         }
     }
-    #pragma warning restore CS8604, CS8625, CS8601, CS8602
+#pragma warning restore CS8604, CS8625, CS8601, CS8602
 }

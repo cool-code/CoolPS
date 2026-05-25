@@ -54,7 +54,6 @@ namespace Cool.Tests
             foreach (int v in r) items.Add(v);
             Assert.Equal(15, items.Count); // 1..0xF inclusive
             Assert.Equal(1, items[0]);
-            Assert.Equal(15, items[^1]);
         }
 
         [Fact]

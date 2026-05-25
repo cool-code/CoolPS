@@ -27,11 +27,11 @@ public static partial class Unchecked
     /// - Intended for use on .NET Framework 4.7+ and .NET 7+ (PowerShell scenarios).
     /// - Callers must ensure indices are valid; out-of-range accesses are undefined behavior.
     /// </remarks>
-    public sealed class Array<T>
+    public sealed partial class Array<T>
     {
         #region Fields and Constructor
         private readonly LengthAndPadding _lengthAndPadding = default;
-        private T _firstElement = default!;
+        private byte _placeholder; // Placeholder for the start of the array data; actual type is T
 
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing arrays.
@@ -49,19 +49,21 @@ public static partial class Unchecked
         public ref T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, index);
+            get => ref Unsafe.Add(ref GetReference(), index);
         }
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, (nint)index);
+            get => ref Unsafe.Add(ref GetReference(), (nint)index);
         }
         #endregion
 
         #region Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T GetReference() => ref Unsafe.As<byte, T>(ref _placeholder);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public ref T GetPinnableReference() => ref _firstElement;
+        public ref T GetPinnableReference() => ref GetReference();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray() => Unsafe.As<T[]>(this);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -80,34 +82,35 @@ public static partial class Unchecked
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetUpperBound(int dimension) => GetLowerBound(dimension) + GetLength(dimension) - 1;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#if NETFRAMEWORK
-        public Span<T> AsSpan() => new(Unsafe.As<Pinnable<T>>(this), (IntPtr)UIntPtr.Size, Length);
-#else
-        public Span<T> AsSpan() => new(ref _firstElement, Length);
-#endif
         #endregion
-
         #region Implicit Conversions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Array<T>(T[] value) => Unsafe.As<Array<T>>(value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator T[](Array<T> value) => Unsafe.As<T[]>(value);
         #endregion
-
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Iterator GetEnumerator() => new(this);
-        public ref struct Iterator(Array<T> array)
+        public Enumerator GetEnumerator() => new(this);
+        public ref struct Enumerator
         {
-            private uint _index = uint.MaxValue;
+            private readonly Array<T> _array;
+            private readonly uint _length;
+            private uint _index;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal Enumerator(Array<T> array)
+            {
+                _array = array;
+                _length = array._lengthAndPadding.Length;
+                _index = uint.MaxValue;
+            }
             public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref array[_index];
+                get => ref _array[_index];
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < array._lengthAndPadding.Length;
+            public bool MoveNext() => ++_index < _length;
         }
         #endregion
     }

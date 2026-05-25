@@ -28,7 +28,7 @@ public static partial class Unchecked
         private readonly int _dim2Length;
         private readonly int _dim1LowerBound;
         private readonly int _dim2LowerBound;
-        private T _firstElement = default!;
+        private byte _placeholder; // Placeholder for the start of the array data; actual type is T
 
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing 2D arrays.
@@ -45,29 +45,31 @@ public static partial class Unchecked
         public ref T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, index);
+            get => ref Unsafe.Add(ref GetReference(), index);
         }
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, (nint)index);
+            get => ref Unsafe.Add(ref GetReference(), (nint)index);
         }
         public ref T this[int index1, int index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, (index1 * (nint)_dim2Length) + index2);
+            get => ref Unsafe.Add(ref GetReference(), (index1 * (nint)_dim2Length) + index2);
         }
         public ref T this[uint index1, uint index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _firstElement, (index1 * (nuint)_dim2Length) + index2);
+            get => ref Unsafe.Add(ref GetReference(), (index1 * (nuint)_dim2Length) + index2);
         }
         #endregion
 
         #region Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T GetReference() => ref Unsafe.As<byte, T>(ref _placeholder);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public ref T GetPinnableReference() => ref _firstElement;
+        public ref T GetPinnableReference() => ref GetReference();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[,] ToArray() => Unsafe.As<T[,]>(this);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,23 +90,6 @@ public static partial class Unchecked
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetUpperBound(int dimension) => GetLowerBound(dimension) + GetLength(dimension) - 1;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        /// <summary>
-        /// Returns a <see cref="Span{T}"/> view over the array elements in row-major order.
-        /// </summary>
-        /// <remarks>
-        /// For performance reasons this method will truncate the returned span length to
-        /// <see cref="int.MaxValue"/> when the underlying total element count is larger than
-        /// <see cref="int.MaxValue"/>. No exception is thrown in that case. Accesses beyond
-        /// <see cref="int.MaxValue"/> may still be made through the indexer and enumerator which
-        /// operate on unsigned indices.
-        /// </remarks>
-#if NETFRAMEWORK
-        // Offset for 2D array is LengthAndPadding (4/8 bytes) + 2 lengths (2*4 bytes) + 2 lower bounds (2*4 bytes) = 20 bytes on 32-bit, 24 bytes on 64-bit
-        public Span<T> AsSpan() => new(Unsafe.As<Pinnable<T>>(this), (IntPtr)UIntPtr.Size + (2 * 2 * sizeof(int)), Length & int.MaxValue);
-#else
-        public Span<T> AsSpan() => new(ref _firstElement, Length & int.MaxValue);
-#endif
         #endregion
 
         #region Implicit Conversions
@@ -116,17 +101,26 @@ public static partial class Unchecked
 
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Iterator GetEnumerator() => new(this);
-        public ref struct Iterator(Array2D<T> array)
+        public Enumerator GetEnumerator() => new(this);
+        public ref struct Enumerator
         {
+            private readonly Array2D<T> _array;
             private uint _index = uint.MaxValue;
+            private readonly uint _length;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal Enumerator(Array2D<T> array)
+            {
+                _array = array;
+                _length = array._lengthAndPadding.Length;
+                _index = uint.MaxValue;
+            }
             public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref array[_index];
+                get => ref _array[_index];
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < array._lengthAndPadding.Length;
+            public bool MoveNext() => ++_index < _length;
         }
         #endregion
     }

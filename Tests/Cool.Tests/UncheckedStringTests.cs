@@ -20,17 +20,6 @@ namespace Cool.Tests
         }
 
         [Fact]
-        public void AsSpan_MatchesString()
-        {
-            string s = "Abc123";
-            Unchecked.String us = s;
-            var span = us.AsSpan();
-            Assert.Equal(s.Length, span.Length);
-            for (int i = 0; i < span.Length; i++)
-                Assert.Equal(s[i], span[i]);
-        }
-
-        [Fact]
         public void Enumerator_IteratesChars()
         {
             string s = "Iterate!";

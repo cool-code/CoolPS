@@ -42,13 +42,6 @@ public static partial class Unchecked
         public override string ToString() => Unsafe.As<string>(this);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#if NETFRAMEWORK
-        public ReadOnlySpan<char> AsSpan() => new(Unsafe.As<Pinnable<char>>(this), (IntPtr)sizeof(int), Length);
-#else
-        public ReadOnlySpan<char> AsSpan() => new(ref _firstChar, Length);
-#endif
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator String(string value) => Unsafe.As<String>(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

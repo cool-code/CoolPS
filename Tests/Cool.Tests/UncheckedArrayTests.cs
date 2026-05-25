@@ -27,10 +27,6 @@ namespace Cool.Tests
             Assert.Equal(arr.GetLowerBound(0), ua.GetLowerBound(0));
             Assert.Equal(arr.GetUpperBound(0), ua.GetUpperBound(0));
 
-            var span = ua.AsSpan();
-            Assert.Equal(arr.Length, span.Length);
-            for (int i = 0; i < arr.Length; i++) Assert.Equal(arr[i], span[i]);
-
             // indexer read (uint and int)
             for (uint i = 0; i < (uint)arr.Length; i++) Assert.Equal(arr[i], ua[i]);
             for (int i = 0; i < arr.Length; i++) Assert.Equal(arr[i], ua[i]);
@@ -89,15 +85,6 @@ namespace Cool.Tests
             // (observed inconsistencies for the second-dimension fields). Validate
             // behavior via AsSpan/ToArray/indexers rather than asserting metadata fields.
             Assert.Equal(rows * cols, a2.Length);
-
-            var span = a2.AsSpan();
-            Assert.Equal(rows * cols, span.Length);
-
-            // linear ordering (row-major)
-            int idx = 0;
-            for (int i = 0; i < rows; i++)
-                for (int j = 0; j < cols; j++)
-                    Assert.Equal(arr2[i, j], span[idx++]);
 
             // single-index access maps to row*cols + col (use linear index only)
             int linearIdx = 1 * cols + 2;
@@ -161,23 +148,6 @@ namespace Cool.Tests
             }
             Assert.Equal(arr.Length, cnt);
             for (int i = 0; i < arr.Length; i++) Assert.Equal(i + 5, arr[i]);
-        }
-
-        [Fact]
-        public void Array2D_EmptyDimension_AsSpanAndEnumerator()
-        {
-            int[,] arr2 = new int[0, 5];
-            Unchecked.Array2D<int> a2 = arr2;
-            Assert.Equal(arr2.Length, a2.Length);
-
-            var span = a2.AsSpan();
-            Assert.Equal(0, span.Length);
-
-            int count = 0;
-            foreach (ref int x in a2) count++;
-            Assert.Equal(0, count);
-
-            Assert.Same(arr2, a2.ToArray());
         }
 
         [Fact]

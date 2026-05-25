@@ -69,7 +69,7 @@ public static class Ansi
     private static char[] InitNativeCache()
     {
         char[] cache = new char[256 * 3];
-        ref char cacheRef = ref Unchecked.GetReference(cache);
+        ref char cacheRef = ref cache.GetReference();
         for (int i = 0; i < 256; i++)
         {
             Unchecked.Write(ref cacheRef, i, (char)('0' + (i / 100 % 10)));
@@ -82,7 +82,7 @@ public static class Ansi
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void FillForegroundRGB(ref char buffer, byte r, byte g, byte b)
     {
-        ref char hpCache = ref Unchecked.GetReference(_pCache);
+        ref char hpCache = ref _pCache.GetReference();
         ref char tpCache = ref Unsafe.Add(ref hpCache, 256);
         ref char opCache = ref Unsafe.Add(ref hpCache, 512);
         Unsafe.As<char, RGBHeader>(ref buffer) = _foregroundHeader;
@@ -101,13 +101,13 @@ public static class Ansi
     public static string Foreground(int r, int g, int b)
     {
         string result = new('\0', 19);
-        FillForegroundRGB(ref Unchecked.GetReference(result), (byte)r, (byte)g, (byte)b);
+        FillForegroundRGB(ref result.GetReference(), (byte)r, (byte)g, (byte)b);
         return result;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void FillBackgroundRGB(ref char buffer, byte r, byte g, byte b)
     {
-        ref char hpCache = ref Unchecked.GetReference(_pCache);
+        ref char hpCache = ref _pCache.GetReference();
         ref char tpCache = ref Unsafe.Add(ref hpCache, 256);
         ref char opCache = ref Unsafe.Add(ref hpCache, 512);
         Unsafe.As<char, RGBHeader>(ref buffer) = _backgroundHeader;
@@ -126,7 +126,7 @@ public static class Ansi
     public static string Background(int r, int g, int b)
     {
         string result = new('\0', 19);
-        FillBackgroundRGB(ref Unchecked.GetReference(result), (byte)r, (byte)g, (byte)b);
+        FillBackgroundRGB(ref result.GetReference(), (byte)r, (byte)g, (byte)b);
         return result;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -171,14 +171,14 @@ public static class Ansi
     #region StringBuilder extensions
     public static unsafe StringBuilder AppendForeground(this StringBuilder sb, int r, int g, int b)
     {
-        char* buffer = stackalloc char[19];
-        Ansi.FillForegroundRGB(ref Unchecked.GetReference(buffer), (byte)r, (byte)g, (byte)b);
+        Unchecked.Ptr<char> buffer = stackalloc char[19];
+        Ansi.FillForegroundRGB(ref buffer.GetReference(), (byte)r, (byte)g, (byte)b);
         return sb.Append(buffer, 19);
     }
     public static unsafe StringBuilder AppendBackground(this StringBuilder sb, int r, int g, int b)
     {
-        char* buffer = stackalloc char[19];
-        Ansi.FillBackgroundRGB(ref Unchecked.GetReference(buffer), (byte)r, (byte)g, (byte)b);
+        Unchecked.Ptr<char> buffer = stackalloc char[19];
+        Ansi.FillBackgroundRGB(ref buffer.GetReference(), (byte)r, (byte)g, (byte)b);
         return sb.Append(buffer, 19);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
