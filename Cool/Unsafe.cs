@@ -232,18 +232,6 @@ public static unsafe class Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T Add<T>(ref T source, int elementOffset)
-    {
-        Ldarg(nameof(source));
-        Ldarg(nameof(elementOffset));
-        Sizeof(typeof(T));
-        Conv_I();
-        Mul();
-        IL.Emit.Add();
-        return ref IL.ReturnRef<T>();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void* Add<T>(void* source, int elementOffset)
     {
         Ldarg(nameof(source));
@@ -253,6 +241,40 @@ public static unsafe class Unsafe
         Mul();
         IL.Emit.Add();
         return IL.ReturnPointer();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void* Add<T>(void* source, IntPtr elementOffset)
+    {
+        Ldarg(nameof(source));
+        Ldarg(nameof(elementOffset));
+        Sizeof(typeof(T));
+        Mul();
+        IL.Emit.Add();
+        return IL.ReturnPointer();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void* Add<T>(void* source, nuint elementOffset)
+    {
+        Ldarg(nameof(source));
+        Ldarg(nameof(elementOffset));
+        Sizeof(typeof(T));
+        Mul();
+        IL.Emit.Add();
+        return IL.ReturnPointer();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T Add<T>(ref T source, int elementOffset)
+    {
+        Ldarg(nameof(source));
+        Ldarg(nameof(elementOffset));
+        Sizeof(typeof(T));
+        Conv_I();
+        Mul();
+        IL.Emit.Add();
+        return ref IL.ReturnRef<T>();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -296,18 +318,6 @@ public static unsafe class Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T Subtract<T>(ref T source, int elementOffset)
-    {
-        Ldarg(nameof(source));
-        Ldarg(nameof(elementOffset));
-        Sizeof(typeof(T));
-        Conv_I();
-        Mul();
-        Sub();
-        return ref IL.ReturnRef<T>();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void* Subtract<T>(void* source, int elementOffset)
     {
         Ldarg(nameof(source));
@@ -317,6 +327,40 @@ public static unsafe class Unsafe
         Mul();
         Sub();
         return IL.ReturnPointer();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void* Subtract<T>(void* source, IntPtr elementOffset)
+    {
+        Ldarg(nameof(source));
+        Ldarg(nameof(elementOffset));
+        Sizeof(typeof(T));
+        Mul();
+        Sub();
+        return IL.ReturnPointer();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void* Subtract<T>(void* source, UIntPtr elementOffset)
+    {
+        Ldarg(nameof(source));
+        Ldarg(nameof(elementOffset));
+        Sizeof(typeof(T));
+        Mul();
+        Sub();
+        return IL.ReturnPointer();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T Subtract<T>(ref T source, int elementOffset)
+    {
+        Ldarg(nameof(source));
+        Ldarg(nameof(elementOffset));
+        Sizeof(typeof(T));
+        Conv_I();
+        Mul();
+        Sub();
+        return ref IL.ReturnRef<T>();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
