@@ -62,7 +62,7 @@ public static class Ansi
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 32)]
-    public struct RGBHeader { }
+    public struct RGBHeader;
     private static readonly RGBHeader _foregroundHeader = Unsafe.As<char, RGBHeader>(ref Unchecked.GetReference("\x1b[38;2;000;000;0"));
     private static readonly RGBHeader _backgroundHeader = Unsafe.As<char, RGBHeader>(ref Unchecked.GetReference("\x1b[48;2;000;000;0"));
     private static readonly char[] _pCache = InitNativeCache();
@@ -140,97 +140,97 @@ public static class Ansi
 
     #region string extensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToSGR(this string input) => Ansi.C0_CSI + input + Ansi.SGR;
+    public static string ToSGR(this string input) => C0_CSI + input + SGR;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToBold(this string text) => Ansi.Bold + text + Ansi.NoBold;
+    public static string ToBold(this string text) => Bold + text + NoBold;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToDim(this string text) => Ansi.Dim + text + Ansi.NoDim;
+    public static string ToDim(this string text) => Dim + text + NoDim;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToItalic(this string text) => Ansi.Italic + text + Ansi.NoItalic;
+    public static string ToItalic(this string text) => Italic + text + NoItalic;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToUnderline(this string text) => Ansi.Underline + text + Ansi.NoUnderline;
+    public static string ToUnderline(this string text) => Underline + text + NoUnderline;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToInverse(this string text) => Ansi.Inverse + text + Ansi.NoInverse;
+    public static string ToInverse(this string text) => Inverse + text + NoInverse;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToHidden(this string text) => Ansi.Hidden + text + Ansi.NoHidden;
+    public static string ToHidden(this string text) => Hidden + text + NoHidden;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrikethrough(this string text) => Ansi.Strikethrough + text + Ansi.NoStrikethrough;
+    public static string ToStrikethrough(this string text) => Strikethrough + text + NoStrikethrough;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToColor(this string text, int r, int g, int b) => Ansi.Foreground(r, g, b) + text + Ansi.DefaultForeground;
+    public static string ToColor(this string text, int r, int g, int b) => Foreground(r, g, b) + text + DefaultForeground;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToColor(this string text, Xterm256 color) => Ansi.Foreground(color) + text + Ansi.DefaultForeground;
+    public static string ToColor(this string text, Xterm256 color) => Foreground(color) + text + DefaultForeground;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToColor(this string text, Xterm16 color) => Ansi.Foreground(color) + text + Ansi.DefaultForeground;
+    public static string ToColor(this string text, Xterm16 color) => Foreground(color) + text + DefaultForeground;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToBackgroundColor(this string text, int r, int g, int b) => Ansi.Background(r, g, b) + text + Ansi.DefaultBackground;
+    public static string ToBackgroundColor(this string text, int r, int g, int b) => Background(r, g, b) + text + DefaultBackground;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToBackgroundColor(this string text, Xterm256 color) => Ansi.Background(color) + text + Ansi.DefaultBackground;
+    public static string ToBackgroundColor(this string text, Xterm256 color) => Background(color) + text + DefaultBackground;
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToBackgroundColor(this string text, Xterm16 color) => Ansi.Background(color) + text + Ansi.DefaultBackground;
+    public static string ToBackgroundColor(this string text, Xterm16 color) => Background(color) + text + DefaultBackground;
     #endregion
     #region StringBuilder extensions
     public static unsafe StringBuilder AppendForeground(this StringBuilder sb, int r, int g, int b)
     {
         Unchecked.Ptr<char> buffer = stackalloc char[19];
-        Ansi.FillForegroundRGB(ref buffer.GetReference(), (byte)r, (byte)g, (byte)b);
+        FillForegroundRGB(ref buffer.GetReference(), (byte)r, (byte)g, (byte)b);
         return sb.Append(buffer, 19);
     }
     public static unsafe StringBuilder AppendBackground(this StringBuilder sb, int r, int g, int b)
     {
         Unchecked.Ptr<char> buffer = stackalloc char[19];
-        Ansi.FillBackgroundRGB(ref buffer.GetReference(), (byte)r, (byte)g, (byte)b);
+        FillBackgroundRGB(ref buffer.GetReference(), (byte)r, (byte)g, (byte)b);
         return sb.Append(buffer, 19);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendForeground(this StringBuilder sb, Xterm256 color) => sb.Append(Ansi.Foreground(color));
+    public static StringBuilder AppendForeground(this StringBuilder sb, Xterm256 color) => sb.Append(Foreground(color));
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBackground(this StringBuilder sb, Xterm256 color) => sb.Append(Ansi.Background(color));
+    public static StringBuilder AppendBackground(this StringBuilder sb, Xterm256 color) => sb.Append(Background(color));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendForeground(this StringBuilder sb, Xterm16 color) => sb.Append(Ansi.Foreground(color));
+    public static StringBuilder AppendForeground(this StringBuilder sb, Xterm16 color) => sb.Append(Foreground(color));
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBackground(this StringBuilder sb, Xterm16 color) => sb.Append(Ansi.Background(color));
+    public static StringBuilder AppendBackground(this StringBuilder sb, Xterm16 color) => sb.Append(Background(color));
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendSGR(this StringBuilder sb, string input) => sb.Append(Ansi.C0_CSI).Append(input).Append('m');
+    public static StringBuilder AppendSGR(this StringBuilder sb, string input) => sb.Append(C0_CSI).Append(input).Append('m');
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBold(this StringBuilder sb, string text) => sb.Append(Ansi.Bold).Append(text).Append(Ansi.NoBold);
+    public static StringBuilder AppendBold(this StringBuilder sb, string text) => sb.Append(Bold).Append(text).Append(NoBold);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendDim(this StringBuilder sb, string text) => sb.Append(Ansi.Dim).Append(text).Append(Ansi.NoDim);
+    public static StringBuilder AppendDim(this StringBuilder sb, string text) => sb.Append(Dim).Append(text).Append(NoDim);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendItalic(this StringBuilder sb, string text) => sb.Append(Ansi.Italic).Append(text).Append(Ansi.NoItalic);
+    public static StringBuilder AppendItalic(this StringBuilder sb, string text) => sb.Append(Italic).Append(text).Append(NoItalic);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendUnderline(this StringBuilder sb, string text) => sb.Append(Ansi.Underline).Append(text).Append(Ansi.NoUnderline);
+    public static StringBuilder AppendUnderline(this StringBuilder sb, string text) => sb.Append(Underline).Append(text).Append(NoUnderline);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendInverse(this StringBuilder sb, string text) => sb.Append(Ansi.Inverse).Append(text).Append(Ansi.NoInverse);
+    public static StringBuilder AppendInverse(this StringBuilder sb, string text) => sb.Append(Inverse).Append(text).Append(NoInverse);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendHidden(this StringBuilder sb, string text) => sb.Append(Ansi.Hidden).Append(text).Append(Ansi.NoHidden);
+    public static StringBuilder AppendHidden(this StringBuilder sb, string text) => sb.Append(Hidden).Append(text).Append(NoHidden);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendStrikethrough(this StringBuilder sb, string text) => sb.Append(Ansi.Strikethrough).Append(text).Append(Ansi.NoStrikethrough);
+    public static StringBuilder AppendStrikethrough(this StringBuilder sb, string text) => sb.Append(Strikethrough).Append(text).Append(NoStrikethrough);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendColor(this StringBuilder sb, string text, int r, int g, int b) => sb.AppendForeground(r, g, b).Append(text).Append(Ansi.DefaultForeground);
+    public static StringBuilder AppendColor(this StringBuilder sb, string text, int r, int g, int b) => sb.AppendForeground(r, g, b).Append(text).Append(DefaultForeground);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendColor(this StringBuilder sb, string text, Xterm256 color) => sb.AppendForeground(color).Append(text).Append(Ansi.DefaultForeground);
+    public static StringBuilder AppendColor(this StringBuilder sb, string text, Xterm256 color) => sb.AppendForeground(color).Append(text).Append(DefaultForeground);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendColor(this StringBuilder sb, string text, Xterm16 color) => sb.AppendForeground(color).Append(text).Append(Ansi.DefaultForeground);
+    public static StringBuilder AppendColor(this StringBuilder sb, string text, Xterm16 color) => sb.AppendForeground(color).Append(text).Append(DefaultForeground);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, int r, int g, int b) => sb.AppendBackground(r, g, b).Append(text).Append(Ansi.DefaultBackground);
+    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, int r, int g, int b) => sb.AppendBackground(r, g, b).Append(text).Append(DefaultBackground);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, Xterm256 color) => sb.AppendBackground(color).Append(text).Append(Ansi.DefaultBackground);
+    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, Xterm256 color) => sb.AppendBackground(color).Append(text).Append(DefaultBackground);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, Xterm16 color) => sb.AppendBackground(color).Append(text).Append(Ansi.DefaultBackground);
+    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, Xterm16 color) => sb.AppendBackground(color).Append(text).Append(DefaultBackground);
     #endregion
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref char WriteForeground(ref char buffer, int r, int g, int b)
     {
-        Ansi.FillForegroundRGB(ref buffer, (byte)r, (byte)g, (byte)b);
+        FillForegroundRGB(ref buffer, (byte)r, (byte)g, (byte)b);
         return ref Unsafe.Add(ref buffer, 19);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref char WriteBackground(ref char buffer, int r, int g, int b)
     {
-        Ansi.FillBackgroundRGB(ref buffer, (byte)r, (byte)g, (byte)b);
+        FillBackgroundRGB(ref buffer, (byte)r, (byte)g, (byte)b);
         return ref Unsafe.Add(ref buffer, 19);
     }
 }
