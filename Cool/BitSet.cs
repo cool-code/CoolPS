@@ -623,18 +623,18 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
             for (; i < count - 8; i += 8)
             {
                 uint* p = ptr + i;
-                hash = hash * 31 + p[0];
-                hash = hash * 31 + p[1];
-                hash = hash * 31 + p[2];
-                hash = hash * 31 + p[3];
-                hash = hash * 31 + p[4];
-                hash = hash * 31 + p[5];
-                hash = hash * 31 + p[6];
-                hash = hash * 31 + p[7];
+                hash = (hash * 31) + p[0];
+                hash = (hash * 31) + p[1];
+                hash = (hash * 31) + p[2];
+                hash = (hash * 31) + p[3];
+                hash = (hash * 31) + p[4];
+                hash = (hash * 31) + p[5];
+                hash = (hash * 31) + p[6];
+                hash = (hash * 31) + p[7];
             }
             for (; i < count; i++)
             {
-                hash = hash * 31 + ptr[i];
+                hash = (hash * 31) + ptr[i];
             }
             return (int)hash;
         }
