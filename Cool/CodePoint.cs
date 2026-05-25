@@ -153,13 +153,13 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         if (!IsValid()) return "\uFFFD";
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
         v -= 0x10000u;
-        string result = new('\0', 2);
-        Unchecked.Write(result, 0, (char)((v >> 10) + HighSurrogateStart));
-        Unchecked.Write(result, 1, (char)((v & 0x3FFu) + LowSurrogateStart));
+        Unchecked.String result = new string('\0', 2);
+        result[0] = (char)((v >> 10) + HighSurrogateStart);
+        result[1] = (char)((v & 0x3FFu) + LowSurrogateStart);
         return result;
     }
 
-    private const string _hexDigits = "0123456789ABCDEF";
+    private static readonly Unchecked.String _hexDigits = "0123456789ABCDEF";
     public string ToUnicode()
     {
         // For invalid code points, return "U+FFFD" which is the standard replacement character
@@ -172,13 +172,12 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
 
         int len = 2 + digits;
-        string result = new('\0', len);
-        var hexDigits = _hexDigits;
-        Unchecked.Write(result, 0, 'U');
-        Unchecked.Write(result, 1, '+');
+        Unchecked.String result = new string('\0', len);
+        result[0] = 'U';
+        result[1] = '+';
         for (int j = len - 1; j >= 2; j--)
         {
-            Unchecked.Write(result, j, Unchecked.Read(hexDigits, (int)(v & 0xF)));
+            result[j] = _hexDigits[v & 0xF];
             v >>= 4;
         }
         return result;
@@ -298,31 +297,35 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     private static readonly BitSet emojiBitSet = new(MaxCodePoint, _emojiRange);
 
     /// <summary>
+    /// <para>
     /// Check if the code point is in the bitmap for wide characters, which allows for O(1) checks for code points up to 0x1FFFF.
     /// For code points above 0x1FFFF, we check if they are in the range of Plane 2 (0x20000-0x2FFFD) and Plane 3 (0x30000-0x3FFFD) which are all wide characters.
     /// This approach allows us to efficiently determine the width of a code point without needing to hardcode checks for each individual character, and it also allows for future additions to Unicode without needing to change the underlying logic.
-    /// 
+    /// </para>
+    /// <para>
     /// `(((uint)(_value - 0x20000) & ~0x10000u) <= 0xFFFDu)` <=> `(_value >= 0x20000 && _value <= 0x2FFFD) || (_value >= 0x30000 && _value <= 0x3FFFD)`
     /// which covers the range of code points that are considered wide width in the Unicode standard, specifically those in the Plane 2 and Plane 3 supplementary planes.
     /// _value ∈ [0x20000 .. 0x2FFFD] => (uint)(_value - 0x20000) & ~0x10000u ∈ [0 .. 0xFFFD] => (uint)(_value - 0x20000) & ~0x10000u <= 0xFFFD
     /// _value ∈ [0x30000 .. 0x3FFFD] => (uint)(_value - 0x20000) & ~0x10000u ∈ [0 .. 0xFFFD] => (uint)(_value - 0x20000) & ~0x10000u <= 0xFFFD
     /// other values will not satisfy the condition and return false, which is correct since they are not considered wide width characters.
-    /// 
+    /// </para>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly bool IsWideWidth() => wideBitSet.Contains(_value) || (((_value - 0x20000u) & ~0x10000u) <= 0xFFFDu);
 
 
     /// <summary>
+    /// <para>
     /// Check if the code point is in the bitmap for ambiguous width characters, which allows for O(1) checks for code points up to 0x1FFFF.
     /// For code points above 0x1FFFF, we check if they are in the range of Plane 15 (0xF0000-0xFFFFD) and Plane 16 (0x100000-0x10FFFD) which are all ambiguous width characters.
-    ///             
+    /// </para>
+    /// <para>
     /// `(((uint)(_value - 0xF0000) & ~0x10000u) <= 0xFFFDu)` <=> `(_value >= 0xF0000 && _value <= 0xFFFFD) || (_value >= 0x100000 && _value <= 0x10FFFD)`
     /// which covers the range of code points that are considered ambiguous width in the Unicode standard, specifically those in the Plane 15 and Plane 16 supplementary planes.
     /// _value ∈ [0xF0000 .. 0xFFFFD] => (uint)(_value - 0xF0000) & ~0x10000u ∈ [0 .. 0xFFFD] => (uint)(_value - 0xF0000) & ~0x10000u <= 0xFFFD
     /// _value ∈ [0x100000 .. 0x10FFFD] => (uint)(_value - 0xF0000) & ~0x10000u ∈ [0 .. 0xFFFD] => (uint)(_value - 0xF0000) & ~0x10000u <= 0xFFFD
     /// other values will not satisfy the condition and return false, which is correct since they are not considered ambiguous width characters.
-    /// 
+    /// </para>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly bool IsAmbiguousWidth() => ambigBitSet.Contains(_value) || (((_value - 0xF0000u) & ~0x10000u) <= 0xFFFDu);
@@ -432,7 +435,7 @@ public static class CodePointExtensions
         foreach (var c in cp) sb.Append(c);
         return sb;
     }
-    private const string _hexDigits = "0123456789ABCDEF";
+    private static readonly Unchecked.String _hexDigits = "0123456789ABCDEF";
     public static unsafe StringBuilder AppendUnicode(this StringBuilder sb, CodePoint cp)
     {
         // For invalid code points, append "U+FFFD" which is the standard replacement character
@@ -445,13 +448,11 @@ public static class CodePointExtensions
         int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
 
         int len = 2 + digits;
-        char* buf = stackalloc char[len];
+        Unchecked.Ptr<char> buf = stackalloc char[len];
         buf[0] = 'U'; buf[1] = '+';
-        var hexDigits = _hexDigits;
-
         for (int j = len - 1; j >= 2; j--)
         {
-            buf[j] = Unchecked.Read(hexDigits, (int)(v & 0xF));
+            buf[j] = _hexDigits[v & 0xF];
             v >>= 4;
         }
 

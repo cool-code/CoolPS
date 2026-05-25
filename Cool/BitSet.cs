@@ -715,7 +715,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         }
     }
 
-    private const string _hexDigits = "0123456789ABCDEF";
+    private static readonly Unchecked.String _hexDigits = "0123456789ABCDEF";
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AppendHex(StringBuilder sb, uint value, char* buf)
     {
@@ -731,7 +731,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         while (value != 0u)
         {
             uint nibble = value & 0xFu;
-            buf[--i] = _hexDigits[(int)nibble];
+            buf[--i] = _hexDigits[nibble];
             value >>= 4;
         }
 
@@ -739,15 +739,15 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         sb.Append(buf + i, 8 - i);
     }
 
-    private static readonly int[] _multiplyDeBruijnBitPosition = [
+    private static readonly Unchecked.Array<int> _multiplyDeBruijnBitPosition = new int[32]{
         0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
         31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
-    ];
+    };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int CountTrailingZeros(uint v)
     {
-        return Unchecked.Read(_multiplyDeBruijnBitPosition, (int)(((uint)((v & -v) * 0x077CB531U)) >> 27));
+        return _multiplyDeBruijnBitPosition[((uint)((v & -v) * 0x077CB531U)) >> 27];
     }
     #endregion
 }
