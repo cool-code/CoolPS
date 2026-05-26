@@ -24,10 +24,7 @@ public static partial class Unchecked
         private readonly T[] _array;
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing arrays.
-        private Array(T[] array)
-        {
-            _array = array;
-        }
+        private Array(T[] array) => _array = array;
         #endregion
 
         #region Properties and Indexer
@@ -75,14 +72,14 @@ public static partial class Unchecked
         #endregion
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Enumerator GetEnumerator() => new(this);
+        public Enumerator GetEnumerator() => new(_array);
         public ref struct Enumerator
         {
-            private readonly Array<T> _array;
+            private readonly T[] _array;
             private readonly uint _length;
             private uint _index;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(Array<T> array)
+            internal Enumerator(T[] array)
             {
                 _array = array;
                 _length = (uint)array.Length;
@@ -91,7 +88,7 @@ public static partial class Unchecked
             public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref _array[_index];
+                get => ref Unsafe.Add(ref _array.GetReference(), _index);
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext() => ++_index < _length;

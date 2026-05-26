@@ -13,7 +13,7 @@ namespace Cool.Benchmarks
         public int Size;
 
         private int[]? data;
-        private Unchecked.Array<int>? ua;
+        private Unchecked.Array<int> ua;
 
         [GlobalSetup]
         public void Setup()
@@ -27,7 +27,7 @@ namespace Cool.Benchmarks
         public int Foreach_SystemArray()
         {
             int sum = 0;
-            foreach (var v in data!) sum += v;
+            foreach (var v in data) sum += v;
             return sum;
         }
 
@@ -35,7 +35,7 @@ namespace Cool.Benchmarks
         public int Foreach_UncheckedArray()
         {
             int sum = 0;
-            foreach (var v in ua!) sum += v;
+            foreach (var v in ua) sum += v;
             return sum;
         }
     }

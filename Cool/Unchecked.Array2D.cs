@@ -25,10 +25,7 @@ public static partial class Unchecked
         private readonly T[,] _array;
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing 2D arrays.
-        private Array2D(T[,] array)
-        {
-            _array = array;
-        }
+        private Array2D(T[,] array) => _array = array;
         #endregion
         #region Properties and Indexer
         public int Rank => 2;
@@ -87,14 +84,14 @@ public static partial class Unchecked
 
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Enumerator GetEnumerator() => new(this);
+        public Enumerator GetEnumerator() => new(_array);
         public ref struct Enumerator
         {
-            private readonly Array2D<T> _array;
-            private uint _index = uint.MaxValue;
+            private readonly T[,] _array;
             private readonly uint _length;
+            private uint _index;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(Array2D<T> array)
+            internal Enumerator(T[,] array)
             {
                 _array = array;
                 _length = (uint)array.LongLength;
@@ -103,7 +100,7 @@ public static partial class Unchecked
             public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref _array[_index];
+                get => ref Unsafe.Add(ref _array.GetReference<T>(), _index);
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext() => ++_index < _length;
