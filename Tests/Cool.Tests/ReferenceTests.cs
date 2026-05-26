@@ -169,6 +169,10 @@ namespace Cool.Tests
             Assert.Equal(123, r2);
             ref object r3 = ref Unsafe.Add(ref r, 2);
             Assert.Equal(3.14, r3);
+            Unchecked.Array<object> arrWrapper = arr;
+            Assert.Equal("Hello", arrWrapper[0]);
+            Assert.Equal(123, arrWrapper[1]);
+            Assert.Equal(3.14, arrWrapper[2]);
         }
 
         [Fact]

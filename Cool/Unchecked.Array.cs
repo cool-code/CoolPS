@@ -7,15 +7,6 @@ namespace Cool;
 
 public static partial class Unchecked
 {
-    [StructLayout(LayoutKind.Explicit)]
-    private readonly struct LengthAndPadding
-    {
-        [FieldOffset(0)]
-        public readonly uint Length;
-        [FieldOffset(0)]
-        internal readonly UIntPtr lengthAndPadding;
-    }
-
     #region Unchecked Array
     [StructLayout(LayoutKind.Sequential)]
     /// <summary>
@@ -27,25 +18,26 @@ public static partial class Unchecked
     /// - Intended for use on .NET Framework 4.7+ and .NET 7+ (PowerShell scenarios).
     /// - Callers must ensure indices are valid; out-of-range accesses are undefined behavior.
     /// </remarks>
-    public sealed partial class Array<T>
+    public readonly struct Array<T>
     {
         #region Fields and Constructor
-        private readonly LengthAndPadding _lengthAndPadding = default;
-        private byte _placeholder; // Placeholder for the start of the array data; actual type is T
-
+        private readonly T[] _array;
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing arrays.
-        private Array() { }
+        private Array(T[] array)
+        {
+            _array = array;
+        }
         #endregion
 
         #region Properties and Indexer
         public int Rank => 1;
-        public int Length => (int)_lengthAndPadding.Length;
-        public long LongLength => _lengthAndPadding.Length;
+        public int Length => _array.Length;
+        public long LongLength => _array.LongLength;
         public bool IsFixedSize => true;
         public bool IsReadOnly => false;
         public bool IsSynchronized => false;
-        public object SyncRoot => this;
+        public object SyncRoot => _array;
         public ref T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -60,34 +52,26 @@ public static partial class Unchecked
 
         #region Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T GetReference() => ref Unsafe.As<byte, T>(ref _placeholder);
+        public ref T GetReference() => ref _array.GetReference();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ref T GetPinnableReference() => ref GetReference();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T[] ToArray() => Unsafe.As<T[]>(this);
+        public T[] ToArray() => _array;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLength(int dimension) => dimension switch
-        {
-            0 => (int)_lengthAndPadding.Length,
-            _ => throw new IndexOutOfRangeException(nameof(dimension))
-        };
+        public int GetLength(int dimension) => _array.GetLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long GetLongLength(int dimension) => GetLength(dimension);
+        public long GetLongLength(int dimension) => _array.GetLongLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLowerBound(int dimension) => dimension switch
-        {
-            0 => 0,
-            _ => throw new IndexOutOfRangeException(nameof(dimension))
-        };
+        public int GetLowerBound(int dimension) => _array.GetLowerBound(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetUpperBound(int dimension) => GetLowerBound(dimension) + GetLength(dimension) - 1;
+        public int GetUpperBound(int dimension) => _array.GetUpperBound(dimension);
         #endregion
         #region Implicit Conversions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator Array<T>(T[] value) => Unsafe.As<Array<T>>(value);
+        public static implicit operator Array<T>(T[] value) => new(value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator T[](Array<T> value) => Unsafe.As<T[]>(value);
+        public static implicit operator T[](Array<T> value) => value._array;
         #endregion
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -101,7 +85,7 @@ public static partial class Unchecked
             internal Enumerator(Array<T> array)
             {
                 _array = array;
-                _length = array._lengthAndPadding.Length;
+                _length = (uint)array.Length;
                 _index = uint.MaxValue;
             }
             public readonly ref T Current
