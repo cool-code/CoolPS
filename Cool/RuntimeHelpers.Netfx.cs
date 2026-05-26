@@ -31,7 +31,8 @@ public static class RuntimeHelpersExtensions
         public static readonly bool IsReferenceOrContainsReferences = IsReferenceOrContainsReferencesCore(typeof(T));
     }
 
-    extension(System.Runtime.CompilerServices.RuntimeHelpers) {
+    extension(System.Runtime.CompilerServices.RuntimeHelpers)
+    {
         public static bool IsReferenceOrContainsReferences<T>() => PerTypeValues<T>.IsReferenceOrContainsReferences;
     }
 }
