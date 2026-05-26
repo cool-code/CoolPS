@@ -122,6 +122,24 @@ public static unsafe class Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void CopyBlock(void* destination, void* source, nuint byteCount)
+    {
+        Ldarg(nameof(destination));
+        Ldarg(nameof(source));
+        Ldarg(nameof(byteCount));
+        Cpblk();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void CopyBlock(ref byte destination, ref byte source, nuint byteCount)
+    {
+        Ldarg(nameof(destination));
+        Ldarg(nameof(source));
+        Ldarg(nameof(byteCount));
+        Cpblk();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CopyBlockUnaligned(void* destination, void* source, uint byteCount)
     {
         Ldarg(nameof(destination));
@@ -133,6 +151,26 @@ public static unsafe class Unsafe
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CopyBlockUnaligned(ref byte destination, ref byte source, uint byteCount)
+    {
+        Ldarg(nameof(destination));
+        Ldarg(nameof(source));
+        Ldarg(nameof(byteCount));
+        Unaligned(1);
+        Cpblk();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void CopyBlockUnaligned(void* destination, void* source, nuint byteCount)
+    {
+        Ldarg(nameof(destination));
+        Ldarg(nameof(source));
+        Ldarg(nameof(byteCount));
+        Unaligned(1);
+        Cpblk();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void CopyBlockUnaligned(ref byte destination, ref byte source, nuint byteCount)
     {
         Ldarg(nameof(destination));
         Ldarg(nameof(source));
@@ -160,6 +198,24 @@ public static unsafe class Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void InitBlock(void* startAddress, byte value, nuint byteCount)
+    {
+        Ldarg(nameof(startAddress));
+        Ldarg(nameof(value));
+        Ldarg(nameof(byteCount));
+        Initblk();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void InitBlock(ref byte startAddress, byte value, nuint byteCount)
+    {
+        Ldarg(nameof(startAddress));
+        Ldarg(nameof(value));
+        Ldarg(nameof(byteCount));
+        Initblk();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void InitBlockUnaligned(void* startAddress, byte value, uint byteCount)
     {
         Ldarg(nameof(startAddress));
@@ -171,6 +227,26 @@ public static unsafe class Unsafe
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void InitBlockUnaligned(ref byte startAddress, byte value, uint byteCount)
+    {
+        Ldarg(nameof(startAddress));
+        Ldarg(nameof(value));
+        Ldarg(nameof(byteCount));
+        Unaligned(1);
+        Initblk();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void InitBlockUnaligned(void* startAddress, byte value, nuint byteCount)
+    {
+        Ldarg(nameof(startAddress));
+        Ldarg(nameof(value));
+        Ldarg(nameof(byteCount));
+        Unaligned(1);
+        Initblk();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void InitBlockUnaligned(ref byte startAddress, byte value, nuint byteCount)
     {
         Ldarg(nameof(startAddress));
         Ldarg(nameof(value));
@@ -213,6 +289,13 @@ public static unsafe class Unsafe
     {
         Ldarg(nameof(source));
         return ref IL.ReturnRef<T>();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref TTo AsRef<TFrom, TTo>(in TFrom source)
+    {
+        Ldarg(nameof(source));
+        return ref IL.ReturnRef<TTo>();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -455,5 +538,17 @@ public static unsafe class Unsafe
         Ldc_I4_0();
         Conv_U();
         return ref IL.ReturnRef<T>();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TTo BitCast<TFrom, TTo>(TFrom source)
+        where TFrom : struct
+        where TTo : struct
+    {
+#if DEBUG
+        if (SizeOf<TFrom>() != SizeOf<TTo>()) throw new NotSupportedException();
+#endif
+        Ldarg(nameof(source));
+        return IL.Return<TTo>();
     }
 }
