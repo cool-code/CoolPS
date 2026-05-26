@@ -7,11 +7,20 @@
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
+  </ItemGroup>
+
+  <!-- Debug Mode：net47 using low version System.Memory -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net47' AND '$(Configuration)' == 'Debug'">
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+  </ItemGroup>
+
+  <!-- Release Mode：net47 using high version System.Memory -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net47' AND '$(Configuration)' == 'Release'">
+    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
   </ItemGroup>
 
   <ItemGroup>
