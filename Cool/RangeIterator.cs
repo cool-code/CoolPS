@@ -1,10 +1,9 @@
-using System;
 using System.Runtime.CompilerServices;
 using Cool.NumberDrivers;
 
 namespace Cool;
 
-public ref struct RangeIterator<T, TNumberDriver>
+public struct RangeIterator<T, TNumberDriver>
     where T : struct
     where TNumberDriver : struct, INumberDriver<T>
 {
