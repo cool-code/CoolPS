@@ -21,15 +21,21 @@ public static partial class Unchecked
     public static ref readonly char GetPinnableReference(this string? str) => ref Unsafe.As<RawStringData>(str).Data;
     #endregion
 
+    [StructLayout(LayoutKind.Sequential)]
+    private sealed class RawArrayData
+    {
+        public nuint LengthAndPadding;
+        public byte Data;
+    }
     #region aggressive inlining Array.GetReference for .NET Framework
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(this T[] array) => ref ((Array<T>)array).GetReference();
+    public static ref T GetReference<T>(this T[] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[], RawArrayData>(ref array).Data);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T GetReference<T>(this Array array)
     {
         int rank = array.Rank;
-        ref T baseRef = ref Unsafe.As<Array<T>>(array).GetReference();
+        ref T baseRef = ref Unsafe.As<byte, T>(ref Unsafe.As<Array, RawArrayData>(ref array).Data);
         if (rank == 1 && array.GetLowerBound(0) == 0) return ref baseRef;
         return ref Unsafe.AddByteOffset(ref baseRef, (IntPtr)(rank << 3));
     }
