@@ -63,7 +63,6 @@ public static partial class Unchecked
     /// </summary>
     /// <remarks>
     /// - High-performance wrapper: intentionally omits bounds checks and other safety checks.
-    /// - Supports only zero-based, rectangular 2-D arrays; non-zero lower bounds are not supported.
     /// - Intended for use on .NET Framework 4.7+ and .NET 7+ (PowerShell scenarios).
     /// - The indexer mapping uses row-major order: offset = index1 * dim2Length + index2.
     /// - Callers must ensure indices are valid; out-of-range accesses are undefined behavior.
