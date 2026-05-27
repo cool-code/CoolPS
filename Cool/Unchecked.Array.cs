@@ -110,6 +110,22 @@ public static partial class Unchecked
         public int GetLowerBound(int dimension) => dimension == 0 ? 0 : throw new IndexOutOfRangeException(nameof(dimension));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetUpperBound(int dimension) => dimension == 0 ? Length - 1 : throw new IndexOutOfRangeException(nameof(dimension));
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index) => this[index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index) => this[index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index) => this[(uint)index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index) => this[(uint)index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index) => this[index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index) => this[index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index) => this[(uint)index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index) => this[(uint)index] = value;
         #endregion
         #region Implicit Conversions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

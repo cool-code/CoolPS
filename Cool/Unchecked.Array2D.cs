@@ -140,6 +140,38 @@ public static partial class Unchecked
             1 => Unsafe.As<RawArray2D>(_array).LowerBounds.Values[1] + Unsafe.As<RawArray2D>(_array).Lengths.Values[1] - 1,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index) => this[index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index) => this[index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index) => this[(uint)index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index) => this[(uint)index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index) => this[index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index) => this[index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index) => this[(uint)index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index) => this[(uint)index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index1, int index2) => this[index1, index2];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index1, uint index2) => this[index1, index2];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index1, long index2) => this[(uint)index1, (uint)index2];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index1, ulong index2) => this[(uint)index1, (uint)index2];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index1, int index2) => this[index1, index2] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index1, uint index2) => this[index1, index2] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index1, long index2) => this[(uint)index1, (uint)index2] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index1, ulong index2) => this[(uint)index1, (uint)index2] = value;
         #endregion
 
         #region Implicit Conversions
