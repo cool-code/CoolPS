@@ -7,6 +7,22 @@ namespace Cool;
 
 public static partial class Unchecked
 {
+    [StructLayout(LayoutKind.Explicit)]
+    private readonly struct LengthAndPadding
+    {
+        [FieldOffset(0)]
+        public readonly uint Length;
+        [FieldOffset(0)]
+        internal readonly UIntPtr lengthAndPadding;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private sealed class RawArray
+    {
+        public LengthAndPadding LengthAndPadding;
+        public byte Data;
+    }
+
     #region Unchecked Array
     [StructLayout(LayoutKind.Sequential)]
     /// <summary>
@@ -28,13 +44,44 @@ public static partial class Unchecked
         #endregion
 
         #region Properties and Indexer
-        public int Rank => 1;
-        public int Length => _array.Length;
-        public long LongLength => _array.LongLength;
-        public bool IsFixedSize => true;
-        public bool IsReadOnly => false;
-        public bool IsSynchronized => false;
-        public object SyncRoot => _array;
+        public int Rank
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => 1;
+        }
+
+        public int Length
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (int)Unsafe.As<RawArray>(_array).LengthAndPadding.Length;
+        }
+
+        public long LongLength
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Unsafe.As<RawArray>(_array).LengthAndPadding.Length;
+        }
+        public bool IsFixedSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => true;
+        }
+
+        public bool IsReadOnly
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => false;
+        }
+        public bool IsSynchronized
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => false;
+        }
+        public object SyncRoot
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _array;
+        }
         public ref T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -56,13 +103,13 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray() => _array;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLength(int dimension) => _array.GetLength(dimension);
+        public int GetLength(int dimension) => dimension == 0 ? Length : throw new IndexOutOfRangeException(nameof(dimension));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long GetLongLength(int dimension) => _array.GetLongLength(dimension);
+        public long GetLongLength(int dimension) => dimension == 0 ? LongLength : throw new IndexOutOfRangeException(nameof(dimension));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLowerBound(int dimension) => _array.GetLowerBound(dimension);
+        public int GetLowerBound(int dimension) => dimension == 0 ? 0 : throw new IndexOutOfRangeException(nameof(dimension));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetUpperBound(int dimension) => _array.GetUpperBound(dimension);
+        public int GetUpperBound(int dimension) => dimension == 0 ? Length - 1 : throw new IndexOutOfRangeException(nameof(dimension));
         #endregion
         #region Implicit Conversions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,7 +129,7 @@ public static partial class Unchecked
             internal Enumerator(T[] array)
             {
                 _array = array;
-                _length = (uint)array.Length;
+                _length = Unsafe.As<RawArray>(_array).LengthAndPadding.Length;
                 _index = uint.MaxValue;
             }
             public readonly ref T Current

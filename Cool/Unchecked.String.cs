@@ -12,7 +12,7 @@ public static partial class Unchecked
     public sealed class String
     {
         public readonly int Length = 0;
-        private char _firstChar = '\0';
+        internal char _firstChar = '\0';
 
         private String() { }
 
