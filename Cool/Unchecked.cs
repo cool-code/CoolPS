@@ -17,7 +17,7 @@ public static partial class Unchecked
     #endregion
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void SlowFill<T>(ref T reference, nuint numElements, in T value) where T : struct
+    private static void SlowFill<T>(ref T reference, nuint numElements, in T value)
     {
         nuint i = 0;
 
@@ -67,7 +67,7 @@ public static partial class Unchecked
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool FastFill<T>(ref T reference, nuint numElements, in T value) where T : struct
+    private static bool FastFill<T>(ref T reference, nuint numElements, in T value)
     {
         // We have enough data for at least one vectorized write.
         Vector<byte> vector;
@@ -177,7 +177,7 @@ public static partial class Unchecked
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Fill<T>(ref T reference, nuint numElements, in T value) where T : struct
+    public static void Fill<T>(ref T reference, nuint numElements, in T value)
     {
         if (numElements == 0) return;
 

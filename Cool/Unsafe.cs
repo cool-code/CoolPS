@@ -542,11 +542,9 @@ public static unsafe class Unsafe
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TTo BitCast<TFrom, TTo>(TFrom source)
-        where TFrom : struct
-        where TTo : struct
     {
 #if DEBUG
-        if (SizeOf<TFrom>() != SizeOf<TTo>()) throw new NotSupportedException();
+        if (SizeOf<TFrom>() != SizeOf<TTo>() || !typeof(TFrom).IsValueType || !typeof(TTo).IsValueType) throw new NotSupportedException();
 #endif
         Ldarg(nameof(source));
         return IL.Return<TTo>();
