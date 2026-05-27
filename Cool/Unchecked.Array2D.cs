@@ -8,18 +8,24 @@ namespace Cool;
 public static partial class Unchecked
 {
     [StructLayout(LayoutKind.Sequential)]
-    private struct Array2DInfo
-    {
-        public unsafe fixed int Values[2];
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     private sealed class RawArray2D
     {
         public LengthAndPadding LengthAndPadding;
-        public Array2DInfo Lengths;
-        public Array2DInfo LowerBounds;
+        public int Dim1Length;
+        public int Dim2Length;
+        public int Dim1LowerBound;
+        public int Dim2LowerBound;
         public byte Data;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T GetReference<T>() => ref Unsafe.As<byte, T>(ref Data);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private uint GetFlattenedIndex(uint index1, uint index2) => ((index1 - (uint)Dim1LowerBound) * (uint)Dim2Length) + (index2 - (uint)Dim2LowerBound);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private uint GetFlattenedIndex(int index1, int index2) => ((uint)(index1 - Dim1LowerBound) * (uint)Dim2Length) + (uint)(index2 - Dim2LowerBound);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T Get<T>(int index1, int index2) => ref Unsafe.Add(ref GetReference<T>(), GetFlattenedIndex(index1, index2));
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T Get<T>(uint index1, uint index2) => ref Unsafe.Add(ref GetReference<T>(), GetFlattenedIndex(index1, index2));
     }
 
     #region Unchecked Array
@@ -37,10 +43,10 @@ public static partial class Unchecked
     public readonly struct Array2D<T>
     {
         #region Fields and Constructor
-        private readonly T[,] _array;
+        private readonly RawArray2D _array;
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing 2D arrays.
-        private Array2D(T[,] array) => _array = array;
+        private Array2D(T[,] array) => _array = Unsafe.As<RawArray2D>(array);
         #endregion
         #region Properties and Indexer
         public int Rank
@@ -52,13 +58,13 @@ public static partial class Unchecked
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)Unsafe.As<RawArray2D>(_array).LengthAndPadding.Length;
+            get => (int)_array.LengthAndPadding.Length;
         }
 
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<RawArray2D>(_array).LengthAndPadding.Length;
+            get => _array.LengthAndPadding.Length;
         }
         public bool IsFixedSize
         {
@@ -92,15 +98,15 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref Unsafe.Add(ref GetReference(), (nint)index);
         }
-        public unsafe ref T this[int index1, int index2]
+        public ref T this[int index1, int index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref GetReference(), ((index1 - Unsafe.As<RawArray2D>(_array).LowerBounds.Values[0]) * (nint)Unsafe.As<RawArray2D>(_array).Lengths.Values[1]) + (index2 - Unsafe.As<RawArray2D>(_array).LowerBounds.Values[1]));
+            get => ref _array.Get<T>(index1, index2);
         }
-        public unsafe ref T this[uint index1, uint index2]
+        public ref T this[uint index1, uint index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref GetReference(), ((index1 - (uint)Unsafe.As<RawArray2D>(_array).LowerBounds.Values[0]) * (nuint)Unsafe.As<RawArray2D>(_array).Lengths.Values[1]) + (index2 - (uint)Unsafe.As<RawArray2D>(_array).LowerBounds.Values[1]));
+            get => ref _array.Get<T>(index1, index2);
         }
         #endregion
 
@@ -111,33 +117,33 @@ public static partial class Unchecked
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ref T GetPinnableReference() => ref GetReference();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T[,] ToArray() => _array;
+        public T[,] ToArray() => Unsafe.As<T[,]>(_array);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe int GetLength(int dimension) => dimension switch
         {
-            0 => Unsafe.As<RawArray2D>(_array).Lengths.Values[0],
-            1 => Unsafe.As<RawArray2D>(_array).Lengths.Values[1],
+            0 => _array.Dim1Length,
+            1 => _array.Dim2Length,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe long GetLongLength(int dimension) => dimension switch
         {
-            0 => Unsafe.As<RawArray2D>(_array).Lengths.Values[0],
-            1 => Unsafe.As<RawArray2D>(_array).Lengths.Values[1],
+            0 => _array.Dim1Length,
+            1 => _array.Dim2Length,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe int GetLowerBound(int dimension) => dimension switch
         {
-            0 => Unsafe.As<RawArray2D>(_array).LowerBounds.Values[0],
-            1 => Unsafe.As<RawArray2D>(_array).LowerBounds.Values[1],
+            0 => _array.Dim1LowerBound,
+            1 => _array.Dim2LowerBound,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe int GetUpperBound(int dimension) => dimension switch
         {
-            0 => Unsafe.As<RawArray2D>(_array).LowerBounds.Values[0] + Unsafe.As<RawArray2D>(_array).Lengths.Values[0] - 1,
-            1 => Unsafe.As<RawArray2D>(_array).LowerBounds.Values[1] + Unsafe.As<RawArray2D>(_array).Lengths.Values[1] - 1,
+            0 => _array.Dim1LowerBound + _array.Dim1Length - 1,
+            1 => _array.Dim2LowerBound + _array.Dim2Length - 1,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -178,12 +184,12 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Array2D<T>(T[,] value) => new(value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator T[,](Array2D<T> value) => value._array;
+        public static implicit operator T[,](Array2D<T> value) => Unsafe.As<T[,]>(value._array);
         #endregion
 
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Enumerator GetEnumerator() => new(_array);
+        public Enumerator GetEnumerator() => new(Unsafe.As<T[,]>(_array));
         public ref struct Enumerator
         {
             private readonly T[,] _array;

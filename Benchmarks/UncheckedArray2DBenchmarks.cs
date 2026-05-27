@@ -27,7 +27,7 @@ namespace Cool.Benchmarks
         public int Foreach_SystemArray2D()
         {
             int sum = 0;
-            foreach (var v in data) sum += v;
+            foreach (var v in data!) sum += v;
             return sum;
         }
 
@@ -38,5 +38,62 @@ namespace Cool.Benchmarks
             foreach (var v in ua) sum += v;
             return sum;
         }
+
+        [Benchmark]
+        public int For_IntIndex_SystemArray2D()
+        {
+            int sum = 0;
+            for (int i = 0; i < Size; i++)
+            {
+                for (int j = 0; j < Size; j++)
+                {
+                    sum += data![i, j];
+                }
+            }
+            return sum;
+        }
+
+        [Benchmark]
+        public int For_UintIndex_SystemArray2D()
+        {
+            int sum = 0;
+            for (uint i = 0; i < Size; i++)
+            {
+                for (uint j = 0; j < Size; j++)
+                {
+                    sum += data![i, j];
+                }
+            }
+            return sum;
+        }
+
+        [Benchmark]
+        public int For_IntIndex_UncheckedArray2D()
+        {
+            int sum = 0;
+            for (int i = 0; i < Size; i++)
+            {
+                for (int j = 0; j < Size; j++)
+                {
+                    sum += ua[i, j];
+                }
+            }
+            return sum;
+        }
+
+        [Benchmark]
+        public int For_UintIndex_UncheckedArray2D()
+        {
+            int sum = 0;
+            for (uint i = 0; i < Size; i++)
+            {
+                for (uint j = 0; j < Size; j++)
+                {
+                    sum += ua[i, j];
+                }
+            }
+            return sum;
+        }
+
     }
 }

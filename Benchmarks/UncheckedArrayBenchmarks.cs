@@ -27,7 +27,7 @@ namespace Cool.Benchmarks
         public int Foreach_SystemArray()
         {
             int sum = 0;
-            foreach (var v in data) sum += v;
+            foreach (var v in data!) sum += v;
             return sum;
         }
 
@@ -36,6 +36,22 @@ namespace Cool.Benchmarks
         {
             int sum = 0;
             foreach (var v in ua) sum += v;
+            return sum;
+        }
+
+        [Benchmark]
+        public int For_SystemArray()
+        {
+            int sum = 0;
+            for (int i = 0; i < Size; i++) sum += data![i];
+            return sum;
+        }
+
+        [Benchmark]
+        public int For_UncheckedArray()
+        {
+            int sum = 0;
+            for (int i = 0; i < Size; i++) sum += ua[i];
             return sum;
         }
     }
