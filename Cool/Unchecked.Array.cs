@@ -11,16 +11,16 @@ public static partial class Unchecked
     private readonly struct LengthAndPadding
     {
         [FieldOffset(0)]
-        public readonly uint Length;
+        internal readonly uint Length;
         [FieldOffset(0)]
-        internal readonly UIntPtr lengthAndPadding;
+        private readonly UIntPtr lengthAndPadding;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     private sealed class RawArray
     {
-        public LengthAndPadding LengthAndPadding;
-        public byte Data;
+        internal readonly LengthAndPadding LengthAndPadding;
+        internal byte Data;
     }
 
     #region Unchecked Array
