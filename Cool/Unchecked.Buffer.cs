@@ -23,7 +23,7 @@ public static partial class Unchecked
     }
     public readonly struct Buffer<T> where T : unmanaged
     {
-        private readonly BufferData<T>? _data;
+        private readonly object? _data;
         private readonly nint _byteOffset;
         private readonly nuint _length;
 
@@ -49,10 +49,9 @@ public static partial class Unchecked
                 this = default;
                 return;
             }
-            ref var data = ref Unsafe.As<T[], BufferData<T>>(ref array);
+            _data = array;
             _length = (nuint)array.Length;
             _byteOffset = _arrayDataOffset;
-            _data = data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,10 +62,9 @@ public static partial class Unchecked
                 this = default;
                 return;
             }
-            ref var data = ref Unsafe.As<T[], BufferData<T>>(ref array);
+            _data = array;
             _length = (nuint)(array.Length - start);
             _byteOffset = _arrayDataOffset.Add<T>(start);
-            _data = data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,10 +75,9 @@ public static partial class Unchecked
                 this = default;
                 return;
             }
-            ref var data = ref Unsafe.As<T[], BufferData<T>>(ref array);
+            _data = array;
             _length = (nuint)length;
             _byteOffset = _arrayDataOffset.Add<T>(start);
-            _data = data;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -91,10 +88,9 @@ public static partial class Unchecked
                 this = default;
                 return;
             }
-            ref var data = ref Unsafe.As<Array, BufferData<T>>(ref array);
+            _data = array;
             _length = (nuint)array.LongLength;
-            _byteOffset = Unsafe.ByteOffset(ref data.PlaceHolder, ref array.GetReference<T>());
-            _data = data;
+            _byteOffset = Unsafe.ByteOffset(ref Unsafe.As<Array, BufferData<T>>(ref array).PlaceHolder, ref array.GetReference<T>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,10 +101,9 @@ public static partial class Unchecked
                 this = default;
                 return;
             }
-            ref var data = ref Unsafe.As<Array, BufferData<T>>(ref array);
+            _data = array;
             _length = (nuint)((nint)array.LongLength - start);
-            _byteOffset = Unsafe.ByteOffset(ref data.PlaceHolder, ref array.GetReference<T>()).Add<T>(start);
-            _data = data;
+            _byteOffset = Unsafe.ByteOffset(ref Unsafe.As<Array, BufferData<T>>(ref array).PlaceHolder, ref array.GetReference<T>()).Add<T>(start);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -119,10 +114,9 @@ public static partial class Unchecked
                 this = default;
                 return;
             }
-            ref var data = ref Unsafe.As<Array, BufferData<T>>(ref array);
+            _data = array;
             _length = length;
-            _byteOffset = Unsafe.ByteOffset(ref data.PlaceHolder, ref array.GetReference<T>()).Add<T>(start);
-            _data = data;
+            _byteOffset = Unsafe.ByteOffset(ref Unsafe.As<Array, BufferData<T>>(ref array).PlaceHolder, ref array.GetReference<T>()).Add<T>(start);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,7 +127,7 @@ public static partial class Unchecked
             _byteOffset = (nint)ptr;
         }
 
-        internal Buffer(BufferData<T>? data, nint byteOffset, nuint length)
+        internal Buffer(object? data, nint byteOffset, nuint length)
         {
             _data = data;
             _length = length;
@@ -148,7 +142,7 @@ public static partial class Unchecked
                 if (_data == null)
                     unsafe { return ref Unsafe.Add(ref Unsafe.AsRef<T>(_byteOffset.ToPointer()), index); }
                 else
-                    return ref Unsafe.Add(ref Unsafe.AddByteOffset(ref _data.PlaceHolder, _byteOffset), index);
+                    return ref Unsafe.Add(ref Unsafe.AddByteOffset(ref Unsafe.As<BufferData<T>>(_data).PlaceHolder, _byteOffset), index);
             }
         }
 
@@ -159,7 +153,7 @@ public static partial class Unchecked
             {
                 unsafe { return ref Unsafe.AsRef<T>(_byteOffset.ToPointer()); }
             }
-            return ref Unsafe.AddByteOffset(ref _data.PlaceHolder, _byteOffset);
+            return ref Unsafe.AddByteOffset(ref Unsafe.As<BufferData<T>>(_data).PlaceHolder, _byteOffset);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -177,13 +171,7 @@ public static partial class Unchecked
         public Buffer<T> Slice(nint start, nuint length) => new(_data, _byteOffset.Add<T>(start), length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-            nuint length = _length;
-            if (length == 0) return;
-            nuint byteLength = length * (nuint)Unsafe.SizeOf<T>();
-            Unsafe.InitBlockUnaligned(ref Unsafe.As<T, byte>(ref GetReference()), 0, byteLength);
-        }
+        public void Clear() => Unchecked.Fill(ref GetReference(), _length, default);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Fill(in T value) => Unchecked.Fill(ref GetReference(), _length, in value);
