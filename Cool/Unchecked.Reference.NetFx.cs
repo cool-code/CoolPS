@@ -2,17 +2,15 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Cool;
-
 
 public static partial class Unchecked
 {
     #region aggressive inlining string.GetPinnableReference for .NET Framework
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static ref readonly char GetPinnableReference(this string? str) => ref Unsafe.As<String>(str)._firstChar;
+    public static ref readonly char GetPinnableReference(this string? str) => ref Unsafe.As<RawString>(str).FirstChar;
     #endregion
 
     #region aggressive inlining Array.GetReference for .NET Framework

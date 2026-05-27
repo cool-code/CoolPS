@@ -12,7 +12,6 @@ namespace Cool.Tests
         {
             string s = "Hello, 世界";
             Unchecked.String us = s;
-            Assert.NotNull(us);
             Assert.Equal(s.Length, us.Length);
             Assert.Equal(s, (string)us);
             Assert.Equal('H', us[0]);
@@ -35,7 +34,7 @@ namespace Cool.Tests
         {
             string s = null;
             Unchecked.String us = s;
-            Assert.Null(us);
+            Assert.Null(us.ToString());
             string back = us;
             Assert.Null(back);
         }

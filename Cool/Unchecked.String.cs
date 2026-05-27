@@ -1,64 +1,84 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
-using System;
 
 namespace Cool;
 
 public static partial class Unchecked
 {
-    #region Unchecked String
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class String
+    internal sealed class RawString
     {
         public readonly int Length = 0;
-        internal char _firstChar = '\0';
+        internal char FirstChar = '\0';
+    }
 
-        private String() { }
+    #region Unchecked String
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct String
+    {
+        private readonly string _string;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private String(string str) => _string = str;
+
+        public int Length
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _string.Length;
+        }
 
         public char this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.Add(ref _firstChar, index);
+            get => Unsafe.Add(ref _string.GetReference(), index);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => Unsafe.Add(ref _firstChar, index) = value;
+            set => Unsafe.Add(ref _string.GetReference(), index) = value;
         }
 
         public char this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.Add(ref _firstChar, index);
+            get => Unsafe.Add(ref _string.GetReference(), index);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => Unsafe.Add(ref _firstChar, index) = value;
+            set => Unsafe.Add(ref _string.GetReference(), index) = value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public ref readonly char GetPinnableReference() => ref _firstChar;
+        public ref readonly char GetPinnableReference() => ref Unsafe.As<RawString>(_string).FirstChar;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref char GetReference() => ref Unsafe.As<RawString>(_string).FirstChar;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override string ToString() => _string;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override string ToString() => Unsafe.As<string>(this);
-
+        public static implicit operator String(string value) => new(value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator String(string value) => Unsafe.As<String>(value);
+        public static implicit operator string(String value) => value._string;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator string(String value) => Unsafe.As<string>(value);
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Iterator GetEnumerator() => new(this);
-        public ref struct Iterator(String str)
+        public Enumerator GetEnumerator() => new(_string);
+        public ref struct Enumerator
         {
-            private int _index = -1;
+            private readonly string _str;
+            private int _index;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal Enumerator(string str)
+            {
+                _str = str;
+                _index = -1;
+            }
             public readonly char Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => str[_index];
+                get => Unsafe.Add(ref _str.GetReference(), _index);
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < str.Length;
+            public bool MoveNext() => ++_index < _str.Length;
         }
         #endregion
 

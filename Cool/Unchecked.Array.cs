@@ -40,6 +40,7 @@ public static partial class Unchecked
         private readonly T[] _array;
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing arrays.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Array(T[] array) => _array = array;
         #endregion
 
