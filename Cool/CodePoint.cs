@@ -1,8 +1,16 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Cool;
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct Surrogate(char high, char low)
+{
+    public char High = high;
+    public char Low = low;
+}
 
 public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparable<CodePoint>
 {
@@ -73,7 +81,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string operator +(CodePoint cp, string s) => string.Concat(cp.ToString(), s);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe string operator *(CodePoint cp, int count)
+    public static string operator *(CodePoint cp, int count)
     {
         if (count <= 0) return string.Empty;
 
@@ -86,61 +94,12 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         if (!cp.IsValid()) return new string('\uFFFD', count);
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
 
-        int size = (int)total;
-        string result = new('\0', size);
-        fixed (char* buf = result)
-        {
-            FillRepeatData(buf, v, size);
-        }
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void FillRepeatData(char* buf, uint v, int size)
-    {
-        // Hint to the compiler that `size` is always even; the JIT can enable combined 32/64-bit register copy optimizations.
-        if ((size & 1) != 0) throw new ArgumentException("UTF-16 surrogate pairs string size must be even.");
-
-        // size is guaranteed to be > 0 here, but we check it anyway to avoid
-        // reflecting the logic of the caller and to handle any future changes
-        // to the code that might affect this assumption.
-        if (size <= 0) return;
-
+        string result = Unchecked.FastAllocateString((int)total);
         v -= 0x10000u;
-        char highSurrogate = (char)((v >> 10) + HighSurrogateStart);
-        char lowSurrogate = (char)((v & 0x3FFu) + LowSurrogateStart);
+        Surrogate surrogate = new((char)((v >> 10) + HighSurrogateStart), (char)((v & 0x3FFu) + LowSurrogateStart));
+        Unchecked.Fill(ref Unsafe.As<char, Surrogate>(ref result.GetReference()), (nuint)count, surrogate);
 
-        // writing the first pair
-        buf[0] = highSurrogate;
-        buf[1] = lowSurrogate;
-
-        // small size can be handled by simple loop without calling MemoryCopy, which has more overhead for small sizes.
-        if (size < 64)
-        {
-            int i = 2;
-            while (i < size)
-            {
-                buf[i++] = highSurrogate;
-                buf[i++] = lowSurrogate;
-            }
-            return;
-        }
-
-        // exponential copy: each time copy the written area to the next, until filled
-        int written = 2;
-        long totalBytes = (long)size * sizeof(char);
-
-        while (written < size)
-        {
-            int copy = Math.Min(written, size - written);
-            long currentOffsetBytes = (long)written * sizeof(char);
-            long remainingBytes = totalBytes - currentOffsetBytes;
-
-            Buffer.MemoryCopy(buf, buf + written, remainingBytes, (long)copy * sizeof(char));
-            written += copy;
-        }
-
-        return;
+        return result;
     }
     #endregion
 
@@ -153,7 +112,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         if (!IsValid()) return "\uFFFD";
         // For code points above U+FFFF, we need to encode them as surrogate pairs in UTF-16
         v -= 0x10000u;
-        Unchecked.String result = new string('\0', 2);
+        Unchecked.String result = Unchecked.FastAllocateString(2);
         result[0] = (char)((v >> 10) + HighSurrogateStart);
         result[1] = (char)((v & 0x3FFu) + LowSurrogateStart);
         return result;
@@ -172,7 +131,7 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
         int digits = (v <= 0xFFFFu) ? 4 : (v <= 0xFFFFFu) ? 5 : 6;
 
         int len = 2 + digits;
-        Unchecked.String result = new string('\0', len);
+        Unchecked.String result = Unchecked.FastAllocateString(len);
         result[0] = 'U';
         result[1] = '+';
         for (int j = len - 1; j >= 2; j--)

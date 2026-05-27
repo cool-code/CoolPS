@@ -100,7 +100,7 @@ public static class Ansi
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Foreground(int r, int g, int b)
     {
-        string result = new('\0', 19);
+        string result = Unchecked.FastAllocateString(19);
         FillForegroundRGB(ref result.GetReference(), (byte)r, (byte)g, (byte)b);
         return result;
     }
@@ -125,7 +125,7 @@ public static class Ansi
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Background(int r, int g, int b)
     {
-        string result = new('\0', 19);
+        string result = Unchecked.FastAllocateString(19);
         FillBackgroundRGB(ref result.GetReference(), (byte)r, (byte)g, (byte)b);
         return result;
     }
