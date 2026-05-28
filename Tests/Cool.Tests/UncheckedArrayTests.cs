@@ -179,5 +179,106 @@ namespace Cool.Tests
             a2[linearIdx] = -99;
             Assert.Equal(-99, arr2[2, 1]);
         }
+        [Fact]
+        public void Array3D_Conversions_Indexers_Enumerator_And_Properties()
+        {
+            int d1 = 2, d2 = 3, d3 = 4;
+            int[,,] arr3 = new int[d1, d2, d3];
+            int v = 1;
+            for (int i = 0; i < d1; i++)
+                for (int j = 0; j < d2; j++)
+                    for (int k = 0; k < d3; k++)
+                        arr3[i, j, k] = v++;
+
+            Unchecked.Array3D<int> a3 = arr3;
+
+            Assert.Equal(arr3.Rank, a3.Rank);
+            Assert.Equal(arr3.Length, a3.Length);
+            Assert.Equal(arr3.LongLength, a3.LongLength);
+            Assert.Equal(arr3.IsFixedSize, a3.IsFixedSize);
+            Assert.Equal(arr3.IsReadOnly, a3.IsReadOnly);
+            Assert.Equal(arr3.IsSynchronized, a3.IsSynchronized);
+            Assert.Same(arr3.SyncRoot, a3.SyncRoot);
+            Assert.Same(arr3, a3.ToArray());
+
+            Assert.Equal(arr3.GetLength(0), a3.GetLength(0));
+            Assert.Equal(arr3.GetLowerBound(0), a3.GetLowerBound(0));
+            Assert.Equal(arr3.GetUpperBound(0), a3.GetUpperBound(0));
+            Assert.Equal(arr3.GetLength(1), a3.GetLength(1));
+            Assert.Equal(arr3.GetLowerBound(1), a3.GetLowerBound(1));
+            Assert.Equal(arr3.GetUpperBound(1), a3.GetUpperBound(1));
+            Assert.Equal(arr3.GetLength(2), a3.GetLength(2));
+            Assert.Equal(arr3.GetLowerBound(2), a3.GetLowerBound(2));
+            Assert.Equal(arr3.GetUpperBound(2), a3.GetUpperBound(2));
+
+            int linearIdx = 1 * d2 * d3 + 2 * d3 + 3;
+            Assert.Equal(arr3[1, 2, 3], a3[linearIdx]);
+            Assert.Equal(arr3[0, 0, 0], a3[0u]);
+
+            a3[linearIdx] = 9999;
+            Assert.Equal(9999, arr3[1, 2, 3]);
+            a3[0] = -5;
+            Assert.Equal(-5, arr3[0, 0, 0]);
+
+            int sumBefore = 0;
+            for (int i = 0; i < d1; i++)
+                for (int j = 0; j < d2; j++)
+                    for (int k = 0; k < d3; k++)
+                        sumBefore += arr3[i, j, k];
+
+            int cnt = 0;
+            foreach (ref int cur in a3)
+            {
+                cur += 10;
+                cnt++;
+            }
+            Assert.Equal(d1 * d2 * d3, cnt);
+
+            int sumAfter = 0;
+            for (int i = 0; i < d1; i++)
+                for (int j = 0; j < d2; j++)
+                    for (int k = 0; k < d3; k++)
+                        sumAfter += arr3[i, j, k];
+            Assert.Equal(sumBefore + 10 * d1 * d2 * d3, sumAfter);
+
+            Assert.Throws<IndexOutOfRangeException>(() => a3.GetLength(3));
+            Assert.Throws<IndexOutOfRangeException>(() => a3.GetLowerBound(3));
+
+            // string[,,] supports reference-type elements and ref-enumerator
+            int sr1 = 1, sr2 = 2, sr3 = 3;
+            string[,,] sarr = new string[sr1, sr2, sr3];
+            int si = 0;
+            for (int i = 0; i < sr1; i++)
+                for (int j = 0; j < sr2; j++)
+                    for (int k = 0; k < sr3; k++)
+                        sarr[i, j, k] = "s" + (si++).ToString();
+
+            Unchecked.Array3D<string> sa3 = sarr;
+            Assert.Same(sarr, sa3.ToArray());
+            sa3[0, 0, 0] = "start";
+            Assert.Equal("start", sarr[0, 0, 0]);
+            foreach (ref string s in sa3) s += "!";
+            for (int i = 0; i < sr1; i++)
+                for (int j = 0; j < sr2; j++)
+                    for (int k = 0; k < sr3; k++)
+                        Assert.EndsWith("!", sarr[i, j, k]);
+
+            // object[,,] elements can be mutated via ref-enumerator
+            int or1 = 1, or2 = 2, or3 = 3;
+            object?[,,] oarr = new object?[or1, or2, or3];
+            int oi = 0;
+            for (int i = 0; i < or1; i++)
+                for (int j = 0; j < or2; j++)
+                    for (int k = 0; k < or3; k++)
+                        oarr[i, j, k] = oi++;
+
+            Unchecked.Array3D<object?> oa3 = oarr;
+            Assert.Same(oarr, oa3.ToArray());
+            foreach (ref object? o in oa3) o = null;
+            for (int i = 0; i < or1; i++)
+                for (int j = 0; j < or2; j++)
+                    for (int k = 0; k < or3; k++)
+                        Assert.Null(oarr[i, j, k]);
+        }
     }
 }
