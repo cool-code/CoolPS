@@ -11,14 +11,14 @@ namespace Cool;
 
 public static class BitOperations
 {
-    private static readonly Unchecked.Array<byte> TrailingZeroCountDeBruijn = new byte[]{
+    private static readonly Unchecked.SZArray<byte> TrailingZeroCountDeBruijn = new byte[]{
             00, 01, 28, 02, 29, 14, 24, 03,
             30, 22, 20, 15, 25, 17, 04, 08,
             31, 27, 13, 23, 21, 19, 16, 07,
             26, 12, 18, 06, 11, 05, 10, 09
         };
 
-    private static readonly Unchecked.Array<byte> Log2DeBruijn = new byte[]{
+    private static readonly Unchecked.SZArray<byte> Log2DeBruijn = new byte[]{
             00, 09, 01, 10, 13, 21, 02, 29,
             11, 14, 16, 18, 22, 25, 03, 30,
             08, 12, 20, 28, 15, 17, 24, 07,
@@ -614,7 +614,7 @@ public static class BitOperations
         // this version uses reflected bit ordering, so 0x1EDC6F41 becomes 0x82F63B78u.
         // This is computed lazily so as to avoid increasing the assembly size for data that's
         // only needed on a fallback path.
-        private static readonly Unchecked.Array<uint> s_crcTable = Crc32ReflectedTable.Generate(0x82F63B78u);
+        private static readonly Unchecked.SZArray<uint> s_crcTable = Crc32ReflectedTable.Generate(0x82F63B78u);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static uint Crc32C(uint crc, byte data)

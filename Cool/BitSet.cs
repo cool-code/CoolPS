@@ -11,7 +11,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
     public readonly int AllocatedSize;
     private readonly int _wordCount;
     private readonly uint _tailMask;
-    private readonly Unchecked.Array<uint> _bitmap;
+    private readonly Unchecked.SZArray<uint> _bitmap;
     #endregion
 
     #region Constructors and Disposal
@@ -739,7 +739,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         sb.Append(buf + i, 8 - i);
     }
 
-    private static readonly Unchecked.Array<int> _multiplyDeBruijnBitPosition = new int[32]{
+    private static readonly Unchecked.SZArray<int> _multiplyDeBruijnBitPosition = new int[32]{
         0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
         31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
     };

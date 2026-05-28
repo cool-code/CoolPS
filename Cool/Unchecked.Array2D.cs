@@ -8,7 +8,7 @@ namespace Cool;
 public static partial class Unchecked
 {
     [StructLayout(LayoutKind.Sequential)]
-    private sealed class RawArray2D
+    private sealed class Array2D
     {
         internal readonly LengthAndPadding LengthAndPadding;
         private readonly int dim1Length;
@@ -86,13 +86,13 @@ public static partial class Unchecked
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)Unsafe.As<RawArray2D>(_array).LengthAndPadding.Length;
+            get => (int)Unsafe.As<Array2D>(_array).LengthAndPadding.Length;
         }
 
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<RawArray2D>(_array).LengthAndPadding.Length;
+            get => Unsafe.As<Array2D>(_array).LengthAndPadding.Length;
         }
         public bool IsFixedSize
         {
@@ -129,12 +129,12 @@ public static partial class Unchecked
         public ref T this[int index1, int index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray2D>(_array).Get<T>(index1, index2);
+            get => ref Unsafe.As<Array2D>(_array).Get<T>(index1, index2);
         }
         public ref T this[uint index1, uint index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray2D>(_array).Get<T>(index1, index2);
+            get => ref Unsafe.As<Array2D>(_array).Get<T>(index1, index2);
         }
         #endregion
 
@@ -147,13 +147,13 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[,] ToArray() => _array;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLength(int dimension) => Unsafe.As<RawArray2D>(_array).GetLength(dimension);
+        public int GetLength(int dimension) => Unsafe.As<Array2D>(_array).GetLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long GetLongLength(int dimension) => Unsafe.As<RawArray2D>(_array).GetLongLength(dimension);
+        public long GetLongLength(int dimension) => Unsafe.As<Array2D>(_array).GetLongLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLowerBound(int dimension) => Unsafe.As<RawArray2D>(_array).GetLowerBound(dimension);
+        public int GetLowerBound(int dimension) => Unsafe.As<Array2D>(_array).GetLowerBound(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetUpperBound(int dimension) => Unsafe.As<RawArray2D>(_array).GetUpperBound(dimension);
+        public int GetUpperBound(int dimension) => Unsafe.As<Array2D>(_array).GetUpperBound(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(int index) => this[index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -207,7 +207,7 @@ public static partial class Unchecked
             internal Enumerator(T[,] array)
             {
                 _array = array;
-                _length = Unsafe.As<RawArray2D>(_array).LengthAndPadding.Length;
+                _length = Unsafe.As<Array2D>(_array).LengthAndPadding.Length;
                 _index = uint.MaxValue;
             }
             public readonly ref T Current

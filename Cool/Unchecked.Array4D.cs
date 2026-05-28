@@ -8,7 +8,7 @@ namespace Cool;
 public static partial class Unchecked
 {
     [StructLayout(LayoutKind.Sequential)]
-    private sealed class RawArray4D
+    private sealed class Array4D
     {
         internal readonly LengthAndPadding LengthAndPadding;
         private readonly int dim1Length;
@@ -23,9 +23,9 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T GetReference<T>() => ref Unsafe.As<byte, T>(ref Data);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private uint GetFlattenedIndex(uint index1, uint index2, uint index3, uint index4) => (((((index1 - (uint)dim1LowerBound) * (uint)dim2Length) + (index2 - (uint)dim2LowerBound)) * (uint)dim3Length + (index3 - (uint)dim3LowerBound)) * (uint)dim4Length) + (index4 - (uint)dim4LowerBound);
+        private uint GetFlattenedIndex(uint index1, uint index2, uint index3, uint index4) => ((((((index1 - (uint)dim1LowerBound) * (uint)dim2Length) + (index2 - (uint)dim2LowerBound)) * (uint)dim3Length) + (index3 - (uint)dim3LowerBound)) * (uint)dim4Length) + (index4 - (uint)dim4LowerBound);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private uint GetFlattenedIndex(int index1, int index2, int index3, int index4) => (((((uint)(index1 - dim1LowerBound) * (uint)dim2Length) + (uint)(index2 - dim2LowerBound)) * (uint)dim3Length + (uint)(index3 - dim3LowerBound)) * (uint)dim4Length) + (uint)(index4 - dim4LowerBound);
+        private uint GetFlattenedIndex(int index1, int index2, int index3, int index4) => ((((((uint)(index1 - dim1LowerBound) * (uint)dim2Length) + (uint)(index2 - dim2LowerBound)) * (uint)dim3Length) + (uint)(index3 - dim3LowerBound)) * (uint)dim4Length) + (uint)(index4 - dim4LowerBound);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T Get<T>(int index1, int index2, int index3, int index4) => ref Unsafe.Add(ref GetReference<T>(), GetFlattenedIndex(index1, index2, index3, index4));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -98,13 +98,13 @@ public static partial class Unchecked
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)Unsafe.As<RawArray4D>(_array).LengthAndPadding.Length;
+            get => (int)Unsafe.As<Array4D>(_array).LengthAndPadding.Length;
         }
 
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<RawArray4D>(_array).LengthAndPadding.Length;
+            get => Unsafe.As<Array4D>(_array).LengthAndPadding.Length;
         }
         public bool IsFixedSize
         {
@@ -141,12 +141,12 @@ public static partial class Unchecked
         public ref T this[int index1, int index2, int index3, int index4]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray4D>(_array).Get<T>(index1, index2, index3, index4);
+            get => ref Unsafe.As<Array4D>(_array).Get<T>(index1, index2, index3, index4);
         }
         public ref T this[uint index1, uint index2, uint index3, uint index4]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray4D>(_array).Get<T>(index1, index2, index3, index4);
+            get => ref Unsafe.As<Array4D>(_array).Get<T>(index1, index2, index3, index4);
         }
         #endregion
 
@@ -159,13 +159,13 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[,,,] ToArray() => _array;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLength(int dimension) => Unsafe.As<RawArray4D>(_array).GetLength(dimension);
+        public int GetLength(int dimension) => Unsafe.As<Array4D>(_array).GetLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long GetLongLength(int dimension) => Unsafe.As<RawArray4D>(_array).GetLongLength(dimension);
+        public long GetLongLength(int dimension) => Unsafe.As<Array4D>(_array).GetLongLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLowerBound(int dimension) => Unsafe.As<RawArray4D>(_array).GetLowerBound(dimension);
+        public int GetLowerBound(int dimension) => Unsafe.As<Array4D>(_array).GetLowerBound(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetUpperBound(int dimension) => Unsafe.As<RawArray4D>(_array).GetUpperBound(dimension);
+        public int GetUpperBound(int dimension) => Unsafe.As<Array4D>(_array).GetUpperBound(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(int index) => this[index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -219,7 +219,7 @@ public static partial class Unchecked
             internal Enumerator(T[,,,] array)
             {
                 _array = array;
-                _length = Unsafe.As<RawArray4D>(_array).LengthAndPadding.Length;
+                _length = Unsafe.As<Array4D>(_array).LengthAndPadding.Length;
                 _index = uint.MaxValue;
             }
             public readonly ref T Current

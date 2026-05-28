@@ -401,7 +401,7 @@ public static class BitOperations
         // this version uses reflected bit ordering, so 0x1EDC6F41 becomes 0x82F63B78u.
         // This is computed lazily so as to avoid increasing the assembly size for data that's
         // only needed on a fallback path.
-        private static readonly Unchecked.Array<uint> s_crcTable = Crc32ReflectedTable.Generate(0x82F63B78u);
+        private static readonly Unchecked.SZArray<uint> s_crcTable = Crc32ReflectedTable.Generate(0x82F63B78u);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static uint Crc32C(uint crc, byte data)

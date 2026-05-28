@@ -17,7 +17,7 @@ public struct RangeIterator<T, TNumberDriver>
     private T _endValue;
     private bool _inRangeMode;
 
-    private static readonly Unchecked.Array<byte> _hexTable = CreateHexTable();
+    private static readonly Unchecked.SZArray<byte> _hexTable = CreateHexTable();
     private static byte[] CreateHexTable()
     {
         var table = new byte[128];
