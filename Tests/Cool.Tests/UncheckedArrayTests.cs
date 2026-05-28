@@ -280,5 +280,77 @@ namespace Cool.Tests
                     for (int k = 0; k < or3; k++)
                         Assert.Null(oarr[i, j, k]);
         }
+
+        [Fact]
+        public void Array4D_Conversions_Indexers_Enumerator_And_Properties()
+        {
+            int d1 = 2, d2 = 2, d3 = 3, d4 = 4;
+            int[,,,] arr4 = new int[d1, d2, d3, d4];
+            int v = 1;
+            for (int i = 0; i < d1; i++)
+                for (int j = 0; j < d2; j++)
+                    for (int k = 0; k < d3; k++)
+                        for (int l = 0; l < d4; l++)
+                            arr4[i, j, k, l] = v++;
+
+            Unchecked.Array4D<int> a4 = arr4;
+
+            Assert.Equal(arr4.Rank, a4.Rank);
+            Assert.Equal(arr4.Length, a4.Length);
+            Assert.Equal(arr4.LongLength, a4.LongLength);
+            Assert.Equal(arr4.IsFixedSize, a4.IsFixedSize);
+            Assert.Equal(arr4.IsReadOnly, a4.IsReadOnly);
+            Assert.Equal(arr4.IsSynchronized, a4.IsSynchronized);
+            Assert.Same(arr4.SyncRoot, a4.SyncRoot);
+            Assert.Same(arr4, a4.ToArray());
+
+            Assert.Equal(arr4.GetLength(0), a4.GetLength(0));
+            Assert.Equal(arr4.GetLowerBound(0), a4.GetLowerBound(0));
+            Assert.Equal(arr4.GetUpperBound(0), a4.GetUpperBound(0));
+            Assert.Equal(arr4.GetLength(1), a4.GetLength(1));
+            Assert.Equal(arr4.GetLowerBound(1), a4.GetLowerBound(1));
+            Assert.Equal(arr4.GetUpperBound(1), a4.GetUpperBound(1));
+            Assert.Equal(arr4.GetLength(2), a4.GetLength(2));
+            Assert.Equal(arr4.GetLowerBound(2), a4.GetLowerBound(2));
+            Assert.Equal(arr4.GetUpperBound(2), a4.GetUpperBound(2));
+            Assert.Equal(arr4.GetLength(3), a4.GetLength(3));
+            Assert.Equal(arr4.GetLowerBound(3), a4.GetLowerBound(3));
+            Assert.Equal(arr4.GetUpperBound(3), a4.GetUpperBound(3));
+
+            int linearIdx = 1 * d2 * d3 * d4 + 0 * d3 * d4 + 2 * d4 + 3;
+            Assert.Equal(arr4[1, 0, 2, 3], a4[linearIdx]);
+            Assert.Equal(arr4[0, 0, 0, 0], a4[0u]);
+
+            a4[linearIdx] = 99999;
+            Assert.Equal(99999, arr4[1, 0, 2, 3]);
+            a4[0] = -5;
+            Assert.Equal(-5, arr4[0, 0, 0, 0]);
+
+            int sumBefore = 0;
+            for (int i = 0; i < d1; i++)
+                for (int j = 0; j < d2; j++)
+                    for (int k = 0; k < d3; k++)
+                        for (int l = 0; l < d4; l++)
+                            sumBefore += arr4[i, j, k, l];
+
+            int cnt = 0;
+            foreach (ref int cur in a4)
+            {
+                cur += 10;
+                cnt++;
+            }
+            Assert.Equal(d1 * d2 * d3 * d4, cnt);
+
+            int sumAfter = 0;
+            for (int i = 0; i < d1; i++)
+                for (int j = 0; j < d2; j++)
+                    for (int k = 0; k < d3; k++)
+                        for (int l = 0; l < d4; l++)
+                            sumAfter += arr4[i, j, k, l];
+            Assert.Equal(sumBefore + 10 * d1 * d2 * d3 * d4, sumAfter);
+
+            Assert.Throws<IndexOutOfRangeException>(() => a4.GetLength(4));
+            Assert.Throws<IndexOutOfRangeException>(() => a4.GetLowerBound(4));
+        }
     }
 }
