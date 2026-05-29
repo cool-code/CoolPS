@@ -29,20 +29,11 @@ public static partial class Unchecked
         internal readonly IntPtr lengthAndPadding;
         private byte placeholder;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal unsafe nint GetOffset()
-        {
-            return BaseSize - (sizeof(IntPtr) * 3);
-        }
+        internal unsafe nint GetOffset() => BaseSize - (sizeof(IntPtr) * 3);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T GetReference<T>(nint offset)
-        {
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, offset));
-        }
+        internal ref T GetReference<T>(nint offset) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, offset));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe ref T GetReference<T>()
-        {
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, BaseSize - (sizeof(IntPtr) * 3)));
-        }
+        public unsafe ref T GetReference<T>() => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, BaseSize - (sizeof(IntPtr) * 3)));
         public unsafe nint BaseSize
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -83,17 +74,15 @@ public static partial class Unchecked
             return length + lowerBound - 1;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T GetElement<T>(nint offset, nint index)
-        {
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (index * Unsafe.SizeOf<T>()) + offset));
-        }
+        internal ref T GetElement<T>(nint offset, nint index) => ref Unsafe.Add(ref GetReference<T>(offset), index);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T Get<T>(nint offset, nint index)
         {
             if (offset == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref placeholder), index);
-            if (offset > sizeof(int) * 2) return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (index * Unsafe.SizeOf<T>()) + offset));
+            if (offset > sizeof(int) * 2) return ref GetElement<T>(offset, index);
             nint lowerBound = Unsafe.Add(ref Unsafe.As<byte, int>(ref placeholder), 1);
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, ((index - lowerBound) * Unsafe.SizeOf<T>()) + (nint)(sizeof(int) * 2)));
+            return ref GetElement<T>(offset, index - lowerBound);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T Get<T>(nint offset, params int[] indices)
@@ -374,7 +363,7 @@ public static partial class Unchecked
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if NETFRAMEWORK
-                get => ref Unsafe.Add(ref _array.GetReference<T>(_offset), _index);
+                get => ref _array.GetElement<T>(_offset, _index);
 #else
                 get => ref Unsafe.Add(ref _baseRef, _index);
 #endif
