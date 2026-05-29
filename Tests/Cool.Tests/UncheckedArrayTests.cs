@@ -137,7 +137,7 @@ namespace Cool.Tests
         public void Array_Enumerator_ModifiesElements()
         {
             Array arr = Array.CreateInstance(typeof(int), [4], [1]);
-            for (int i = 1; i < arr.GetUpperBound(0); i++) arr.SetValue(i, i);
+            for (int i = 1; i <= arr.GetUpperBound(0); i++) arr.SetValue(i, i);
             Unchecked.Array<int> ua = arr;
             int cnt = 0;
             foreach (ref int x in ua)
@@ -146,8 +146,8 @@ namespace Cool.Tests
                 cnt++;
             }
             Assert.Equal(arr.Length, cnt);
-            for (int i = 1; i < arr.Length; i++) Assert.Equal(i + 5, arr.GetValue(i));
-            for (int i = 1; i < ua.Length; i++) Assert.Equal(i + 5, ua[i]);
+            for (int i = 1; i <= arr.GetUpperBound(0); i++) Assert.Equal(i + 5, arr.GetValue(i));
+            for (int i = 1; i <= ua.GetUpperBound(0); i++) Assert.Equal(i + 5, ua[i]);
         }
 
         [Fact]
