@@ -11,12 +11,6 @@ public static partial class Unchecked
     internal struct MethodTable
     {
         /// <summary>
-        /// The low WORD of the first field is the component size for array and string types.
-        /// </summary>
-        [FieldOffset(0)]
-        public ushort ComponentSize;
-
-        /// <summary>
         /// The base size of the type (used when allocating an instance on the heap).
         /// </summary>
         [FieldOffset(4)]
@@ -30,11 +24,24 @@ public static partial class Unchecked
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private sealed class RawArray
+    internal sealed class RawArray
     {
         internal byte Placeholder;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe MethodTable* GetMethodTable() => Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref Placeholder, (nint)sizeof(IntPtr))).MethodTable;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe nint GetOffset()
+        {
+            ref byte placeholder = ref Placeholder;
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            return baseSize - (sizeof(IntPtr) * 2);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T GetReference<T>(nint offset)
+        {
+            ref byte placeholder = ref Placeholder;
+            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, offset));
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe ref T GetReference<T>()
         {
@@ -47,10 +54,14 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => GetMethodTable()->BaseSize;
         }
-        public unsafe uint ComponentSize
+        public uint Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => GetMethodTable()->ComponentSize;
+            get
+            {
+                ref byte placeholder = ref Placeholder;
+                return Unsafe.As<byte, uint>(ref placeholder);
+            }
         }
         public unsafe bool IsSZArray
         {
@@ -76,11 +87,6 @@ public static partial class Unchecked
                 uint rank = (BaseSize - (uint)(3 * sizeof(IntPtr))) / (2 * sizeof(int));
                 return (int)(rank ^ ((rank - 1) >> 31));
             }
-        }
-        public uint Length
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<byte, uint>(ref Placeholder);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe int GetLength(int dimension)
@@ -116,6 +122,21 @@ public static partial class Unchecked
             int length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (dim * sizeof(int)) + sizeof(IntPtr)));
             int lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, ((dim + rank) * sizeof(int)) + sizeof(IntPtr)));
             return length + lowerBound - 1;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T GetElement<T>(nint index, nint offset)
+        {
+            ref byte placeholder = ref Placeholder;
+            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (index * Unsafe.SizeOf<T>()) + offset));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe ref T Get<T>(nint index, nint offset)
+        {
+            ref byte placeholder = ref Placeholder;
+            if (offset == sizeof(IntPtr)) return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (index * Unsafe.SizeOf<T>()) + sizeof(IntPtr)));
+            if (offset > sizeof(IntPtr) * 2) return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (index * Unsafe.SizeOf<T>()) + offset));
+            nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)((2 * sizeof(int)) + sizeof(IntPtr))));
+            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, ((index - lowerBound) * Unsafe.SizeOf<T>()) + offset));
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe ref T Get<T>(params int[] indices)
@@ -205,10 +226,15 @@ public static partial class Unchecked
     {
         #region Fields and Constructor
         private readonly Array _array;
+        internal readonly nint _offset;
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing arrays.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Array(Array array) => _array = array;
+        private Array(Array array)
+        {
+            _array = array;
+            _offset = Unsafe.As<RawArray>(_array).GetOffset();
+        }
         #endregion
 
         #region Properties and Indexer
@@ -253,12 +279,32 @@ public static partial class Unchecked
         public ref T this[nuint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref GetReference(), index);
+            get => ref Unsafe.As<RawArray>(_array).Get<T>((nint)index, _offset);
         }
         public ref T this[nint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref GetReference(), index);
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(index, _offset);
+        }
+        public ref T this[uint index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>((nint)index, _offset);
+        }
+        public ref T this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(index, _offset);
+        }
+        public ref T this[ulong index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>((nint)index, _offset);
+        }
+        public ref T this[long index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>((nint)index, _offset);
         }
         public ref T this[params int[] indices]
         {
@@ -284,7 +330,7 @@ public static partial class Unchecked
 
         #region Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T GetReference() => ref _array.GetReference<T>();
+        public ref T GetReference() => ref Unsafe.As<RawArray>(_array).GetReference<T>(_offset);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ref T GetPinnableReference() => ref GetReference();
@@ -303,9 +349,9 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(uint index) => this[index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T GetValue(long index) => this[(uint)index];
+        public T GetValue(long index) => this[index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T GetValue(ulong index) => this[(uint)index];
+        public T GetValue(ulong index) => this[index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(params int[] indices) => this[indices];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -319,9 +365,9 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, uint index) => this[index] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetValue(T value, long index) => this[(uint)index] = value;
+        public void SetValue(T value, long index) => this[index] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetValue(T value, ulong index) => this[(uint)index] = value;
+        public void SetValue(T value, ulong index) => this[index] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, params int[] indices) => this[indices] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -339,7 +385,7 @@ public static partial class Unchecked
         #endregion
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Enumerator GetEnumerator() => new(_array);
+        public Enumerator GetEnumerator() => new(Unsafe.As<RawArray>(_array), _offset);
         public unsafe ref struct Enumerator
         {
 #if NETFRAMEWORK
@@ -351,25 +397,22 @@ public static partial class Unchecked
             private readonly nint _length;
             private nint _index;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(Array array)
+            internal Enumerator(RawArray array, nint offset)
             {
 #if NETFRAMEWORK
-                _array = Unsafe.As<RawArray>(array);
-                ref byte baseRef = ref _array.Placeholder;
-                _offset = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref baseRef, (nint)sizeof(IntPtr))).MethodTable->BaseSize - (nint)(sizeof(IntPtr) * 2);
+                _array = array;
+                _offset = offset;
 #else
-                ref byte baseRef = ref Unsafe.As<RawArray>(array).Placeholder;
-                nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref baseRef, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-                _baseRef = ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref baseRef, (nint)baseSize - (nint)(sizeof(IntPtr) * 2)));
+                _baseRef = ref array.GetReference<T>(offset);
 #endif
-                _length = (nint)Unsafe.As<byte, uint>(ref baseRef);
+                _length = (nint)array.Length;
                 _index = -1;
             }
             public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if NETFRAMEWORK
-                get => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref _array.Placeholder, (_index * Unsafe.SizeOf<T>()) + _offset));
+                get => ref _array.GetElement<T>(_index, _offset);
 #else
                 get => ref Unsafe.Add(ref _baseRef, _index);
 #endif
