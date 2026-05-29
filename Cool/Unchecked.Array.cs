@@ -53,58 +53,33 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => Unsafe.As<byte, uint>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr)));
         }
-        public unsafe bool IsSZArray
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => BaseSize == (nint)(3 * sizeof(IntPtr));
-        }
-        public unsafe bool IsMultiDimensionalArray
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => BaseSize > (nint)(3 * sizeof(IntPtr));
-        }
-        // Returns rank of multi-dimensional array rank, 0 for sz arrays
-        public unsafe int MultiDimensionalArrayRank
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)((BaseSize - (nint)(3 * sizeof(IntPtr))) / (2 * sizeof(int)));
-        }
-        public unsafe int Rank
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                int rank = MultiDimensionalArrayRank;
-                return rank + ((rank - 1) >> 31 & 1);
-            }
-        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal int GetLength(nint offset, int dimension)
         {
+            if (offset == 0 && dimension == 0) return (int)Length;
             nint dim = dimension;
             nint rank = offset / (2 * sizeof(int));
-            if (dim == 0 && rank == 0) return (int)Length;
             if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            return Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, dim * sizeof(int)));
+            return Unsafe.Add(ref Unsafe.As<byte, int>(ref placeholder), dim);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal int GetLowerBound(nint offset, int dimension)
         {
+            if (offset == 0 && dimension == 0) return 0;
             nint dim = dimension;
             nint rank = offset / (2 * sizeof(int));
-            if (dim == 0 && rank == 0) return 0;
             if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            return Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (dim + rank) * sizeof(int)));
+            return Unsafe.Add(ref Unsafe.As<byte, int>(ref placeholder), dim + rank);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal int GetUpperBound(nint offset, int dimension)
         {
+            if (offset == 0 && dimension == 0) return (int)Length - 1;
             nint dim = dimension;
             nint rank = offset / (2 * sizeof(int));
-            if (dim == 0 && rank == 0) return (int)Length - 1;
             if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            int length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, dim * sizeof(int)));
-            int lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (dim + rank) * sizeof(int)));
+            int length = Unsafe.Add(ref Unsafe.As<byte, int>(ref placeholder), dim);
+            int lowerBound = Unsafe.Add(ref Unsafe.As<byte, int>(ref placeholder), dim + rank);
             return length + lowerBound - 1;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -115,9 +90,9 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T Get<T>(nint offset, nint index)
         {
-            if (offset == 0) return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, index * Unsafe.SizeOf<T>()));
+            if (offset == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref placeholder), index);
             if (offset > sizeof(int) * 2) return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (index * Unsafe.SizeOf<T>()) + offset));
-            nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)sizeof(int) * 2));
+            nint lowerBound = Unsafe.Add(ref Unsafe.As<byte, int>(ref placeholder), 1);
             return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, ((index - lowerBound) * Unsafe.SizeOf<T>()) + (nint)(sizeof(int) * 2)));
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -211,15 +186,17 @@ public static partial class Unchecked
         public int Rank
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<RawArray>(_array).Rank;
+            get
+            {
+                int rank = MDArrayRank;
+                return rank + ((rank - 1) >> 31 & 1);
+            }
         }
-
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => (int)Unsafe.As<RawArray>(_array).Length;
         }
-
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -230,7 +207,6 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => true;
         }
-
         public bool IsReadOnly
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -245,6 +221,22 @@ public static partial class Unchecked
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _array;
+        }
+        public bool IsSZArray
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _offset == 0;
+        }
+        public bool IsMDArray
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _offset > 0;
+        }
+        // The rank of the array if it's a multi-dimensional array; otherwise, 0 for single-dimensional zero-based arrays.
+        public int MDArrayRank
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (int)(_offset / (2 * sizeof(int)));
         }
         public ref T this[nuint index]
         {
@@ -382,7 +374,7 @@ public static partial class Unchecked
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if NETFRAMEWORK
-                get => ref _array.GetElement<T>(_offset, _index);
+                get => ref Unsafe.Add(ref _array.GetReference<T>(_offset), _index);
 #else
                 get => ref Unsafe.Add(ref _baseRef, _index);
 #endif

@@ -136,10 +136,9 @@ namespace Cool.Tests
         [Fact]
         public void Array_Enumerator_ModifiesElements()
         {
-            int[] arr = new int[10];
-            for (int i = 0; i < arr.Length; i++) arr[i] = i;
+            Array arr = Array.CreateInstance(typeof(int), [4], [1]);
+            for (int i = 1; i < arr.GetUpperBound(0); i++) arr.SetValue(i, i);
             Unchecked.Array<int> ua = arr;
-
             int cnt = 0;
             foreach (ref int x in ua)
             {
@@ -147,7 +146,8 @@ namespace Cool.Tests
                 cnt++;
             }
             Assert.Equal(arr.Length, cnt);
-            for (int i = 0; i < arr.Length; i++) Assert.Equal(i + 5, arr[i]);
+            for (int i = 1; i < arr.Length; i++) Assert.Equal(i + 5, arr.GetValue(i));
+            for (int i = 1; i < ua.Length; i++) Assert.Equal(i + 5, ua[i]);
         }
 
         [Fact]
@@ -271,6 +271,22 @@ namespace Cool.Tests
                 for (int j = 0; j < or2; j++)
                     for (int k = 0; k < or3; k++)
                         oarr[i, j, k] = oi++;
+
+            Unchecked.Array<object?> ua3 = oarr;
+            Assert.Same(oarr, ua3.ToArray());
+            oi = 0;
+            foreach (ref object? o in ua3) Assert.Equal(oi++, o);
+            oi = 0;
+            for (int i = 0; i < or1; i++)
+            {
+                for (int j = 0; j < or2; j++)
+                {
+                    for (int k = 0; k < or3; k++)
+                    {
+                        Assert.Equal(oi++, ua3[i, j, k]);
+                    }
+                }
+            }
 
             Unchecked.Array3D<object?> oa3 = oarr;
             Assert.Same(oarr, oa3.ToArray());
