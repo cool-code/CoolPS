@@ -25,7 +25,7 @@ public static partial class Unchecked
     public static ref T GetReference<T>(this T[,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[,,,], Array4D>(ref array).Data);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe ref T GetReference<T>(this Array array) => ref Unsafe.As<Array, RawArray>(ref array).GetReference<T>();
+    public static unsafe ref T GetReference<T>(this Array array) => ref Unsafe.As<RawArray>(array).GetReference<T>();
     #endregion
 
 }

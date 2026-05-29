@@ -39,8 +39,8 @@ public static partial class Unchecked
         public unsafe ref T GetReference<T>()
         {
             ref byte placeholder = ref Placeholder;
-            uint baseSize = Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (nint)baseSize - (nint)(sizeof(IntPtr) * 2)));
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, baseSize - (sizeof(IntPtr) * 2)));
         }
         public unsafe uint BaseSize
         {
@@ -86,102 +86,108 @@ public static partial class Unchecked
         public unsafe int GetLength(int dimension)
         {
             ref byte placeholder = ref Placeholder;
-            uint baseSize = Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-            int rank = (int)((baseSize - (uint)(3 * sizeof(IntPtr))) / (2 * sizeof(int)));
-            if (dimension == 0 && rank == 0) return Unsafe.As<byte, int>(ref placeholder);
-            if (dimension < 0 || dimension >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            return Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)(dimension * sizeof(int)) + (nint)sizeof(IntPtr)));
+            nint dim = dimension;
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            nint rank = (baseSize - (3 * sizeof(IntPtr))) / (2 * sizeof(int));
+            if (dim == 0 && rank == 0) return Unsafe.As<byte, int>(ref placeholder);
+            if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
+            return Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (dim * sizeof(int)) + sizeof(IntPtr)));
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe int GetLowerBound(int dimension)
         {
             ref byte placeholder = ref Placeholder;
-            uint baseSize = Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-            int rank = (int)((baseSize - (uint)(3 * sizeof(IntPtr))) / (2 * sizeof(int)));
-            if (dimension == 0 && rank == 0) return 0;
-            if (dimension < 0 || dimension >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            return Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)((dimension + rank) * sizeof(int)) + (nint)sizeof(IntPtr)));
+            nint dim = dimension;
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            nint rank = (baseSize - (3 * sizeof(IntPtr))) / (2 * sizeof(int));
+            if (dim == 0 && rank == 0) return 0;
+            if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
+            return Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, ((dim + rank) * sizeof(int)) + sizeof(IntPtr)));
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe int GetUpperBound(int dimension)
         {
             ref byte placeholder = ref Placeholder;
-            uint baseSize = Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-            int rank = (int)((baseSize - (uint)(3 * sizeof(IntPtr))) / (2 * sizeof(int)));
-            if (dimension == 0 && rank == 0) return Unsafe.As<byte, int>(ref placeholder) - 1;
-            if (dimension < 0 || dimension >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            int length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)(dimension * sizeof(int)) + (nint)sizeof(IntPtr)));
-            int lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)((dimension + rank) * sizeof(int)) + (nint)sizeof(IntPtr)));
+            nint dim = dimension;
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            nint rank = (baseSize - (3 * sizeof(IntPtr))) / (2 * sizeof(int));
+            if (dim == 0 && rank == 0) return Unsafe.As<byte, int>(ref placeholder) - 1;
+            if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
+            int length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (dim * sizeof(int)) + sizeof(IntPtr)));
+            int lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, ((dim + rank) * sizeof(int)) + sizeof(IntPtr)));
             return length + lowerBound - 1;
         }
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // private unsafe uint GetFlattenedIndex(params int[] indices)
-        // {
-        //     ref int index = ref indices[0];
-        //     ref byte placeholder = ref Placeholder;
-        //     uint baseSize = Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-        //     int rank = (int)((baseSize - (uint)(3 * sizeof(IntPtr))) / (2 * sizeof(int)));
-        //     uint flattenedIndex = 0;
-        //     for (int i = 0; i < rank; i++)
-        //     {
-        //         int length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)(i * sizeof(int)) + (nint)sizeof(IntPtr)));
-        //         int lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)((i + rank) * sizeof(int)) + (nint)sizeof(IntPtr)));
-        //         flattenedIndex = (flattenedIndex * (uint)length) + (uint)(Unsafe.Add(ref index, i) - lowerBound);
-        //     }
-        //     return rank == 0 ? (uint)index : flattenedIndex;
-        // }
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // private unsafe uint GetFlattenedIndex(params uint[] indices)
-        // {
-        //     ref uint index = ref indices[0];
-        //     ref byte placeholder = ref Placeholder;
-        //     uint baseSize = Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-        //     int rank = (int)((baseSize - (uint)(3 * sizeof(IntPtr))) / (2 * sizeof(int)));
-        //     uint flattenedIndex = 0;
-        //     for (int i = 0; i < rank; i++)
-        //     {
-        //         int length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)(i * sizeof(int)) + (nint)sizeof(IntPtr)));
-        //         int lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)((i + rank) * sizeof(int)) + (nint)sizeof(IntPtr)));
-        //         flattenedIndex = (flattenedIndex * (uint)length) + (Unsafe.Add(ref index, i) - (uint)lowerBound);
-        //     }
-        //     return rank == 0 ? index : flattenedIndex;
-        // }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe ref T Get<T>(params uint[] indices)
-        {
-            ref uint index = ref indices[0];
-            ref byte placeholder = ref Placeholder;
-            uint baseSize = Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-            int rank = (int)((baseSize - (uint)(3 * sizeof(IntPtr))) / (2 * sizeof(int)));
-            uint flattenedIndex = 0;
-            for (int i = 0; i < rank; i++)
-            {
-                int length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)(i * sizeof(int)) + (nint)sizeof(IntPtr)));
-                int lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)((i + rank) * sizeof(int)) + (nint)sizeof(IntPtr)));
-                flattenedIndex = (flattenedIndex * (uint)length) + (Unsafe.Add(ref index, i) - (uint)lowerBound);
-            }
-            flattenedIndex = rank == 0 ? index : flattenedIndex;
-            nint offset = (nint)flattenedIndex * Unsafe.SizeOf<T>();
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (nint)baseSize + offset - (nint)(sizeof(IntPtr) * 2)));
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe ref T Get<T>(params int[] indices)
         {
             ref int index = ref indices[0];
             ref byte placeholder = ref Placeholder;
-            uint baseSize = Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
-            int rank = (int)((baseSize - (uint)(3 * sizeof(IntPtr))) / (2 * sizeof(int)));
-            uint flattenedIndex = 0;
-            for (int i = 0; i < rank; i++)
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            nint rank = (baseSize - (3 * sizeof(IntPtr))) / (2 * sizeof(int));
+            nint flattenedIndex = 0;
+            for (nint i = 0; i < rank; i++)
             {
-                int length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)(i * sizeof(int)) + (nint)sizeof(IntPtr)));
-                int lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (nint)((i + rank) * sizeof(int)) + (nint)sizeof(IntPtr)));
-                flattenedIndex = (flattenedIndex * (uint)length) + (uint)(Unsafe.Add(ref index, i) - lowerBound);
+                nint length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (i * sizeof(int)) + sizeof(IntPtr)));
+                nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, ((i + rank) * sizeof(int)) + sizeof(IntPtr)));
+                flattenedIndex = (flattenedIndex * length) + ((nint)Unsafe.Add(ref index, i) - lowerBound);
             }
-            flattenedIndex = rank == 0 ? (uint)index : flattenedIndex;
-            nint offset = (nint)flattenedIndex * Unsafe.SizeOf<T>();
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, (nint)baseSize + offset - (nint)(sizeof(IntPtr) * 2)));
+            flattenedIndex = rank == 0 ? index : flattenedIndex;
+            nint offset = flattenedIndex * Unsafe.SizeOf<T>();
+            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, baseSize + offset - (nint)(sizeof(IntPtr) * 2)));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe ref T Get<T>(params uint[] indices)
+        {
+            ref uint index = ref indices[0];
+            ref byte placeholder = ref Placeholder;
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            nint rank = (baseSize - (3 * sizeof(IntPtr))) / (2 * sizeof(int));
+            nint flattenedIndex = 0;
+            for (nint i = 0; i < rank; i++)
+            {
+                nint length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (i * sizeof(int)) + sizeof(IntPtr)));
+                nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, ((i + rank) * sizeof(int)) + sizeof(IntPtr)));
+                flattenedIndex = (flattenedIndex * length) + ((nint)Unsafe.Add(ref index, i) - lowerBound);
+            }
+            flattenedIndex = rank == 0 ? (nint)index : flattenedIndex;
+            nint offset = flattenedIndex * Unsafe.SizeOf<T>();
+            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, baseSize + offset - (sizeof(IntPtr) * 2)));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe ref T Get<T>(params long[] indices)
+        {
+            ref long index = ref indices[0];
+            ref byte placeholder = ref Placeholder;
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            nint rank = (baseSize - (3 * sizeof(IntPtr))) / (2 * sizeof(int));
+            nint flattenedIndex = 0;
+            for (nint i = 0; i < rank; i++)
+            {
+                nint length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (i * sizeof(int)) + sizeof(IntPtr)));
+                nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, ((i + rank) * sizeof(int)) + sizeof(IntPtr)));
+                flattenedIndex = (flattenedIndex * length) + ((nint)Unsafe.Add(ref index, i) - lowerBound);
+            }
+            flattenedIndex = rank == 0 ? (nint)index : flattenedIndex;
+            nint offset = flattenedIndex * Unsafe.SizeOf<T>();
+            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, baseSize + offset - (sizeof(IntPtr) * 2)));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe ref T Get<T>(params ulong[] indices)
+        {
+            ref ulong index = ref indices[0];
+            ref byte placeholder = ref Placeholder;
+            nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref placeholder, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+            nint rank = (baseSize - (3 * sizeof(IntPtr))) / (2 * sizeof(int));
+            nint flattenedIndex = 0;
+            for (nint i = 0; i < rank; i++)
+            {
+                nint length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, (i * sizeof(int)) + sizeof(IntPtr)));
+                nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref placeholder, ((i + rank) * sizeof(int)) + sizeof(IntPtr)));
+                flattenedIndex = (flattenedIndex * length) + ((nint)Unsafe.Add(ref index, i) - lowerBound);
+            }
+            flattenedIndex = rank == 0 ? (nint)index : flattenedIndex;
+            nint offset = flattenedIndex * Unsafe.SizeOf<T>();
+            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref placeholder, baseSize + offset - (sizeof(IntPtr) * 2)));
         }
     }
 
@@ -244,15 +250,15 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _array;
         }
-        public ref T this[uint index]
+        public ref T this[nuint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref Unsafe.Add(ref GetReference(), index);
         }
-        public ref T this[int index]
+        public ref T this[nint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref GetReference(), (nint)index);
+            get => ref Unsafe.Add(ref GetReference(), index);
         }
         public ref T this[params int[] indices]
         {
@@ -260,6 +266,16 @@ public static partial class Unchecked
             get => ref Unsafe.As<RawArray>(_array).Get<T>(indices);
         }
         public ref T this[params uint[] indices]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(indices);
+        }
+        public ref T this[params long[] indices]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(indices);
+        }
+        public ref T this[params ulong[] indices]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref Unsafe.As<RawArray>(_array).Get<T>(indices);
@@ -291,6 +307,14 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(ulong index) => this[(uint)index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(params int[] indices) => this[indices];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(params uint[] indices) => this[indices];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(params long[] indices) => this[indices];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(params ulong[] indices) => this[indices];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, int index) => this[index] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, uint index) => this[index] = value;
@@ -298,6 +322,14 @@ public static partial class Unchecked
         public void SetValue(T value, long index) => this[(uint)index] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, ulong index) => this[(uint)index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, params int[] indices) => this[indices] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, params uint[] indices) => this[indices] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, params long[] indices) => this[indices] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, params ulong[] indices) => this[indices] = value;
         #endregion
         #region Implicit Conversions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -312,37 +344,32 @@ public static partial class Unchecked
         {
 #if NETFRAMEWORK
             private readonly RawArray _array;
-            private readonly nint _baseSize;
+            private readonly nint _offset;
 #else
             private readonly ref T _baseRef;
 #endif
-            private readonly uint _length;
-            private uint _index;
+            private readonly nint _length;
+            private nint _index;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal Enumerator(Array array)
             {
 #if NETFRAMEWORK
                 _array = Unsafe.As<RawArray>(array);
                 ref byte baseRef = ref _array.Placeholder;
-                _baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref baseRef, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
+                _offset = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref baseRef, (nint)sizeof(IntPtr))).MethodTable->BaseSize - (nint)(sizeof(IntPtr) * 2);
 #else
                 ref byte baseRef = ref Unsafe.As<RawArray>(array).Placeholder;
                 nint baseSize = (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref baseRef, (nint)sizeof(IntPtr))).MethodTable->BaseSize;
                 _baseRef = ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref baseRef, (nint)baseSize - (nint)(sizeof(IntPtr) * 2)));
 #endif
-                _length = Unsafe.As<byte, uint>(ref baseRef);
-                _index = uint.MaxValue;
+                _length = (nint)Unsafe.As<byte, uint>(ref baseRef);
+                _index = -1;
             }
             public readonly ref T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if NETFRAMEWORK
-                get
-                {
-                    ref byte baseRef = ref _array.Placeholder;
-                    nint size = _baseSize;
-                    return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref baseRef, size - (nint)(sizeof(IntPtr) * 2) + ((nint)_index * Unsafe.SizeOf<T>())));
-                }
+                get => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref _array.Placeholder, (_index * Unsafe.SizeOf<T>()) + _offset));
 #else
                 get => ref Unsafe.Add(ref _baseRef, _index);
 #endif
