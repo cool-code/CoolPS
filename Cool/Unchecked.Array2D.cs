@@ -19,9 +19,9 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T GetReference<T>() => ref Unsafe.As<byte, T>(ref Data);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private uint GetFlattenedIndex(uint index1, uint index2) => ((index1 - (uint)dim1LowerBound) * (uint)dim2Length) + (index2 - (uint)dim2LowerBound);
+        private uint GetFlattenedIndex(uint index1, uint index2) => (index1 * (uint)dim2Length) + index2;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private uint GetFlattenedIndex(int index1, int index2) => ((uint)(index1 - dim1LowerBound) * (uint)dim2Length) + (uint)(index2 - dim2LowerBound);
+        private uint GetFlattenedIndex(int index1, int index2) => (uint)((index1 * dim2Length) + index2);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T Get<T>(int index1, int index2) => ref Unsafe.Add(ref GetReference<T>(), GetFlattenedIndex(index1, index2));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,6 +63,7 @@ public static partial class Unchecked
     /// </summary>
     /// <remarks>
     /// - High-performance wrapper: intentionally omits bounds checks and other safety checks.
+    /// - Only supports zero-based arrays Indexer, non-zero lower bounds are not supported.
     /// - Intended for use on .NET Framework 4.7+ and .NET 7+ (PowerShell scenarios).
     /// - The indexer mapping uses row-major order: offset = index1 * dim2Length + index2.
     /// - Callers must ensure indices are valid; out-of-range accesses are undefined behavior.

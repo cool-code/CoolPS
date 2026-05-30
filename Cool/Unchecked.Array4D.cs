@@ -23,9 +23,9 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T GetReference<T>() => ref Unsafe.As<byte, T>(ref Data);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private uint GetFlattenedIndex(uint index1, uint index2, uint index3, uint index4) => ((((((index1 - (uint)dim1LowerBound) * (uint)dim2Length) + (index2 - (uint)dim2LowerBound)) * (uint)dim3Length) + (index3 - (uint)dim3LowerBound)) * (uint)dim4Length) + (index4 - (uint)dim4LowerBound);
+        private uint GetFlattenedIndex(uint index1, uint index2, uint index3, uint index4) => (((((index1 * (uint)dim2Length) + index2) * (uint)dim3Length) + index3) * (uint)dim4Length) + index4;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private uint GetFlattenedIndex(int index1, int index2, int index3, int index4) => ((((((uint)(index1 - dim1LowerBound) * (uint)dim2Length) + (uint)(index2 - dim2LowerBound)) * (uint)dim3Length) + (uint)(index3 - dim3LowerBound)) * (uint)dim4Length) + (uint)(index4 - dim4LowerBound);
+        private uint GetFlattenedIndex(int index1, int index2, int index3, int index4) => (uint)((((((index1 * dim2Length) + index2) * dim3Length) + index3) * dim4Length) + index4);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T Get<T>(int index1, int index2, int index3, int index4) => ref Unsafe.Add(ref GetReference<T>(), GetFlattenedIndex(index1, index2, index3, index4));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -75,8 +75,9 @@ public static partial class Unchecked
     /// </summary>
     /// <remarks>
     /// - High-performance wrapper: intentionally omits bounds checks and other safety checks.
+    /// - Only supports zero-based arrays Indexer, non-zero lower bounds are not supported.
     /// - Intended for use on .NET Framework 4.7+ and .NET 7+ (PowerShell scenarios).
-    /// - The indexer mapping uses row-major order: offset = index1 * dim2Length * dim3Length * dim4Length + index2 * dim3Length * dim4Length + index3 * dim4Length + index4.
+    /// - The indexer mapping uses row-major order: offset = (((((index1 * dim2Length) + index2) * dim3Length) + index3) * dim4Length) + index4.
     /// - Callers must ensure indices are valid; out-of-range accesses are undefined behavior.
     /// </remarks>
     public readonly struct Array4D<T>
