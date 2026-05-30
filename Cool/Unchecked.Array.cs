@@ -128,6 +128,46 @@ public static partial class Unchecked
             return ref Unsafe.Add(ref reference, index);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal uint GetFlattenedIndex(nint offset, uint index1, uint index2, uint index3)
+        {
+            ref uint lengthStart = ref Unsafe.As<byte, uint>(ref placeholder);
+            ref uint lowerBoundStart = ref Unsafe.AddByteOffset(ref lengthStart, offset >> 1);
+            index3 -= Unsafe.Add(ref lowerBoundStart, 2);
+            index2 -= Unsafe.Add(ref lowerBoundStart, 1);
+            index1 -= Unsafe.Add(ref lowerBoundStart, 0);
+            index1 *= Unsafe.Add(ref lengthStart, 1);
+            index1 += index2;
+            index1 *= Unsafe.Add(ref lengthStart, 2);
+            return (uint)(index1 + index3);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal uint GetFlattenedIndex(nint offset, int index1, int index2, int index3)
+        {
+            ref int lengthStart = ref Unsafe.As<byte, int>(ref placeholder);
+            ref int lowerBoundStart = ref Unsafe.AddByteOffset(ref lengthStart, offset >> 1);
+            index3 -= Unsafe.Add(ref lowerBoundStart, 2);
+            index2 -= Unsafe.Add(ref lowerBoundStart, 1);
+            index1 -= Unsafe.Add(ref lowerBoundStart, 0);
+            index1 *= Unsafe.Add(ref lengthStart, 1);
+            index1 += index2;
+            index1 *= Unsafe.Add(ref lengthStart, 2);
+            return (uint)(index1 + index3);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T Get<T>(nint offset, int index1, int index2, int index3)
+        {
+            ref T reference = ref GetReference<T>(offset);
+            uint index = GetFlattenedIndex(offset, index1, index2, index3);
+            return ref Unsafe.Add(ref reference, index);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T Get<T>(nint offset, uint index1, uint index2, uint index3)
+        {
+            ref T reference = ref GetReference<T>(offset);
+            uint index = GetFlattenedIndex(offset, index1, index2, index3);
+            return ref Unsafe.Add(ref reference, index);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T Get<T>(nint offset, params int[] indices)
         {
             ref int index = ref indices[0];
@@ -310,6 +350,26 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2);
         }
+        public ref T this[uint index1, uint index2, uint index3]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index1, index2, index3);
+        }
+        public ref T this[int index1, int index2, int index3]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index1, index2, index3);
+        }
+        public ref T this[ulong index1, ulong index2, ulong index3]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2, (uint)index3);
+        }
+        public ref T this[long index1, long index2, long index3]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2, (uint)index3);
+        }
         public ref T this[params int[] indices]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -365,6 +425,14 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(ulong index1, ulong index2) => this[index1, index2];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index1, int index2, int index3) => this[index1, index2, index3];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index1, uint index2, uint index3) => this[index1, index2, index3];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index1, long index2, long index3) => this[index1, index2, index3];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index1, ulong index2, ulong index3) => this[index1, index2, index3];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(params int[] indices) => this[indices];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(params uint[] indices) => this[indices];
@@ -388,6 +456,14 @@ public static partial class Unchecked
         public void SetValue(T value, long index1, long index2) => this[index1, index2] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, ulong index1, ulong index2) => this[index1, index2] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index1, int index2, int index3) => this[index1, index2, index3] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index1, uint index2, uint index3) => this[index1, index2, index3] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index1, long index2, long index3) => this[index1, index2, index3] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index1, ulong index2, ulong index3) => this[index1, index2, index3] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, params int[] indices) => this[indices] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
