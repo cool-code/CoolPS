@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using static Cool.Unchecked;
 
 namespace Cool;
 
@@ -75,14 +76,55 @@ public static partial class Unchecked
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T GetElement<T>(nint offset, nint index) => ref Unsafe.Add(ref GetReference<T>(offset), index);
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, nint index)
+        internal ref T GetElement<T>(nint offset, uint index) => ref Unsafe.Add(ref GetReference<T>(offset), index);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T Get<T>(nint offset, uint index)
         {
             if (offset == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref placeholder), index);
             if (offset > sizeof(int) * 2) return ref GetElement<T>(offset, index);
-            nint lowerBound = Unsafe.Add(ref Unsafe.As<byte, int>(ref placeholder), 1);
-            return ref GetElement<T>(offset, index - lowerBound);
+            index -= Unsafe.Add(ref Unsafe.As<byte, uint>(ref placeholder), 1);
+            return ref GetElement<T>(offset, index);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T Get<T>(nint offset, int index)
+        {
+            if (offset == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref placeholder), (uint)index);
+            if (offset > sizeof(int) * 2) return ref GetElement<T>(offset, (uint)index);
+            index -= Unsafe.Add(ref Unsafe.As<byte, int>(ref placeholder), 1);
+            return ref GetElement<T>(offset, (uint)index);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal uint GetFlattenedIndex(uint index1, uint index2)
+        {
+            ref uint dimInfo = ref Unsafe.As<byte, uint>(ref placeholder);
+            index2 -= Unsafe.Add(ref dimInfo, 3);
+            index1 -= Unsafe.Add(ref dimInfo, 2);
+            index1 *= Unsafe.Add(ref dimInfo, 1);
+            return (uint)(index1 + index2);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal uint GetFlattenedIndex(int index1, int index2)
+        {
+            ref int dimInfo = ref Unsafe.As<byte, int>(ref placeholder);
+            index2 -= Unsafe.Add(ref dimInfo, 3);
+            index1 -= Unsafe.Add(ref dimInfo, 2);
+            index1 *= Unsafe.Add(ref dimInfo, 1);
+            return (uint)(index1 + index2);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T Get<T>(nint offset, int index1, int index2)
+        {
+            ref T reference = ref GetReference<T>(offset);
+            uint index = GetFlattenedIndex(index1, index2);
+            return ref Unsafe.Add(ref reference, index);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ref T Get<T>(nint offset, uint index1, uint index2)
+        {
+            ref T reference = ref GetReference<T>(offset);
+            uint index = GetFlattenedIndex(index1, index2);
+            return ref Unsafe.Add(ref reference, index);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T Get<T>(nint offset, params int[] indices)
@@ -227,35 +269,45 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => (int)(_offset / (2 * sizeof(int)));
         }
-        public ref T this[nuint index]
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (nint)index);
-        }
-        public ref T this[nint index]
+        public ref T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index);
         }
-        public ref T this[uint index]
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (nint)index);
-        }
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (nint)index);
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index);
         }
         public ref T this[ulong index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (nint)index);
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index);
         }
         public ref T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (nint)index);
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index);
+        }
+        public ref T this[uint index1, uint index2]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index1, index2);
+        }
+        public ref T this[int index1, int index2]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index1, index2);
+        }
+        public ref T this[ulong index1, ulong index2]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2);
+        }
+        public ref T this[long index1, long index2]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2);
         }
         public ref T this[params int[] indices]
         {
@@ -304,6 +356,14 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(ulong index) => this[index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index1, int index2) => this[index1, index2];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index1, uint index2) => this[index1, index2];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index1, long index2) => this[index1, index2];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index1, ulong index2) => this[index1, index2];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(params int[] indices) => this[indices];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(params uint[] indices) => this[indices];
@@ -319,6 +379,14 @@ public static partial class Unchecked
         public void SetValue(T value, long index) => this[index] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, ulong index) => this[index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index1, int index2) => this[index1, index2] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index1, uint index2) => this[index1, index2] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index1, long index2) => this[index1, index2] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index1, ulong index2) => this[index1, index2] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, params int[] indices) => this[indices] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -337,7 +405,7 @@ public static partial class Unchecked
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Enumerator GetEnumerator() => new(Unsafe.As<RawArray>(_array), _offset);
-        public unsafe ref struct Enumerator
+        public ref struct Enumerator
         {
 #if NETFRAMEWORK
             private readonly RawArray _array;
