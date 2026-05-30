@@ -13,7 +13,7 @@ namespace Cool.Benchmarks
         public int Size;
 
         private int[,,]? data;
-        private Unchecked.Array<int> ua;
+        private Unchecked.Array3D<int> ua;
 
         [GlobalSetup]
         public void Setup()

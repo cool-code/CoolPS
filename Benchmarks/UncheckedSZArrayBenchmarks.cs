@@ -7,13 +7,13 @@ namespace Cool.Benchmarks
 {
     [MemoryDiagnoser]
     [DisassemblyDiagnoser]
-    public class UncheckedArrayBenchmarks
+    public class UncheckedSZArrayBenchmarks
     {
         [Params(16, 64, 1024, 8192)]
         public int Size;
 
         private int[]? data;
-        private Unchecked.Array<int> ua;
+        private Unchecked.SZArray<int> ua;
 
         [GlobalSetup]
         public void Setup()
@@ -32,7 +32,7 @@ namespace Cool.Benchmarks
         }
 
         [Benchmark]
-        public int Foreach_UncheckedArray()
+        public int Foreach_UncheckedSZArray()
         {
             int sum = 0;
             foreach (var v in ua) sum += v;
@@ -48,7 +48,7 @@ namespace Cool.Benchmarks
         }
 
         [Benchmark]
-        public int For_UncheckedArray()
+        public int For_UncheckedSZArray()
         {
             int sum = 0;
             for (int i = 0; i < Size; i++) sum += ua[i];
