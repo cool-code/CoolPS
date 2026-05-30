@@ -198,7 +198,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         {
             int i = 0;
             int count = _wordCount;
-            if (IntPtr.Size == 8)
+            if (sizeof(IntPtr) == 8)
             {
                 for (; i <= count - 8; i += 8)
                 {
@@ -229,7 +229,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         {
             int i = 0;
             int count = _wordCount;
-            if (IntPtr.Size == 8)
+            if (sizeof(IntPtr) == 8)
             {
                 for (; i <= count - 8; i += 8)
                 {
@@ -267,7 +267,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         {
             int i = 0;
             int count = _wordCount;
-            if (IntPtr.Size == 8)
+            if (sizeof(IntPtr) == 8)
             {
                 for (; i <= count - 8; i += 8)
                 {
@@ -307,7 +307,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         {
             int i = 0;
             int count = _wordCount;
-            if (IntPtr.Size == 8)
+            if (sizeof(IntPtr) == 8)
             {
                 for (; i <= count - 8; i += 8)
                 {
@@ -347,7 +347,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
         {
             int i = 0;
             int count = _wordCount;
-            if (IntPtr.Size == 8)
+            if (sizeof(IntPtr) == 8)
             {
                 for (; i <= count - 8; i += 8)
                 {
@@ -391,7 +391,7 @@ public unsafe sealed class BitSet : IEquatable<BitSet>
             int count = _wordCount;
             int total = 0;
             int i = 0;
-            if (IntPtr.Size == 8)
+            if (sizeof(IntPtr) == 8)
             {
                 for (; i <= count - 8; i += 8)
                 {

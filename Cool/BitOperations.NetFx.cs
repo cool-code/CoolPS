@@ -117,9 +117,9 @@ public static class BitOperations
     /// If <paramref name="value"/> is 0 or the result overflows, returns 0.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static nuint RoundUpToPowerOf2(nuint value)
+    public static unsafe nuint RoundUpToPowerOf2(nuint value)
     {
-        if (UIntPtr.Size == 8)
+        if (sizeof(IntPtr) == 8)
         {
             return (nuint)RoundUpToPowerOf2((ulong)value);
         }
@@ -169,9 +169,9 @@ public static class BitOperations
     /// </summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int LeadingZeroCount(nuint value)
+    public static unsafe int LeadingZeroCount(nuint value)
     {
-        if (UIntPtr.Size == 8)
+        if (sizeof(IntPtr) == 8)
         {
             return LeadingZeroCount((ulong)value);
         }
@@ -223,9 +223,9 @@ public static class BitOperations
     /// </summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Log2(nuint value)
+    public static unsafe int Log2(nuint value)
     {
-        if (UIntPtr.Size == 8)
+        if (sizeof(IntPtr) == 8)
         {
             return Log2((ulong)value);
         }
@@ -310,9 +310,9 @@ public static class BitOperations
     /// </summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int PopCount(ulong value)
+    public static unsafe int PopCount(ulong value)
     {
-        if (UIntPtr.Size == 4)
+        if (sizeof(IntPtr) == 4)
         {
             return PopCount((uint)value) // lo
                 + PopCount((uint)(value >> 32)); // hi
@@ -335,9 +335,9 @@ public static class BitOperations
     /// </summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int PopCount(nuint value)
+    public static unsafe int PopCount(nuint value)
     {
-        if (UIntPtr.Size == 8)
+        if (sizeof(IntPtr) == 8)
         {
             return PopCount((ulong)value);
         }
@@ -407,9 +407,9 @@ public static class BitOperations
     /// </summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int TrailingZeroCount(nint value)
+    public static unsafe int TrailingZeroCount(nint value)
     {
-        if (UIntPtr.Size == 8)
+        if (sizeof(IntPtr) == 8)
         {
             return TrailingZeroCount((ulong)(nuint)value);
         }
@@ -425,9 +425,9 @@ public static class BitOperations
     /// </summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int TrailingZeroCount(nuint value)
+    public static unsafe int TrailingZeroCount(nuint value)
     {
-        if (UIntPtr.Size == 8)
+        if (sizeof(IntPtr) == 8)
         {
             return TrailingZeroCount((ulong)value);
         }
@@ -471,9 +471,9 @@ public static class BitOperations
     /// and any value outside the range [0..63] is treated as congruent mod 64 on a 64-bit process.</param>
     /// <returns>The rotated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static nuint RotateLeft(nuint value, int offset)
+    public static unsafe nuint RotateLeft(nuint value, int offset)
     {
-        if (UIntPtr.Size == 8)
+        if (sizeof(IntPtr) == 8)
         {
             return (nuint)RotateLeft((ulong)value, offset);
         }
@@ -517,9 +517,9 @@ public static class BitOperations
     /// and any value outside the range [0..63] is treated as congruent mod 64 on a 64-bit process.</param>
     /// <returns>The rotated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static nuint RotateRight(nuint value, int offset)
+    public static unsafe nuint RotateRight(nuint value, int offset)
     {
-        if (UIntPtr.Size == 8)
+        if (sizeof(IntPtr) == 8)
         {
             return (nuint)RotateRight((ulong)value, offset);
         }

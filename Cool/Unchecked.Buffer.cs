@@ -27,7 +27,7 @@ public static partial class Unchecked
         private readonly nint _byteOffset;
         private readonly nuint _length;
 
-        private static readonly nint _arrayDataOffset = IntPtr.Size;
+        private static unsafe readonly nint _arrayDataOffset = sizeof(IntPtr);
 
         public uint Length
         {
