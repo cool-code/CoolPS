@@ -2,7 +2,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
-using static Cool.Unchecked;
 
 namespace Cool;
 
@@ -95,35 +94,37 @@ public static partial class Unchecked
             return ref GetElement<T>(offset, (uint)index);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal uint GetFlattenedIndex(uint index1, uint index2)
+        internal uint GetFlattenedIndex(nint offset, uint index1, uint index2)
         {
-            ref uint dimInfo = ref Unsafe.As<byte, uint>(ref placeholder);
-            index2 -= Unsafe.Add(ref dimInfo, 3);
-            index1 -= Unsafe.Add(ref dimInfo, 2);
-            index1 *= Unsafe.Add(ref dimInfo, 1);
+            ref uint lengthStart = ref Unsafe.As<byte, uint>(ref placeholder);
+            ref uint lowerBoundStart = ref Unsafe.AddByteOffset(ref lengthStart, offset >> 1);
+            index2 -= Unsafe.Add(ref lowerBoundStart, 1);
+            index1 -= Unsafe.Add(ref lowerBoundStart, 0);
+            index1 *= Unsafe.Add(ref lengthStart, 1);
             return (uint)(index1 + index2);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal uint GetFlattenedIndex(int index1, int index2)
+        internal uint GetFlattenedIndex(nint offset, int index1, int index2)
         {
-            ref int dimInfo = ref Unsafe.As<byte, int>(ref placeholder);
-            index2 -= Unsafe.Add(ref dimInfo, 3);
-            index1 -= Unsafe.Add(ref dimInfo, 2);
-            index1 *= Unsafe.Add(ref dimInfo, 1);
+            ref int lengthStart = ref Unsafe.As<byte, int>(ref placeholder);
+            ref int lowerBoundStart = ref Unsafe.AddByteOffset(ref lengthStart, offset >> 1);
+            index2 -= Unsafe.Add(ref lowerBoundStart, 1);
+            index1 -= Unsafe.Add(ref lowerBoundStart, 0);
+            index1 *= Unsafe.Add(ref lengthStart, 1);
             return (uint)(index1 + index2);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T Get<T>(nint offset, int index1, int index2)
         {
             ref T reference = ref GetReference<T>(offset);
-            uint index = GetFlattenedIndex(index1, index2);
+            uint index = GetFlattenedIndex(offset, index1, index2);
             return ref Unsafe.Add(ref reference, index);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T Get<T>(nint offset, uint index1, uint index2)
         {
             ref T reference = ref GetReference<T>(offset);
-            uint index = GetFlattenedIndex(index1, index2);
+            uint index = GetFlattenedIndex(offset, index1, index2);
             return ref Unsafe.Add(ref reference, index);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
