@@ -10,18 +10,18 @@ public static partial class Unchecked
     [StructLayout(LayoutKind.Sequential)]
     private sealed class Array2D
     {
-        internal readonly LengthAndPadding LengthAndPadding;
-        private readonly int dim1Length;
-        private readonly int dim2Length;
-        private readonly int dim1LowerBound;
-        private readonly int dim2LowerBound;
+        internal readonly IntPtr LengthAndPadding;
+        private readonly int Dim1Length;
+        private readonly int Dim2Length;
+        private readonly int Dim1LowerBound;
+        private readonly int Dim2LowerBound;
         internal byte Data;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T GetReference<T>() => ref Unsafe.As<byte, T>(ref Data);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private uint GetFlattenedIndex(uint index1, uint index2) => (index1 * (uint)dim2Length) + index2;
+        private uint GetFlattenedIndex(uint index1, uint index2) => (index1 * (uint)Dim2Length) + index2;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private uint GetFlattenedIndex(int index1, int index2) => (uint)((index1 * dim2Length) + index2);
+        private uint GetFlattenedIndex(int index1, int index2) => (uint)((index1 * Dim2Length) + index2);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T Get<T>(int index1, int index2) => ref Unsafe.Add(ref GetReference<T>(), GetFlattenedIndex(index1, index2));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -29,29 +29,29 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetLength(int dimension) => dimension switch
         {
-            0 => dim1Length,
-            1 => dim2Length,
+            0 => Dim1Length,
+            1 => Dim2Length,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long GetLongLength(int dimension) => dimension switch
         {
-            0 => dim1Length,
-            1 => dim2Length,
+            0 => Dim1Length,
+            1 => Dim2Length,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetLowerBound(int dimension) => dimension switch
         {
-            0 => dim1LowerBound,
-            1 => dim2LowerBound,
+            0 => Dim1LowerBound,
+            1 => Dim2LowerBound,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetUpperBound(int dimension) => dimension switch
         {
-            0 => dim1LowerBound + dim1Length - 1,
-            1 => dim2LowerBound + dim2Length - 1,
+            0 => Dim1LowerBound + Dim1Length - 1,
+            1 => Dim2LowerBound + Dim2Length - 1,
             _ => throw new IndexOutOfRangeException(nameof(dimension))
         };
     }
@@ -87,14 +87,15 @@ public static partial class Unchecked
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)Unsafe.As<Array2D>(_array).LengthAndPadding.Length;
+            get => (int)Unsafe.As<RawArray>(_array).Length;
         }
 
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<Array2D>(_array).LengthAndPadding.Length;
+            get => Unsafe.As<RawArray>(_array).Length;
         }
+
         public bool IsFixedSize
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -198,27 +199,7 @@ public static partial class Unchecked
 
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Enumerator GetEnumerator() => new(_array);
-        public ref struct Enumerator
-        {
-            private readonly T[,] _array;
-            private readonly uint _length;
-            private uint _index;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(T[,] array)
-            {
-                _array = array;
-                _length = Unsafe.As<Array2D>(_array).LengthAndPadding.Length;
-                _index = uint.MaxValue;
-            }
-            public readonly ref T Current
-            {
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref Unsafe.Add(ref _array.GetReference<T>(), _index);
-            }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < _length;
-        }
+        public ArrayEnumerator<T> GetEnumerator() => new(_array, sizeof(int) * 4);
         #endregion
     }
     #endregion

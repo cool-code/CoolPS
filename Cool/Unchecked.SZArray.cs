@@ -7,22 +7,6 @@ namespace Cool;
 
 public static partial class Unchecked
 {
-    [StructLayout(LayoutKind.Explicit)]
-    private readonly struct LengthAndPadding
-    {
-        [FieldOffset(0)]
-        internal readonly uint Length;
-        [FieldOffset(0)]
-        private readonly UIntPtr lengthAndPadding;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private sealed class SZArray
-    {
-        internal readonly LengthAndPadding LengthAndPadding;
-        internal byte Data;
-    }
-
     #region Unchecked Array
     [StructLayout(LayoutKind.Sequential)]
     /// <summary>
@@ -54,14 +38,14 @@ public static partial class Unchecked
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)Unsafe.As<SZArray>(_array).LengthAndPadding.Length;
+            get => (int)Unsafe.As<RawArray>(_array).Length;
         }
-
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<SZArray>(_array).LengthAndPadding.Length;
+            get => Unsafe.As<RawArray>(_array).Length;
         }
+
         public bool IsFixedSize
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -91,7 +75,7 @@ public static partial class Unchecked
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref GetReference(), (nint)index);
+            get => ref Unsafe.Add(ref GetReference(), index);
         }
         #endregion
 
@@ -136,27 +120,7 @@ public static partial class Unchecked
         #endregion
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Enumerator GetEnumerator() => new(_array);
-        public ref struct Enumerator
-        {
-            private readonly T[] _array;
-            private readonly uint _length;
-            private uint _index;
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(T[] array)
-            {
-                _array = array;
-                _length = Unsafe.As<SZArray>(_array).LengthAndPadding.Length;
-                _index = uint.MaxValue;
-            }
-            public readonly ref T Current
-            {
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref Unsafe.Add(ref _array.GetReference(), _index);
-            }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext() => ++_index < _length;
-        }
+        public ArrayEnumerator<T> GetEnumerator() => new(_array, 0);
         #endregion
     }
     #endregion

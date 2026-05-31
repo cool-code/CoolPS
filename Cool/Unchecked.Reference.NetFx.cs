@@ -16,7 +16,7 @@ public static partial class Unchecked
 
     #region aggressive inlining Array.GetReference for .NET Framework
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(this T[] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[], SZArray>(ref array).Data);
+    public static ref T GetReference<T>(this T[] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[], RawArray>(ref array).Data);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T GetReference<T>(this T[,] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[,], Array2D>(ref array).Data);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
