@@ -549,4 +549,15 @@ public static unsafe class Unsafe
         Ldarg(nameof(source));
         return IL.ReturnRef<TTo>();
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint GetBaseSize(object obj)
+    {
+        Ldarg(nameof(obj));
+        Ldind_I();
+        Ldc_I4(4);
+        IL.Emit.Add();
+        Ldind_U4();
+        return IL.Return<uint>();
+    }
 }

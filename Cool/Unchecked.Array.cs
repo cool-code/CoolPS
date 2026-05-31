@@ -7,38 +7,13 @@ namespace Cool;
 
 public static partial class Unchecked
 {
-    [StructLayout(LayoutKind.Explicit)]
-    internal struct MethodTable
-    {
-        /// <summary>
-        /// The base size of the type (used when allocating an instance on the heap).
-        /// </summary>
-        [FieldOffset(4)]
-        public uint BaseSize;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private unsafe struct PMethodTable
-    {
-        internal MethodTable* MethodTable;
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     internal sealed class RawArray
     {
         internal readonly IntPtr LengthAndPadding;
         internal byte Data;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal unsafe nint GetOffset() => BaseSize - (sizeof(IntPtr) * 3);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ref T GetReference<T>(nint offset) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Data, offset));
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe ref T GetReference<T>() => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Data, BaseSize - (sizeof(IntPtr) * 3)));
-        public unsafe nint BaseSize
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (nint)Unsafe.As<byte, PMethodTable>(ref Unsafe.SubtractByteOffset(ref Data, (nint)sizeof(IntPtr) * 2)).MethodTable->BaseSize;
-        }
         public unsafe uint Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -247,10 +222,10 @@ public static partial class Unchecked
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing arrays.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Array(Array array)
+        private unsafe Array(Array array)
         {
             _array = array;
-            _offset = Unsafe.As<RawArray>(_array).GetOffset();
+            _offset = (nint)Unsafe.GetBaseSize(array) - (sizeof(IntPtr) * 3);
         }
         #endregion
 

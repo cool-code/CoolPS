@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 #if NETFRAMEWORK
 using System;
 using System.ComponentModel;
@@ -25,7 +24,11 @@ public static partial class Unchecked
     public static ref T GetReference<T>(this T[,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[,,,], Array4D>(ref array).Data);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(this Array array) => ref Unsafe.As<RawArray>(array).GetReference<T>();
+    public static unsafe ref T GetReference<T>(this Array array) {
+         // Write separately for JIT addressing optimization, do not try to merge into one line
+        nint baseSize = (nint)Unsafe.GetBaseSize(array);
+        return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<RawArray>(array).Data, baseSize - (3 * sizeof(IntPtr))));
+    }
     #endregion
 
 }
