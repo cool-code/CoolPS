@@ -7,202 +7,26 @@ namespace Cool;
 
 public static partial class Unchecked
 {
+
     [StructLayout(LayoutKind.Sequential)]
     internal sealed class RawArray
     {
         internal readonly IntPtr LengthAndPadding;
         internal byte Data;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T GetReference<T>(nint offset) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Data, offset));
-        public unsafe uint Length
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.SubtractByteOffset(ref Unsafe.As<byte, uint>(ref Data), (nint)sizeof(IntPtr));
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal int GetLength(nint offset, int dimension)
-        {
-            if (offset == 0 && dimension == 0) return (int)Length;
-            nint dim = dimension;
-            nint rank = offset / (2 * sizeof(int));
-            if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            return Unsafe.Add(ref Unsafe.As<byte, int>(ref Data), dim);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal int GetLowerBound(nint offset, int dimension)
-        {
-            if (offset == 0 && dimension == 0) return 0;
-            nint dim = dimension;
-            nint rank = offset / (2 * sizeof(int));
-            if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            return Unsafe.Add(ref Unsafe.As<byte, int>(ref Data), dim + rank);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal int GetUpperBound(nint offset, int dimension)
-        {
-            if (offset == 0 && dimension == 0) return (int)Length - 1;
-            nint dim = dimension;
-            nint rank = offset / (2 * sizeof(int));
-            if (dim < 0 || dim >= rank) throw new IndexOutOfRangeException(nameof(dimension));
-            int length = Unsafe.Add(ref Unsafe.As<byte, int>(ref Data), dim);
-            int lowerBound = Unsafe.Add(ref Unsafe.As<byte, int>(ref Data), dim + rank);
-            return length + lowerBound - 1;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T GetElement<T>(nint offset, nint index) => ref Unsafe.Add(ref GetReference<T>(offset), index);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T GetElement<T>(nint offset, uint index) => ref Unsafe.Add(ref GetReference<T>(offset), index);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, uint index)
-        {
-            if (offset == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref Data), index);
-            if (offset > sizeof(int) * 2) return ref GetElement<T>(offset, index);
-            index -= Unsafe.Add(ref Unsafe.As<byte, uint>(ref Data), 1);
-            return ref GetElement<T>(offset, index);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, int index)
-        {
-            if (offset == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref Data), (uint)index);
-            if (offset > sizeof(int) * 2) return ref GetElement<T>(offset, (uint)index);
-            index -= Unsafe.Add(ref Unsafe.As<byte, int>(ref Data), 1);
-            return ref GetElement<T>(offset, (uint)index);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal uint GetFlattenedIndex(nint offset, uint index1, uint index2)
-        {
-            ref uint lengthStart = ref Unsafe.As<byte, uint>(ref Data);
-            ref uint lowerBoundStart = ref Unsafe.AddByteOffset(ref lengthStart, offset >> 1);
-            index2 -= Unsafe.Add(ref lowerBoundStart, 1);
-            index1 -= Unsafe.Add(ref lowerBoundStart, 0);
-            index1 *= Unsafe.Add(ref lengthStart, 1);
-            return (uint)(index1 + index2);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal uint GetFlattenedIndex(nint offset, int index1, int index2)
-        {
-            ref int lengthStart = ref Unsafe.As<byte, int>(ref Data);
-            ref int lowerBoundStart = ref Unsafe.AddByteOffset(ref lengthStart, offset >> 1);
-            index2 -= Unsafe.Add(ref lowerBoundStart, 1);
-            index1 -= Unsafe.Add(ref lowerBoundStart, 0);
-            index1 *= Unsafe.Add(ref lengthStart, 1);
-            return (uint)(index1 + index2);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, int index1, int index2)
-        {
-            ref T reference = ref GetReference<T>(offset);
-            uint index = GetFlattenedIndex(offset, index1, index2);
-            return ref Unsafe.Add(ref reference, index);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, uint index1, uint index2)
-        {
-            ref T reference = ref GetReference<T>(offset);
-            uint index = GetFlattenedIndex(offset, index1, index2);
-            return ref Unsafe.Add(ref reference, index);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal uint GetFlattenedIndex(nint offset, uint index1, uint index2, uint index3)
-        {
-            ref uint lengthStart = ref Unsafe.As<byte, uint>(ref Data);
-            ref uint lowerBoundStart = ref Unsafe.AddByteOffset(ref lengthStart, offset >> 1);
-            index3 -= Unsafe.Add(ref lowerBoundStart, 2);
-            index2 -= Unsafe.Add(ref lowerBoundStart, 1);
-            index1 -= Unsafe.Add(ref lowerBoundStart, 0);
-            index1 *= Unsafe.Add(ref lengthStart, 1);
-            index1 += index2;
-            index1 *= Unsafe.Add(ref lengthStart, 2);
-            return (uint)(index1 + index3);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal uint GetFlattenedIndex(nint offset, int index1, int index2, int index3)
-        {
-            ref int lengthStart = ref Unsafe.As<byte, int>(ref Data);
-            ref int lowerBoundStart = ref Unsafe.AddByteOffset(ref lengthStart, offset >> 1);
-            index3 -= Unsafe.Add(ref lowerBoundStart, 2);
-            index2 -= Unsafe.Add(ref lowerBoundStart, 1);
-            index1 -= Unsafe.Add(ref lowerBoundStart, 0);
-            index1 *= Unsafe.Add(ref lengthStart, 1);
-            index1 += index2;
-            index1 *= Unsafe.Add(ref lengthStart, 2);
-            return (uint)(index1 + index3);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, int index1, int index2, int index3)
-        {
-            ref T reference = ref GetReference<T>(offset);
-            uint index = GetFlattenedIndex(offset, index1, index2, index3);
-            return ref Unsafe.Add(ref reference, index);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, uint index1, uint index2, uint index3)
-        {
-            ref T reference = ref GetReference<T>(offset);
-            uint index = GetFlattenedIndex(offset, index1, index2, index3);
-            return ref Unsafe.Add(ref reference, index);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, params int[] indices)
-        {
-            ref int index = ref indices[0];
-            nint rank = offset / (2 * sizeof(int));
-            nint flattenedIndex = 0;
-            for (nint i = 0; i < rank; i++)
-            {
-                nint length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref Data, i * sizeof(int)));
-                nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref Data, (i + rank) * sizeof(int)));
-                flattenedIndex = (flattenedIndex * length) + ((nint)Unsafe.Add(ref index, i) - lowerBound);
-            }
-            flattenedIndex = rank == 0 ? index : flattenedIndex;
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Data, offset + (flattenedIndex * Unsafe.SizeOf<T>())));
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, params uint[] indices)
-        {
-            ref uint index = ref indices[0];
-            nint rank = offset / (2 * sizeof(int));
-            nint flattenedIndex = 0;
-            for (nint i = 0; i < rank; i++)
-            {
-                nint length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref Data, i * sizeof(int)));
-                nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref Data, (i + rank) * sizeof(int)));
-                flattenedIndex = (flattenedIndex * length) + ((nint)Unsafe.Add(ref index, i) - lowerBound);
-            }
-            flattenedIndex = rank == 0 ? (nint)index : flattenedIndex;
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Data, offset + (flattenedIndex * Unsafe.SizeOf<T>())));
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, params long[] indices)
-        {
-            ref long index = ref indices[0];
-            nint rank = offset / (2 * sizeof(int));
-            nint flattenedIndex = 0;
-            for (nint i = 0; i < rank; i++)
-            {
-                nint length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref Data, i * sizeof(int)));
-                nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref Data, (i + rank) * sizeof(int)));
-                flattenedIndex = (flattenedIndex * length) + ((nint)Unsafe.Add(ref index, i) - lowerBound);
-            }
-            flattenedIndex = rank == 0 ? (nint)index : flattenedIndex;
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Data, offset + (flattenedIndex * Unsafe.SizeOf<T>())));
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Get<T>(nint offset, params ulong[] indices)
-        {
-            ref ulong index = ref indices[0];
-            nint rank = offset / (2 * sizeof(int));
-            nint flattenedIndex = 0;
-            for (nint i = 0; i < rank; i++)
-            {
-                nint length = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref Data, i * sizeof(int)));
-                nint lowerBound = Unsafe.As<byte, int>(ref Unsafe.AddByteOffset(ref Data, (i + rank) * sizeof(int)));
-                flattenedIndex = (flattenedIndex * length) + ((nint)Unsafe.Add(ref index, i) - lowerBound);
-            }
-            flattenedIndex = rank == 0 ? (nint)index : flattenedIndex;
-            return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Data, offset + (flattenedIndex * Unsafe.SizeOf<T>())));
-        }
     }
+
+    #region helper methods for Array<T>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ref byte GetRawArrayData(this Array array)
+    {
+        return ref Unsafe.As<RawArray>(array).Data;
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal unsafe static uint GetLength(this Array array)
+    {
+        return Unsafe.SubtractByteOffset(ref Unsafe.As<byte, uint>(ref array.GetRawArrayData()), (nint)sizeof(IntPtr));
+    }
+    #endregion
 
     #region Unchecked Array
     [StructLayout(LayoutKind.Sequential)]
@@ -218,14 +42,16 @@ public static partial class Unchecked
     {
         #region Fields and Constructor
         private readonly Array _array;
-        internal readonly nint _offset;
+        internal readonly uint _offset;
+        internal readonly uint _rank;
         // The constructor is private to prevent external instantiation,
         // as the class is designed to be used as a wrapper around existing arrays.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe Array(Array array)
         {
             _array = array;
-            _offset = (nint)Unsafe.GetBaseSize(array) - (sizeof(IntPtr) * 3);
+            _offset = Unsafe.GetBaseSize(array) - (uint)(3 * sizeof(IntPtr));
+            _rank = _offset / (2 * sizeof(int));
         }
         #endregion
 
@@ -235,19 +61,18 @@ public static partial class Unchecked
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                int rank = MDArrayRank;
-                return rank + ((rank - 1) >> 31 & 1);
+                return (int)(_rank ^ ((_rank - 1) >> 31));
             }
         }
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)Unsafe.As<RawArray>(_array).Length;
+            get => (int)_array.GetLength();
         }
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<RawArray>(_array).Length;
+            get => _array.GetLength();
         }
         public bool IsFixedSize
         {
@@ -272,117 +97,648 @@ public static partial class Unchecked
         public bool IsSZArray
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _offset == 0;
+            get => _rank == 0;
         }
         public bool IsMDArray
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _offset > 0;
+            get => _rank > 0;
         }
         // The rank of the array if it's a multi-dimensional array; otherwise, 0 for single-dimensional zero-based arrays.
         public int MDArrayRank
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)(_offset / (2 * sizeof(int)));
-        }
-        public ref T this[uint index]
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index);
+            get => (int)_rank;
         }
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                if (_rank == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref rawData), index);
+                index -= Unsafe.Add(ref Unsafe.As<byte, int>(ref rawData), _rank);
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)index * Unsafe.SizeOf<T>())));
+            }
         }
-        public ref T this[ulong index]
+        public ref T this[uint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                if (_rank == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref rawData), index);
+                index -= Unsafe.Add(ref Unsafe.As<byte, uint>(ref rawData), _rank);
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(index * Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                if (_rank == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref rawData), (nint)index);
+                index -= Unsafe.Add(ref Unsafe.As<byte, int>(ref rawData), _rank);
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(index * Unsafe.SizeOf<T>())));
+            }
         }
-        public ref T this[uint index1, uint index2]
+        public ref T this[ulong index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index1, index2);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                if (_rank == 0) return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref rawData), (nuint)index);
+                index -= Unsafe.Add(ref Unsafe.As<byte, uint>(ref rawData), 1);
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(index * (ulong)Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[int index1, int index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index1, index2);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                int flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)flattenedIndex * Unsafe.SizeOf<T>())));
+            }
         }
-        public ref T this[ulong index1, ulong index2]
+        public ref T this[uint index1, uint index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                uint flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[long index1, long index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                long flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
         }
-        public ref T this[uint index1, uint index2, uint index3]
+        public ref T this[ulong index1, ulong index2]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index1, index2, index3);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                ulong flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(flattenedIndex * (ulong)Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[int index1, int index2, int index3]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, index1, index2, index3);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                int flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)flattenedIndex * Unsafe.SizeOf<T>())));
+            }
         }
-        public ref T this[ulong index1, ulong index2, ulong index3]
+        public ref T this[uint index1, uint index2, uint index3]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2, (uint)index3);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                uint flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[long index1, long index2, long index3]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, (uint)index1, (uint)index2, (uint)index3);
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                long flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[ulong index1, ulong index2, ulong index3]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                ulong flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(flattenedIndex * (ulong)Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[int index1, int index2, int index3, int index4]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                int flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[uint index1, uint index2, uint index3, uint index4]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                uint flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[long index1, long index2, long index3, long index4]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                long flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[ulong index1, ulong index2, ulong index3, ulong index4]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                ulong flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(flattenedIndex * (ulong)Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[int index1, int index2, int index3, int index4, int index5]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                int flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[uint index1, uint index2, uint index3, uint index4, uint index5]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                uint flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[long index1, long index2, long index3, long index4, long index5]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                long flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[ulong index1, ulong index2, ulong index3, ulong index4, ulong index5]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                ulong flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(flattenedIndex * (ulong)Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[int index1, int index2, int index3, int index4, int index5, int index6]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                int flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[uint index1, uint index2, uint index3, uint index4, uint index5, uint index6]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                uint flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[long index1, long index2, long index3, long index4, long index5, long index6]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                long flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                ulong flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(flattenedIndex * (ulong)Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[int index1, int index2, int index3, int index4, int index5, int index6, int index7]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                int flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 6)) + (index7 - Unsafe.Add(ref bound, 6));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[uint index1, uint index2, uint index3, uint index4, uint index5, uint index6, uint index7]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                uint flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 6)) + (index7 - Unsafe.Add(ref bound, 6));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[long index1, long index2, long index3, long index4, long index5, long index6, long index7]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                long flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 6)) + (index7 - Unsafe.Add(ref bound, 6));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6, ulong index7]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                ulong flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 6)) + (index7 - Unsafe.Add(ref bound, 6));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(flattenedIndex * (ulong)Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[int index1, int index2, int index3, int index4, int index5, int index6, int index7, int index8]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                int flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 6)) + (index7 - Unsafe.Add(ref bound, 6));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 7)) + (index8 - Unsafe.Add(ref bound, 7));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[uint index1, uint index2, uint index3, uint index4, uint index5, uint index6, uint index7, uint index8]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                uint flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 6)) + (index7 - Unsafe.Add(ref bound, 6));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 7)) + (index8 - Unsafe.Add(ref bound, 7));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[long index1, long index2, long index3, long index4, long index5, long index6, long index7, long index8]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                long flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 6)) + (index7 - Unsafe.Add(ref bound, 6));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 7)) + (index8 - Unsafe.Add(ref bound, 7));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
+        }
+        public ref T this[ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6, ulong index7, ulong index8]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                ulong flattenedIndex = index1 - bound;
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 1)) + (index2 - Unsafe.Add(ref bound, 1));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 2)) + (index3 - Unsafe.Add(ref bound, 2));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 3)) + (index4 - Unsafe.Add(ref bound, 3));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 4)) + (index5 - Unsafe.Add(ref bound, 4));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 5)) + (index6 - Unsafe.Add(ref bound, 5));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 6)) + (index7 - Unsafe.Add(ref bound, 6));
+                flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, 7)) + (index8 - Unsafe.Add(ref bound, 7));
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(flattenedIndex * (ulong)Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[params int[] indices]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, indices);
+            get
+            {
+                if (indices.Length == 1) return ref this[indices[0]];
+                ref int index = ref indices.GetReference();
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                int flattenedIndex = 0;
+                for (int i = 0; i < indices.Length; i++)
+                {
+                    flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, i)) + (Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i));
+                }
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)((uint)flattenedIndex * Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[params uint[] indices]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, indices);
+            get
+            {
+                if (indices.Length == 1) return ref this[indices[0]];
+                ref uint index = ref indices.GetReference();
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                uint flattenedIndex = 0;
+                for (int i = 0; i < indices.Length; i++)
+                {
+                    flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, i)) + (Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i));
+                }
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[params long[] indices]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, indices);
+            get
+            {
+                if (indices.Length == 1) return ref this[indices[0]];
+                ref long index = ref indices.GetReference();
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref int length = ref Unsafe.As<byte, int>(ref rawData);
+                ref int bound = ref Unsafe.Add(ref length, _rank);
+                long flattenedIndex = 0;
+                for (int i = 0; i < indices.Length; i++)
+                {
+                    flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, i)) + (Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i));
+                }
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, (nint)_offset + (nint)(flattenedIndex * Unsafe.SizeOf<T>())));
+            }
         }
         public ref T this[params ulong[] indices]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<RawArray>(_array).Get<T>(_offset, indices);
+            get
+            {
+                if (indices.Length == 1) return ref this[indices[0]];
+                ref ulong index = ref indices.GetReference();
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
+                ref uint bound = ref Unsafe.Add(ref length, _rank);
+                ulong flattenedIndex = 0;
+                for (int i = 0; i < indices.Length; i++)
+                {
+                    flattenedIndex = (flattenedIndex * Unsafe.Add(ref length, i)) + (Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i));
+                }
+                return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref rawData, _offset + (nuint)(flattenedIndex * (ulong)Unsafe.SizeOf<T>())));
+            }
         }
         #endregion
 
         #region Methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T GetReference() => ref Unsafe.As<RawArray>(_array).GetReference<T>(_offset);
+        public ref T GetReference() => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref _array.GetRawArrayData(), _offset));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ref T GetPinnableReference() => ref GetReference();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Array ToArray() => _array;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLength(int dimension) => Unsafe.As<RawArray>(_array).GetLength(_offset, dimension);
+        public int GetLength(uint dimension)
+        {
+            if (_rank == 0 && dimension == 0) return Length;
+            if (dimension < _rank) return Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension);
+            return 0;
+        }
+        public int GetLength(int dimension)
+        {
+            if (_rank == 0 && dimension == 0) return Length;
+            if ((uint)dimension < _rank) return Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension);
+            throw new IndexOutOfRangeException(nameof(dimension));
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long GetLongLength(int dimension) => Unsafe.As<RawArray>(_array).GetLength(_offset, dimension);
+        public long GetLongLength(uint dimension) => GetLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLowerBound(int dimension) => Unsafe.As<RawArray>(_array).GetLowerBound(_offset, dimension);
+        public long GetLongLength(int dimension) => GetLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetUpperBound(int dimension) => Unsafe.As<RawArray>(_array).GetUpperBound(_offset, dimension);
+        public int GetLowerBound(uint dimension)
+        {
+            if (_rank == 0 && dimension == 0) return 0;
+            if (dimension < _rank) return Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension + _rank);
+            return 0;
+        }
+        public int GetLowerBound(int dimension)
+        {
+            if (_rank == 0 && dimension == 0) return 0;
+            if ((uint)dimension < _rank) return Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), (uint)dimension + _rank);
+            throw new IndexOutOfRangeException(nameof(dimension));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetUpperBound(uint dimension)
+        {
+            if (_rank == 0 && dimension == 0) return Length - 1;
+            if (dimension < _rank)
+            {
+                ref int lengthStart = ref Unsafe.As<byte, int>(ref _array.GetRawArrayData());
+                int length = Unsafe.Add(ref lengthStart, dimension);
+                int lowerBound = Unsafe.Add(ref lengthStart, dimension + _rank);
+                return length + lowerBound - 1;
+            }
+            return -1;
+        }
+        public int GetUpperBound(int dimension)
+        {
+            if (_rank == 0 && dimension == 0) return Length - 1;
+            if ((uint)dimension < _rank)
+            {
+                ref int lengthStart = ref Unsafe.As<byte, int>(ref _array.GetRawArrayData());
+                int length = Unsafe.Add(ref lengthStart, dimension);
+                int lowerBound = Unsafe.Add(ref lengthStart, (uint)dimension + _rank);
+                return length + lowerBound - 1;
+            }
+            throw new IndexOutOfRangeException(nameof(dimension));
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(int index) => this[index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -407,6 +763,46 @@ public static partial class Unchecked
         public T GetValue(long index1, long index2, long index3) => this[index1, index2, index3];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(ulong index1, ulong index2, ulong index3) => this[index1, index2, index3];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index1, int index2, int index3, int index4) => this[index1, index2, index3, index4];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index1, uint index2, uint index3, uint index4) => this[index1, index2, index3, index4];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index1, long index2, long index3, long index4) => this[index1, index2, index3, index4];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index1, ulong index2, ulong index3, ulong index4) => this[index1, index2, index3, index4];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index1, int index2, int index3, int index4, int index5) => this[index1, index2, index3, index4, index5];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index1, uint index2, uint index3, uint index4, uint index5) => this[index1, index2, index3, index4, index5];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index1, long index2, long index3, long index4, long index5) => this[index1, index2, index3, index4, index5];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index1, ulong index2, ulong index3, ulong index4, ulong index5) => this[index1, index2, index3, index4, index5];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index1, int index2, int index3, int index4, int index5, int index6) => this[index1, index2, index3, index4, index5, index6];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index1, uint index2, uint index3, uint index4, uint index5, uint index6) => this[index1, index2, index3, index4, index5, index6];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index1, long index2, long index3, long index4, long index5, long index6) => this[index1, index2, index3, index4, index5, index6];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6) => this[index1, index2, index3, index4, index5, index6];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index1, int index2, int index3, int index4, int index5, int index6, int index7) => this[index1, index2, index3, index4, index5, index6, index7];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index1, uint index2, uint index3, uint index4, uint index5, uint index6, uint index7) => this[index1, index2, index3, index4, index5, index6, index7];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index1, long index2, long index3, long index4, long index5, long index6, long index7) => this[index1, index2, index3, index4, index5, index6, index7];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6, ulong index7) => this[index1, index2, index3, index4, index5, index6, index7];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index1, int index2, int index3, int index4, int index5, int index6, int index7, int index8) => this[index1, index2, index3, index4, index5, index6, index7, index8];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index1, uint index2, uint index3, uint index4, uint index5, uint index6, uint index7, uint index8) => this[index1, index2, index3, index4, index5, index6, index7, index8];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index1, long index2, long index3, long index4, long index5, long index6, long index7, long index8) => this[index1, index2, index3, index4, index5, index6, index7, index8];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6, ulong index7, ulong index8) => this[index1, index2, index3, index4, index5, index6, index7, index8];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(params int[] indices) => this[indices];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -439,6 +835,46 @@ public static partial class Unchecked
         public void SetValue(T value, long index1, long index2, long index3) => this[index1, index2, index3] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, ulong index1, ulong index2, ulong index3) => this[index1, index2, index3] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index1, int index2, int index3, int index4) => this[index1, index2, index3, index4] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index1, uint index2, uint index3, uint index4) => this[index1, index2, index3, index4] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index1, long index2, long index3, long index4) => this[index1, index2, index3, index4] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index1, ulong index2, ulong index3, ulong index4) => this[index1, index2, index3, index4] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index1, int index2, int index3, int index4, int index5) => this[index1, index2, index3, index4, index5] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index1, uint index2, uint index3, uint index4, uint index5) => this[index1, index2, index3, index4, index5] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index1, long index2, long index3, long index4, long index5) => this[index1, index2, index3, index4, index5] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index1, ulong index2, ulong index3, ulong index4, ulong index5) => this[index1, index2, index3, index4, index5] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index1, int index2, int index3, int index4, int index5, int index6) => this[index1, index2, index3, index4, index5, index6] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index1, uint index2, uint index3, uint index4, uint index5, uint index6) => this[index1, index2, index3, index4, index5, index6] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index1, long index2, long index3, long index4, long index5, long index6) => this[index1, index2, index3, index4, index5, index6] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6) => this[index1, index2, index3, index4, index5, index6] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index1, int index2, int index3, int index4, int index5, int index6, int index7) => this[index1, index2, index3, index4, index5, index6, index7] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index1, uint index2, uint index3, uint index4, uint index5, uint index6, uint index7) => this[index1, index2, index3, index4, index5, index6, index7] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index1, long index2, long index3, long index4, long index5, long index6, long index7) => this[index1, index2, index3, index4, index5, index6, index7] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6, ulong index7) => this[index1, index2, index3, index4, index5, index6, index7] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index1, int index2, int index3, int index4, int index5, int index6, int index7, int index8) => this[index1, index2, index3, index4, index5, index6, index7, index8] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index1, uint index2, uint index3, uint index4, uint index5, uint index6, uint index7, uint index8) => this[index1, index2, index3, index4, index5, index6, index7, index8] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index1, long index2, long index3, long index4, long index5, long index6, long index7, long index8) => this[index1, index2, index3, index4, index5, index6, index7, index8] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index1, ulong index2, ulong index3, ulong index4, ulong index5, ulong index6, ulong index7, ulong index8) => this[index1, index2, index3, index4, index5, index6, index7, index8] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue(T value, params int[] indices) => this[indices] = value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

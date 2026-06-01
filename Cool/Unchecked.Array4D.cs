@@ -96,17 +96,15 @@ public static partial class Unchecked
             get => 4;
         }
 
-
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)Unsafe.As<RawArray>(_array).Length;
+            get => (int)_array.GetLength();
         }
-
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.As<RawArray>(_array).Length;
+            get => _array.GetLength();
         }
 
         public bool IsFixedSize

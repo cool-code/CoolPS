@@ -8,24 +8,30 @@ public static partial class Unchecked
 {
     public ref struct ArrayEnumerator<T>
     {
-        private readonly ref T _ref;
-        private readonly nint _length;
-        private nint _index;
+        private ref T _current;
+        private readonly ref T _end;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ArrayEnumerator(Array array, nint offset)
+        internal ArrayEnumerator(Array array, uint offset)
         {
-            var a = Unsafe.As<RawArray>(array);
-            _ref = ref a.GetReference<T>(offset);
-            _length = (nint)a.Length;
-            _index = -1;
+            ref T start = ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref array.GetRawArrayData(), (nint)offset));
+            nint len = (nint)array.GetLength();
+            _current = ref Unsafe.Subtract(ref start, 1);
+            _end = ref Unsafe.Add(ref start, len);
         }
+
         public readonly ref T Current
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref _ref, _index);
+            get => ref _current;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool MoveNext() => ++_index < _length;
+        public bool MoveNext()
+        {
+            _current = ref Unsafe.Add(ref _current, 1);
+            return !Unsafe.AreSame(ref _current, ref _end);
+        }
     }
 }
 #endif
