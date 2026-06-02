@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Cool;
 
-public class ConfigLoader
+public static class ConfigLoader
 {
     private static readonly Dictionary<string, string> _translateMap = new(StringComparer.OrdinalIgnoreCase) {
         {"BLK", "bd"},
