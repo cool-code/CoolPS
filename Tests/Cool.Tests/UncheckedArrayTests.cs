@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using Cool;
 
@@ -10,7 +12,7 @@ namespace Cool.Tests
         public void Array_Conversions_Indexer_Span_Enumerator_And_Properties()
         {
             int[] arr = [1, 2, 3, 4];
-            Unchecked.Array<int> ua = arr;
+            Unchecked.SZArray<int> ua = arr;
 
             Assert.Equal(arr.Rank, ua.Rank);
             Assert.Equal(arr.Length, ua.Length);
@@ -123,7 +125,7 @@ namespace Cool.Tests
         public void Array_Empty_EnumeratesNone()
         {
             int[] arr = new int[0];
-            Unchecked.Array<int> ua = arr;
+            Unchecked.SZArray<int> ua = arr;
             Assert.Equal(arr.Length, ua.Length);
 
             int count = 0;
@@ -367,6 +369,154 @@ namespace Cool.Tests
 
             Assert.Throws<IndexOutOfRangeException>(() => a4.GetLength(4));
             Assert.Throws<IndexOutOfRangeException>(() => a4.GetLowerBound(4));
+        }
+
+        [Fact]
+        public void Array_1D_NonZeroLowerBound_Access_And_Enumerator()
+        {
+            int len = 4;
+            int lb = 1;
+            Array arr = Array.CreateInstance(typeof(int), new int[] { len }, new int[] { lb });
+            for (int i = lb; i <= lb + len - 1; i++) arr.SetValue(i * 10, i);
+
+            Unchecked.Array<int> ua = arr;
+            Assert.Equal(len, ua.Length);
+            Assert.Equal(lb, ua.GetLowerBound(0));
+            Assert.Equal(lb + len - 1, ua.GetUpperBound(0));
+
+            for (int i = lb; i <= lb + len - 1; i++) Assert.Equal(i * 10, ua[i]);
+
+            ua[lb] = 999;
+            Assert.Equal(999, arr.GetValue(lb));
+
+            int cnt = 0;
+            foreach (ref int x in ua)
+            {
+                cnt++;
+                x += 1;
+            }
+            Assert.Equal(len, cnt);
+            for (int i = lb; i <= lb + len - 1; i++)
+            {
+                int expectedBefore = (i == lb) ? 999 : (i * 10);
+                Assert.Equal(expectedBefore + 1, arr.GetValue(i));
+            }
+        }
+
+        [Fact]
+        public void LowerDim_Indexers_Flatten_HigherDim_Access_2D_on_3D_4D()
+        {
+            // 3D array: verify 2D indexer flattens to underlying linear ordering
+            int d0 = 2, d1 = 3, d2 = 4;
+            int[,,] arr3 = new int[d0, d1, d2];
+            int v = 0;
+            for (int i = 0; i < d0; i++)
+                for (int j = 0; j < d1; j++)
+                    for (int k = 0; k < d2; k++)
+                        arr3[i, j, k] = v++;
+
+            Unchecked.Array<int> ua3 = arr3;
+            var flat3 = new List<int>();
+            foreach (var o in arr3) flat3.Add((int)o);
+
+            for (int i = 0; i < d0; i++)
+            {
+                for (int j = 0; j < d1; j++)
+                {
+                    int A = (i - arr3.GetLowerBound(0)) * arr3.GetLength(1) + (j - arr3.GetLowerBound(1));
+                    Assert.Equal(flat3[A], ua3[i, j]);
+
+                    int newv = -1000 + i * 10 + j;
+                    ua3[i, j] = newv;
+                    var flat3b = new List<int>();
+                    foreach (var o in arr3) flat3b.Add((int)o);
+                    Assert.Equal(newv, flat3b[A]);
+                }
+            }
+
+            // 4D array: verify 2D indexer flattens to underlying linear ordering
+            int a0 = 2, a1 = 2, a2 = 3, a3 = 4;
+            int[,,,] arr4 = new int[a0, a1, a2, a3];
+            v = 0;
+            for (int i = 0; i < a0; i++)
+                for (int j = 0; j < a1; j++)
+                    for (int k = 0; k < a2; k++)
+                        for (int l = 0; l < a3; l++)
+                            arr4[i, j, k, l] = v++;
+
+            Unchecked.Array<int> ua4 = arr4;
+            var flat4 = new List<int>();
+            foreach (var o in arr4) flat4.Add((int)o);
+
+            for (int i = 0; i < a0; i++)
+            {
+                for (int j = 0; j < a1; j++)
+                {
+                    int A = (i - arr4.GetLowerBound(0)) * arr4.GetLength(1) + (j - arr4.GetLowerBound(1));
+                    Assert.Equal(flat4[A], ua4[i, j]);
+
+                    int newv = 20000 + i * 10 + j;
+                    ua4[i, j] = newv;
+                    var flat4b = new List<int>();
+                    foreach (var o in arr4) flat4b.Add((int)o);
+                    Assert.Equal(newv, flat4b[A]);
+                }
+            }
+        }
+
+        [Fact]
+        public void Array_Dimensions_5_to_10_Params_Indexer_And_Enumeration()
+        {
+            for (int rank = 5; rank <= 10; rank++)
+            {
+                int[] dims = Enumerable.Repeat(2, rank).ToArray();
+                Array arr = Array.CreateInstance(typeof(int), dims);
+                int total = 1;
+                for (int i = 0; i < rank; i++) total *= dims[i];
+
+                // fill sequential values
+                int val = 0;
+                for (int linear = 0; linear < total; linear++)
+                {
+                    int rem = linear;
+                    int[] indices = new int[rank];
+                    for (int d = 0; d < rank; d++)
+                    {
+                        int stride = 1;
+                        for (int k = d + 1; k < rank; k++) stride *= dims[k];
+                        indices[d] = arr.GetLowerBound(d) + rem / stride;
+                        rem = rem % stride;
+                    }
+                    arr.SetValue(val++, indices);
+                }
+
+                Unchecked.Array<int> ua = arr;
+
+                var flat = new List<int>();
+                foreach (var o in arr) flat.Add((int)o);
+
+                for (int linear = 0; linear < total; linear++)
+                {
+                    int rem = linear;
+                    int[] indices = new int[rank];
+                    for (int d = 0; d < rank; d++)
+                    {
+                        int stride = 1;
+                        for (int k = d + 1; k < rank; k++) stride *= dims[k];
+                        indices[d] = arr.GetLowerBound(d) + rem / stride;
+                        rem = rem % stride;
+                    }
+
+                    // read via params indexer
+                    Assert.Equal(flat[linear], ua[indices]);
+
+                    int newv = 100000 + linear;
+                    ua[indices] = newv;
+                    var flat2 = new List<int>();
+                    foreach (var o in arr) flat2.Add((int)o);
+                    Assert.Equal(newv, flat2[linear]);
+                }
+            }
         }
     }
 }
