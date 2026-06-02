@@ -9,7 +9,7 @@ namespace Cool.Benchmarks
     [DisassemblyDiagnoser]
     public class UncheckedArray3DBenchmarks
     {
-        [Params(16, 64, 1024)]
+        [Params(16, 64, 512)]
         public int Size;
 
         private int[,,]? data;

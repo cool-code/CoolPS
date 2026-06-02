@@ -142,12 +142,12 @@ public static partial class Unchecked
         public ref T this[int index1, int index2, int index3, int index4]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<Array4D>(_array).Get<T>(index1, index2, index3, index4);
+            get => ref Unsafe.AsRef<T[,,,], Array4D>(_array).Get<T>(index1, index2, index3, index4);
         }
         public ref T this[uint index1, uint index2, uint index3, uint index4]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.As<Array4D>(_array).Get<T>(index1, index2, index3, index4);
+            get => ref Unsafe.AsRef<T[,,,], Array4D>(_array).Get<T>(index1, index2, index3, index4);
         }
         #endregion
 
@@ -160,13 +160,13 @@ public static partial class Unchecked
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[,,,] ToArray() => _array;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLength(int dimension) => Unsafe.As<Array4D>(_array).GetLength(dimension);
+        public int GetLength(int dimension) => Unsafe.AsRef<T[,,,], Array4D>(_array).GetLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long GetLongLength(int dimension) => Unsafe.As<Array4D>(_array).GetLongLength(dimension);
+        public long GetLongLength(int dimension) => Unsafe.AsRef<T[,,,], Array4D>(_array).GetLongLength(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetLowerBound(int dimension) => Unsafe.As<Array4D>(_array).GetLowerBound(dimension);
+        public int GetLowerBound(int dimension) => Unsafe.AsRef<T[,,,], Array4D>(_array).GetLowerBound(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetUpperBound(int dimension) => Unsafe.As<Array4D>(_array).GetUpperBound(dimension);
+        public int GetUpperBound(int dimension) => Unsafe.AsRef<T[,,,], Array4D>(_array).GetUpperBound(dimension);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(int index) => this[index];
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

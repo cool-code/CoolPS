@@ -10,7 +10,7 @@ public static partial class Unchecked
     #region aggressive inlining string.GetPinnableReference for .NET Framework
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static ref readonly char GetPinnableReference(this string? str) => ref Unsafe.As<RawString>(str).FirstChar;
+    public static ref readonly char GetPinnableReference(this string str) => ref Unsafe.As<string, RawString>(ref str).FirstChar;
     #endregion
 
     #region aggressive inlining Array.GetReference for .NET Framework
@@ -28,7 +28,7 @@ public static partial class Unchecked
     {
         // Write separately for JIT addressing optimization, do not try to merge into one line
         nint baseSize = (nint)Unsafe.GetBaseSize(array);
-        return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<RawArray>(array).Data, baseSize - (3 * sizeof(IntPtr))));
+        return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<Array, RawArray>(ref array).Data, baseSize - (3 * sizeof(IntPtr))));
     }
     #endregion
 }

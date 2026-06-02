@@ -8,25 +8,54 @@ public static partial class Unchecked
 {
     public ref struct ArrayEnumerator<T>
     {
-        private readonly Array _array;
+        private readonly RawArray _array;
         private readonly nint _offset;
-        private readonly nint _length;
-        private nint _index;
+        private readonly uint _length;
+        private uint _index;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ArrayEnumerator(Array array, uint offset)
         {
-            _array = array;
+            _array = Unsafe.As<Array, RawArray>(ref array);
             _offset = (nint)offset;
-            _length = (nint)array.GetLength();
-            _index = -1;
+            _length = array.GetLength();
+            _index = uint.MaxValue;
         }
         public readonly ref T Current
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref Unsafe.Add(ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref _array.GetRawArrayData(), _offset)), _index);
+            get
+            {
+                nuint index = _index;
+                return ref Unsafe.Add(ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref _array.Data, _offset)), index);
+            }
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool MoveNext() => ++_index < _length;
+        public bool MoveNext() => _length > ++_index;
+    }
+
+    public ref struct SZArrayEnumerator<T>
+    {
+        private readonly T[] _array;
+        private readonly uint _length;
+        private uint _index;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal SZArrayEnumerator(T[] array)
+        {
+            _array = array;
+            _length = (uint)array.Length;
+            _index = uint.MaxValue;
+        }
+        public readonly ref T Current
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                nuint index = _index;
+                return ref Unsafe.Add(ref _array.GetReference(), index);
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool MoveNext() => _length > ++_index;
     }
 }
 #endif

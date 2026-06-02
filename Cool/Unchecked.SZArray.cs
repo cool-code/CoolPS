@@ -38,12 +38,12 @@ public static partial class Unchecked
         public int Length
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (int)_array.GetLength();
+            get => _array.Length;
         }
         public long LongLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _array.GetLength();
+            get => _array.LongLength;
         }
 
         public bool IsFixedSize
@@ -120,7 +120,7 @@ public static partial class Unchecked
         #endregion
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ArrayEnumerator<T> GetEnumerator() => new(_array, 0);
+        public SZArrayEnumerator<T> GetEnumerator() => new(_array);
         #endregion
     }
     #endregion

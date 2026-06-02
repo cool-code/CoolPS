@@ -19,7 +19,7 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref byte GetRawArrayData(this Array array)
     {
-        return ref Unsafe.As<RawArray>(array).Data;
+        return ref Unsafe.As<Array, RawArray>(ref array).Data;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal unsafe static uint GetLength(this Array array)

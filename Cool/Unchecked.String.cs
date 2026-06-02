@@ -48,9 +48,9 @@ public static partial class Unchecked
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public ref readonly char GetPinnableReference() => ref Unsafe.As<RawString>(_string).FirstChar;
+        public ref readonly char GetPinnableReference() => ref Unsafe.AsRef<string, RawString>(_string).FirstChar;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref char GetReference() => ref Unsafe.As<RawString>(_string).FirstChar;
+        public ref char GetReference() => ref Unsafe.AsRef<string, RawString>(_string).FirstChar;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString() => _string;
 
