@@ -38,7 +38,7 @@ public static partial class Unchecked
     /// - Intended for use on .NET Framework 4.7+ and .NET 7+ (PowerShell scenarios).
     /// - Callers must ensure indices are valid; out-of-range accesses are undefined behavior.
     /// </remarks>
-    public readonly struct Array<T>
+    public readonly partial struct Array<T>
     {
         #region Fields and Constructor
         private readonly Array _array;
