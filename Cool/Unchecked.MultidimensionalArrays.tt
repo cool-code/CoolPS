@@ -1,0 +1,205 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.ComponentModel;
+
+namespace Cool;
+
+public static partial class Unchecked
+{
+<# 
+    for (int r = 2; r <= 32; r++) 
+    {
+        string rankStr = r + "D";
+        string commaRank = new string(',', r - 1); 
+        string rankName = r.ToString();
+#>
+    #region Unchecked Array <#= rankStr #>
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct Array<#= rankStr #><T>
+    {
+        #region Fields and Constructor
+        private readonly T[<#= commaRank #>] _array;
+        private static readonly uint runtimeOffset = (uint)(<#= r * 2 #> * sizeof(int));
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Array<#= rankStr #>(T[<#= commaRank #>] array) => _array = array;
+        #endregion
+
+        #region Properties and Indexer
+        public int Rank
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => <#= rankName #>;
+        }
+        public int Length
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (int)_array.GetLength();
+        }
+        public long LongLength
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _array.GetLength();
+        }
+        public bool IsFixedSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => true;
+        }
+        public bool IsReadOnly
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => false;
+        }
+        public bool IsSynchronized
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => false;
+        }
+        public object SyncRoot
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _array;
+        }
+
+        public ref T this[uint index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.Add(ref GetReference(), index);
+        }
+        public ref T this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref Unsafe.Add(ref GetReference(), (nint)index);
+        }
+<#
+        var config = new[] {
+            new { Type = "int",   Cast = "int",  Ret = "ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex)" },
+            new { Type = "uint",  Cast = "uint", Ret = "ref Unsafe.Add(ref GetReference(), flattenedIndex)" },
+            new { Type = "long",  Cast = "int",  Ret = "ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex)" },
+            new { Type = "ulong", Cast = "uint", Ret = "ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex)" }
+        };
+        for (int d = 2; d <= r; d++)
+        {
+            foreach (var cfg in config)
+            {
+                var paramsList = Enumerable.Range(1, d).Select(i => cfg.Type + " index" + i).ToList();
+                //paramsList.Add(cfg.Type + " index" + r);
+#>
+        public ref T this[<#= string.Join(", ", paramsList) #>]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref <#= cfg.Cast #> length = ref Unsafe.As<byte, <#= cfg.Cast #>>(ref rawData);
+
+                <#= cfg.Type #> flattenedIndex = index1;
+<#
+                for (int i = 1; i < d - 1; i++)
+                {
+                    WriteLine($"                flattenedIndex *= Unsafe.Add(ref length, {i});");
+                    WriteLine($"                flattenedIndex += index{i + 1};");
+                }
+                for (int i = d - 1; i < r; i++)
+                {
+                    WriteLine($"                flattenedIndex *= Unsafe.Add(ref length, {i});");
+                }
+                WriteLine($"                flattenedIndex += index{d};");
+#>
+                return <#= cfg.Ret #>;
+            }
+        }
+<#
+            }
+        }
+#>
+        #endregion
+
+        #region Methods
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref T GetReference() => ref _array.GetReference<T>();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ref T GetPinnableReference() => ref GetReference();
+        public T[<#= commaRank #>] ToArray() => _array;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetLength(int dimension)
+        {
+            if ((uint)dimension >= (uint)Rank) ThrowIndexOutOfRange();
+            return Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public long GetLongLength(int dimension) => GetLength(dimension);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetLowerBound(int dimension)
+        {
+            if ((uint)dimension >= (uint)Rank) ThrowIndexOutOfRange();
+            return Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension + Rank);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetUpperBound(int dimension)
+        {
+            if ((uint)dimension >= (uint)Rank) ThrowIndexOutOfRange();
+            ref int length = ref Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension);
+            ref int lowerBound = ref Unsafe.Add(ref length, Rank);
+            return lowerBound + length - 1;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(int index) => this[index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(uint index) => this[index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(long index) => this[(uint)index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(ulong index) => this[(uint)index];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, int index) => this[index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, uint index) => this[index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, long index) => this[(uint)index] = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, ulong index) => this[(uint)index] = value;
+<#
+        for (int d = 2; d <= r; d++)
+        {
+            foreach (var cfg in config)
+            {
+                var methodParams = Enumerable.Range(1, d).Select(i => cfg.Type + " index" + i).ToList();
+                string args = string.Join(", ", methodParams);
+                
+                string callParams = string.Join(", ", Enumerable.Range(1, d).Select(i => "index" + i));
+#>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(<#= args #>) => this[<#= callParams #>];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, <#= args #>) => this[<#= callParams #>] = value;
+<#
+            }
+        } 
+#>
+        #endregion
+
+        #region Implicit Conversions
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator Array<#= rankStr #><T>(T[<#= commaRank #>] value) => new(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator T[<#= commaRank #>](Array<#= rankStr #><T> value) => value._array;
+        #endregion
+
+        #region Enumerator
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ArrayEnumerator<T> GetEnumerator() => new(_array, runtimeOffset);
+        #endregion
+    }
+    #endregion
+<#
+    } 
+#>
+}

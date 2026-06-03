@@ -1,0 +1,42 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+#if NETFRAMEWORK
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace Cool;
+
+public static partial class Unchecked
+{
+    #region aggressive inlining string.GetPinnableReference for .NET Framework
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static ref readonly char GetPinnableReference(this string str) => ref Unsafe.As<string, RawString>(ref str).FirstChar;
+    #endregion
+
+    #region aggressive inlining Array.GetReference for .NET Framework
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[], RawArray>(ref array).Data);
+<# 
+    for (int r = 2; r <= 32; r++) 
+    {
+        string rankStr = r + "D";
+        string commaRank = new string(',', r - 1); 
+        string rankName = r.ToString();
+#>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[<#= commaRank #>] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[<#= commaRank #>], RawArray>(ref array).Data, <#= r * 2 #> * sizeof(int)));
+<#
+    }
+#>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe ref T GetReference<T>(this Array array)
+    {
+        // Write separately for JIT addressing optimization, do not try to merge into one line
+        nint baseSize = (nint)Unsafe.GetBaseSize(array);
+        return ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<Array, RawArray>(ref array).Data, baseSize - (3 * sizeof(IntPtr))));
+    }
+    #endregion
+}
+#endif

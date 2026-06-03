@@ -17,12 +17,67 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T GetReference<T>(this T[] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[], RawArray>(ref array).Data);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(this T[,] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[,], Array2D>(ref array).Data);
+    public static ref T GetReference<T>(this T[,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,], RawArray>(ref array).Data, 4 * sizeof(int)));
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(this T[,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[,,], Array3D>(ref array).Data);
+    public static ref T GetReference<T>(this T[,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,], RawArray>(ref array).Data, 6 * sizeof(int)));
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetReference<T>(this T[,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.As<T[,,,], Array4D>(ref array).Data);
-
+    public static ref T GetReference<T>(this T[,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,], RawArray>(ref array).Data, 8 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,], RawArray>(ref array).Data, 10 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,], RawArray>(ref array).Data, 12 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,], RawArray>(ref array).Data, 14 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,], RawArray>(ref array).Data, 16 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,], RawArray>(ref array).Data, 18 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,], RawArray>(ref array).Data, 20 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,], RawArray>(ref array).Data, 22 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,], RawArray>(ref array).Data, 24 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,], RawArray>(ref array).Data, 26 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,], RawArray>(ref array).Data, 28 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,], RawArray>(ref array).Data, 30 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 32 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 34 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 36 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 38 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 40 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 42 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 44 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 46 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 48 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 50 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 52 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 54 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 56 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 58 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 60 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 62 * sizeof(int)));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetReference<T>(this T[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,] array) => ref Unsafe.As<byte, T>(ref Unsafe.AddByteOffset(ref Unsafe.As<T[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,], RawArray>(ref array).Data, 64 * sizeof(int)));
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe ref T GetReference<T>(this Array array)
     {

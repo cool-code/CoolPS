@@ -1,0 +1,82 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+using System.Runtime.CompilerServices;
+
+namespace Cool;
+
+public static partial class Unchecked
+{
+    #region Generic Unchecked Array (Supports Arbitrary Dimensions)
+    public readonly partial struct Array<T>
+    {
+<#
+        var config = new[] {
+            new { Type = "int",   Cast = "int",  Ret = "ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex)" },
+            new { Type = "uint",  Cast = "uint", Ret = "ref Unsafe.Add(ref GetReference(), flattenedIndex)" },
+            new { Type = "long",  Cast = "int",  Ret = "ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex)" },
+            new { Type = "ulong", Cast = "uint", Ret = "ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex)" }
+        };
+
+        for (int d = 2; d <= 32; d++)
+        {
+            foreach (var cfg in config)
+            {
+                var paramsList = Enumerable.Range(1, d - 1).Select(i => cfg.Type + " index" + i).ToList();
+                paramsList.Add(cfg.Type + " index" + d);
+#>
+        public ref T this[<#= string.Join(", ", paramsList) #>]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref byte rawData = ref _array.GetRawArrayData();
+                ref <#= cfg.Cast #> length = ref Unsafe.As<byte, <#= cfg.Cast #>>(ref rawData);
+                ref <#= cfg.Cast #> bound = ref Unsafe.Add(ref length, _rank);
+                <#= cfg.Type #> flattenedIndex = index1 - bound;
+<#
+                for (int i = 1; i < d - 1; i++)
+                {
+                    WriteLine($"                flattenedIndex *= Unsafe.Add(ref length, {i});");
+                    WriteLine($"                flattenedIndex += index{i + 1} - Unsafe.Add(ref bound, {i});");
+                }
+#>
+                for (int i = <#= d - 1 #>; i < _rank; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                }
+                flattenedIndex += index<#= d #> - Unsafe.Add(ref bound, <#= d - 1 #>);
+                return <#= cfg.Ret #>;
+            }
+        }
+<#
+            }
+        }
+#>
+        #region Methods
+<#
+        for (int d = 2; d <= 32; d++)
+        {
+            foreach (var cfg in config)
+            {
+                var methodParams = Enumerable.Range(1, d - 1).Select(i => cfg.Type + " index" + i).ToList();
+                methodParams.Add(cfg.Type + " index" + d);
+                string args = string.Join(", ", methodParams);
+                
+                string callParams = string.Join(", ", Enumerable.Range(1, d - 1).Select(i => "index" + i).Concat(new[] { "index" + d }));
+#>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue(<#= args #>) => this[<#= callParams #>];
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue(T value, <#= args #>) => this[<#= callParams #>] = value;
+<#
+            }
+        } 
+#>
+        #endregion
+    }
+    #endregion
+}
