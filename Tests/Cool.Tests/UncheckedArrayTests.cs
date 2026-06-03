@@ -417,19 +417,21 @@ namespace Cool.Tests
 
             Unchecked.Array<int> ua3 = arr3;
             var flat3 = new List<int>();
-            foreach (var o in arr3) flat3.Add((int)o);
+            foreach (int o in arr3) flat3.Add(o);
 
             for (int i = 0; i < d0; i++)
             {
                 for (int j = 0; j < d1; j++)
                 {
-                    int A = (i - arr3.GetLowerBound(0)) * arr3.GetLength(1) + (j - arr3.GetLowerBound(1));
+                    int A = (i - arr3.GetLowerBound(0));
+                    for (int t = 1; t < arr3.Rank; t++) A *= arr3.GetLength(t);
+                    A += (j - arr3.GetLowerBound(1));
                     Assert.Equal(flat3[A], ua3[i, j]);
 
                     int newv = -1000 + i * 10 + j;
                     ua3[i, j] = newv;
                     var flat3b = new List<int>();
-                    foreach (var o in arr3) flat3b.Add((int)o);
+                    foreach (int o in arr3) flat3b.Add(o);
                     Assert.Equal(newv, flat3b[A]);
                 }
             }
@@ -446,19 +448,21 @@ namespace Cool.Tests
 
             Unchecked.Array<int> ua4 = arr4;
             var flat4 = new List<int>();
-            foreach (var o in arr4) flat4.Add((int)o);
+            foreach (int o in arr4) flat4.Add(o);
 
             for (int i = 0; i < a0; i++)
             {
                 for (int j = 0; j < a1; j++)
                 {
-                    int A = (i - arr4.GetLowerBound(0)) * arr4.GetLength(1) + (j - arr4.GetLowerBound(1));
+                    int A = (i - arr4.GetLowerBound(0));
+                    for (int t = 1; t < arr4.Rank; t++) A *= arr4.GetLength(t);
+                    A += (j - arr4.GetLowerBound(1));
                     Assert.Equal(flat4[A], ua4[i, j]);
 
                     int newv = 20000 + i * 10 + j;
                     ua4[i, j] = newv;
                     var flat4b = new List<int>();
-                    foreach (var o in arr4) flat4b.Add((int)o);
+                    foreach (int o in arr4) flat4b.Add(o);
                     Assert.Equal(newv, flat4b[A]);
                 }
             }
@@ -492,9 +496,6 @@ namespace Cool.Tests
 
                 Unchecked.Array<int> ua = arr;
 
-                var flat = new List<int>();
-                foreach (var o in arr) flat.Add((int)o);
-
                 for (int linear = 0; linear < total; linear++)
                 {
                     int rem = linear;
@@ -507,14 +508,13 @@ namespace Cool.Tests
                         rem = rem % stride;
                     }
 
-                    // read via params indexer
-                    Assert.Equal(flat[linear], ua[indices]);
+                    // read via params indexer (use Array.GetValue as the authoritative source)
+                    int expected = (int)arr.GetValue(indices)!;
+                    Assert.Equal(expected, ua[indices]);
 
                     int newv = 100000 + linear;
                     ua[indices] = newv;
-                    var flat2 = new List<int>();
-                    foreach (var o in arr) flat2.Add((int)o);
-                    Assert.Equal(newv, flat2[linear]);
+                    Assert.Equal(newv, (int)arr.GetValue(indices)!);
                 }
             }
         }
