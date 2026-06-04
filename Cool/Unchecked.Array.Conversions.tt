@@ -1,0 +1,29 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+using System.Runtime.CompilerServices;
+
+namespace Cool;
+
+public static partial class Unchecked
+{
+    public readonly partial struct Array<T>
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator T[](Array<T> value) => (T[])value._array;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator SZArray<T>(Array<T> value) => (SZArray<T>)(T[])value._array;
+<#
+        for (int i = 2; i <= 32; i++)
+        {
+            string rankStr = i + "D";
+            string comma = new string(',', i - 1);
+#>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator T[<#= comma #>](Array<T> value) => (T[<#= comma #>])value._array;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator Array<#= rankStr #><T>(Array<T> value) => (Array<#= rankStr #><T>)(T[<#= comma #>])value._array;
+<#
+        }
+#>
+    }
+}

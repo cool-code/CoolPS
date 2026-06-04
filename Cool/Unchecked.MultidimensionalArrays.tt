@@ -191,6 +191,8 @@ public static partial class Unchecked
         public static implicit operator Array<#= rankStr #><T>(T[<#= commaRank #>] value) => new(value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator T[<#= commaRank #>](Array<#= rankStr #><T> value) => value._array;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator Array<T>(Array<#= rankStr #><T> value) => value._array;
         #endregion
 
         #region Enumerator

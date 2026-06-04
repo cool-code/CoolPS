@@ -117,6 +117,8 @@ public static partial class Unchecked
         public static implicit operator SZArray<T>(T[] value) => new(value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator T[](SZArray<T> value) => value._array;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator Array<T>(SZArray<T> value) => value._array;
         #endregion
         #region Enumerator
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
