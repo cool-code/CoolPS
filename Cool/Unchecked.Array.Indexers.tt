@@ -37,18 +37,21 @@ public static partial class Unchecked
                 ref <#= cfg.Cast #> length = ref Unsafe.As<byte, <#= cfg.Cast #>>(ref rawData);
                 ref <#= cfg.Cast #> bound = ref Unsafe.Add(ref length, _rank);
                 <#= cfg.Type #> flattenedIndex = index1 - bound;
+                unchecked
+                {
 <#
                 for (int i = 1; i < d - 1; i++)
                 {
-                    WriteLine($"                flattenedIndex *= Unsafe.Add(ref length, {i});");
-                    WriteLine($"                flattenedIndex += index{i + 1} - Unsafe.Add(ref bound, {i});");
+                    WriteLine($"                    flattenedIndex *= Unsafe.Add(ref length, {i});");
+                    WriteLine($"                    flattenedIndex += index{i + 1} - Unsafe.Add(ref bound, {i});");
                 }
 #>
-                for (int i = <#= d - 1 #>; i < _rank; i++)
-                {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    for (int i = <#= d - 1 #>; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index<#= d #> - Unsafe.Add(ref bound, <#= d - 1 #>);
                 }
-                flattenedIndex += index<#= d #> - Unsafe.Add(ref bound, <#= d - 1 #>);
                 return <#= cfg.Ret #>;
             }
         }

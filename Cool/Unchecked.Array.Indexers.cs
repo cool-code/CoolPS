@@ -16,11 +16,14 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                for (int i = 1; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    for (int i = 1; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
                 }
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -33,11 +36,14 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                for (int i = 1; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    for (int i = 1; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
                 }
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -50,11 +56,14 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                for (int i = 1; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    for (int i = 1; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
                 }
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -67,11 +76,14 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                for (int i = 1; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    for (int i = 1; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
                 }
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -84,13 +96,16 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                for (int i = 2; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    for (int i = 2; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
                 }
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -103,13 +118,16 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                for (int i = 2; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    for (int i = 2; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
                 }
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -122,13 +140,16 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                for (int i = 2; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    for (int i = 2; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
                 }
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -141,13 +162,16 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                for (int i = 2; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    for (int i = 2; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
                 }
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -160,15 +184,18 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                for (int i = 3; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    for (int i = 3; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
                 }
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -181,15 +208,18 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                for (int i = 3; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    for (int i = 3; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
                 }
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -202,15 +232,18 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                for (int i = 3; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    for (int i = 3; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
                 }
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -223,15 +256,18 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                for (int i = 3; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    for (int i = 3; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
                 }
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -244,17 +280,20 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                for (int i = 4; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    for (int i = 4; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
                 }
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -267,17 +306,20 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                for (int i = 4; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    for (int i = 4; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
                 }
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -290,17 +332,20 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                for (int i = 4; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    for (int i = 4; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
                 }
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -313,17 +358,20 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                for (int i = 4; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    for (int i = 4; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
                 }
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -336,19 +384,22 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                for (int i = 5; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    for (int i = 5; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
                 }
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -361,19 +412,22 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                for (int i = 5; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    for (int i = 5; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
                 }
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -386,19 +440,22 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                for (int i = 5; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    for (int i = 5; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
                 }
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -411,19 +468,22 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                for (int i = 5; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    for (int i = 5; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
                 }
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -436,21 +496,24 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                for (int i = 6; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    for (int i = 6; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
                 }
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -463,21 +526,24 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                for (int i = 6; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    for (int i = 6; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
                 }
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -490,21 +556,24 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                for (int i = 6; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    for (int i = 6; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
                 }
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -517,21 +586,24 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                for (int i = 6; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    for (int i = 6; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
                 }
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -544,23 +616,26 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                for (int i = 7; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    for (int i = 7; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
                 }
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -573,23 +648,26 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                for (int i = 7; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    for (int i = 7; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
                 }
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -602,23 +680,26 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                for (int i = 7; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    for (int i = 7; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
                 }
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -631,23 +712,26 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                for (int i = 7; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    for (int i = 7; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
                 }
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -660,25 +744,28 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                for (int i = 8; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    for (int i = 8; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
                 }
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -691,25 +778,28 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                for (int i = 8; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    for (int i = 8; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
                 }
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -722,25 +812,28 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                for (int i = 8; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    for (int i = 8; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
                 }
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -753,25 +846,28 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                for (int i = 8; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    for (int i = 8; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
                 }
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -784,27 +880,30 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                for (int i = 9; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    for (int i = 9; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
                 }
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -817,27 +916,30 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                for (int i = 9; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    for (int i = 9; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
                 }
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -850,27 +952,30 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                for (int i = 9; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    for (int i = 9; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
                 }
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -883,27 +988,30 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                for (int i = 9; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    for (int i = 9; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
                 }
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -916,29 +1024,32 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                for (int i = 10; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    for (int i = 10; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
                 }
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -951,29 +1062,32 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                for (int i = 10; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    for (int i = 10; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
                 }
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -986,29 +1100,32 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                for (int i = 10; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    for (int i = 10; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
                 }
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -1021,29 +1138,32 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                for (int i = 10; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    for (int i = 10; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
                 }
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -1056,31 +1176,34 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                for (int i = 11; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    for (int i = 11; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
                 }
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -1093,31 +1216,34 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                for (int i = 11; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    for (int i = 11; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
                 }
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -1130,31 +1256,34 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                for (int i = 11; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    for (int i = 11; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
                 }
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -1167,31 +1296,34 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                for (int i = 11; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    for (int i = 11; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
                 }
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -1204,33 +1336,36 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                for (int i = 12; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    for (int i = 12; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
                 }
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -1243,33 +1378,36 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                for (int i = 12; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    for (int i = 12; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
                 }
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -1282,33 +1420,36 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                for (int i = 12; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    for (int i = 12; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
                 }
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -1321,33 +1462,36 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                for (int i = 12; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    for (int i = 12; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
                 }
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -1360,35 +1504,38 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                for (int i = 13; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    for (int i = 13; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
                 }
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -1401,35 +1548,38 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                for (int i = 13; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    for (int i = 13; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
                 }
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -1442,35 +1592,38 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                for (int i = 13; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    for (int i = 13; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
                 }
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -1483,35 +1636,38 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                for (int i = 13; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    for (int i = 13; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
                 }
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -1524,37 +1680,40 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                for (int i = 14; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    for (int i = 14; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
                 }
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -1567,37 +1726,40 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                for (int i = 14; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    for (int i = 14; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
                 }
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -1610,37 +1772,40 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                for (int i = 14; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    for (int i = 14; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
                 }
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -1653,37 +1818,40 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                for (int i = 14; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    for (int i = 14; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
                 }
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -1696,39 +1864,42 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                for (int i = 15; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    for (int i = 15; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
                 }
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -1741,39 +1912,42 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                for (int i = 15; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    for (int i = 15; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
                 }
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -1786,39 +1960,42 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                for (int i = 15; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    for (int i = 15; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
                 }
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -1831,39 +2008,42 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                for (int i = 15; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    for (int i = 15; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
                 }
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -1876,41 +2056,44 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                for (int i = 16; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    for (int i = 16; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
                 }
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -1923,41 +2106,44 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                for (int i = 16; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    for (int i = 16; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
                 }
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -1970,41 +2156,44 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                for (int i = 16; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    for (int i = 16; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
                 }
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -2017,41 +2206,44 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                for (int i = 16; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    for (int i = 16; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
                 }
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -2064,43 +2256,46 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                for (int i = 17; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    for (int i = 17; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
                 }
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -2113,43 +2308,46 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                for (int i = 17; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    for (int i = 17; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
                 }
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -2162,43 +2360,46 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                for (int i = 17; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    for (int i = 17; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
                 }
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -2211,43 +2412,46 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                for (int i = 17; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    for (int i = 17; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
                 }
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -2260,45 +2464,48 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                for (int i = 18; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    for (int i = 18; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
                 }
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -2311,45 +2518,48 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                for (int i = 18; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    for (int i = 18; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
                 }
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -2362,45 +2572,48 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                for (int i = 18; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    for (int i = 18; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
                 }
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -2413,45 +2626,48 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                for (int i = 18; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    for (int i = 18; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
                 }
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -2464,47 +2680,50 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                for (int i = 19; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    for (int i = 19; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
                 }
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -2517,47 +2736,50 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                for (int i = 19; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    for (int i = 19; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
                 }
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -2570,47 +2792,50 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                for (int i = 19; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    for (int i = 19; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
                 }
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -2623,47 +2848,50 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                for (int i = 19; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    for (int i = 19; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
                 }
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -2676,49 +2904,52 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                for (int i = 20; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    for (int i = 20; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
                 }
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -2731,49 +2962,52 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                for (int i = 20; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    for (int i = 20; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
                 }
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -2786,49 +3020,52 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                for (int i = 20; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    for (int i = 20; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
                 }
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -2841,49 +3078,52 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                for (int i = 20; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    for (int i = 20; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
                 }
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -2896,51 +3136,54 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                for (int i = 21; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    for (int i = 21; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
                 }
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -2953,51 +3196,54 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                for (int i = 21; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    for (int i = 21; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
                 }
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -3010,51 +3256,54 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                for (int i = 21; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    for (int i = 21; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
                 }
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -3067,51 +3316,54 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                for (int i = 21; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    for (int i = 21; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
                 }
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -3124,53 +3376,56 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                for (int i = 22; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    for (int i = 22; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
                 }
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -3183,53 +3438,56 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                for (int i = 22; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    for (int i = 22; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
                 }
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -3242,53 +3500,56 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                for (int i = 22; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    for (int i = 22; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
                 }
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -3301,53 +3562,56 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                for (int i = 22; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    for (int i = 22; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
                 }
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -3360,55 +3624,58 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                for (int i = 23; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    for (int i = 23; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
                 }
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -3421,55 +3688,58 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                for (int i = 23; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    for (int i = 23; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
                 }
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -3482,55 +3752,58 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                for (int i = 23; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    for (int i = 23; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
                 }
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -3543,55 +3816,58 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                for (int i = 23; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    for (int i = 23; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
                 }
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -3604,57 +3880,60 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                for (int i = 24; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    for (int i = 24; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
                 }
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -3667,57 +3946,60 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                for (int i = 24; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    for (int i = 24; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
                 }
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -3730,57 +4012,60 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                for (int i = 24; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    for (int i = 24; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
                 }
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -3793,57 +4078,60 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                for (int i = 24; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    for (int i = 24; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
                 }
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -3856,59 +4144,62 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                for (int i = 25; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    for (int i = 25; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
                 }
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -3921,59 +4212,62 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                for (int i = 25; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    for (int i = 25; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
                 }
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -3986,59 +4280,62 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                for (int i = 25; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    for (int i = 25; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
                 }
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -4051,59 +4348,62 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                for (int i = 25; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    for (int i = 25; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
                 }
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -4116,61 +4416,64 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                for (int i = 26; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    for (int i = 26; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
                 }
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -4183,61 +4486,64 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                for (int i = 26; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    for (int i = 26; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
                 }
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -4250,61 +4556,64 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                for (int i = 26; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    for (int i = 26; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
                 }
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -4317,61 +4626,64 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                for (int i = 26; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    for (int i = 26; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
                 }
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -4384,63 +4696,66 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                for (int i = 27; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    for (int i = 27; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
                 }
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -4453,63 +4768,66 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                for (int i = 27; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    for (int i = 27; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
                 }
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -4522,63 +4840,66 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                for (int i = 27; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    for (int i = 27; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
                 }
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -4591,63 +4912,66 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                for (int i = 27; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    for (int i = 27; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
                 }
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -4660,65 +4984,68 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                for (int i = 28; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    for (int i = 28; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
                 }
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -4731,65 +5058,68 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                for (int i = 28; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    for (int i = 28; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
                 }
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -4802,65 +5132,68 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                for (int i = 28; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    for (int i = 28; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
                 }
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -4873,65 +5206,68 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                for (int i = 28; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    for (int i = 28; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
                 }
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -4944,67 +5280,70 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                for (int i = 29; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    for (int i = 29; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
                 }
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -5017,67 +5356,70 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                for (int i = 29; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    for (int i = 29; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
                 }
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -5090,67 +5432,70 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                for (int i = 29; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    for (int i = 29; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
                 }
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -5163,67 +5508,70 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                for (int i = 29; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    for (int i = 29; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
                 }
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -5236,69 +5584,72 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                flattenedIndex *= Unsafe.Add(ref length, 29);
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
-                for (int i = 30; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    flattenedIndex *= Unsafe.Add(ref length, 29);
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
+                    for (int i = 30; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
                 }
-                flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -5311,69 +5662,72 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                flattenedIndex *= Unsafe.Add(ref length, 29);
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
-                for (int i = 30; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    flattenedIndex *= Unsafe.Add(ref length, 29);
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
+                    for (int i = 30; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
                 }
-                flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -5386,69 +5740,72 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                flattenedIndex *= Unsafe.Add(ref length, 29);
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
-                for (int i = 30; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    flattenedIndex *= Unsafe.Add(ref length, 29);
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
+                    for (int i = 30; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
                 }
-                flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -5461,69 +5818,72 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                flattenedIndex *= Unsafe.Add(ref length, 29);
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
-                for (int i = 30; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    flattenedIndex *= Unsafe.Add(ref length, 29);
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
+                    for (int i = 30; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
                 }
-                flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }
@@ -5536,71 +5896,74 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 int flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                flattenedIndex *= Unsafe.Add(ref length, 29);
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
-                flattenedIndex *= Unsafe.Add(ref length, 30);
-                flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
-                for (int i = 31; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    flattenedIndex *= Unsafe.Add(ref length, 29);
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
+                    flattenedIndex *= Unsafe.Add(ref length, 30);
+                    flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
+                    for (int i = 31; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index32 - Unsafe.Add(ref bound, 31);
                 }
-                flattenedIndex += index32 - Unsafe.Add(ref bound, 31);
                 return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
             }
         }
@@ -5613,71 +5976,74 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 uint flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                flattenedIndex *= Unsafe.Add(ref length, 29);
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
-                flattenedIndex *= Unsafe.Add(ref length, 30);
-                flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
-                for (int i = 31; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    flattenedIndex *= Unsafe.Add(ref length, 29);
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
+                    flattenedIndex *= Unsafe.Add(ref length, 30);
+                    flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
+                    for (int i = 31; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index32 - Unsafe.Add(ref bound, 31);
                 }
-                flattenedIndex += index32 - Unsafe.Add(ref bound, 31);
                 return ref Unsafe.Add(ref GetReference(), flattenedIndex);
             }
         }
@@ -5690,71 +6056,74 @@ public static partial class Unchecked
                 ref int length = ref Unsafe.As<byte, int>(ref rawData);
                 ref int bound = ref Unsafe.Add(ref length, _rank);
                 long flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                flattenedIndex *= Unsafe.Add(ref length, 29);
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
-                flattenedIndex *= Unsafe.Add(ref length, 30);
-                flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
-                for (int i = 31; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    flattenedIndex *= Unsafe.Add(ref length, 29);
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
+                    flattenedIndex *= Unsafe.Add(ref length, 30);
+                    flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
+                    for (int i = 31; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index32 - Unsafe.Add(ref bound, 31);
                 }
-                flattenedIndex += index32 - Unsafe.Add(ref bound, 31);
                 return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
             }
         }
@@ -5767,71 +6136,74 @@ public static partial class Unchecked
                 ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
                 ref uint bound = ref Unsafe.Add(ref length, _rank);
                 ulong flattenedIndex = index1 - bound;
-                flattenedIndex *= Unsafe.Add(ref length, 1);
-                flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
-                flattenedIndex *= Unsafe.Add(ref length, 2);
-                flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
-                flattenedIndex *= Unsafe.Add(ref length, 3);
-                flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
-                flattenedIndex *= Unsafe.Add(ref length, 4);
-                flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
-                flattenedIndex *= Unsafe.Add(ref length, 5);
-                flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
-                flattenedIndex *= Unsafe.Add(ref length, 6);
-                flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
-                flattenedIndex *= Unsafe.Add(ref length, 7);
-                flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
-                flattenedIndex *= Unsafe.Add(ref length, 8);
-                flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
-                flattenedIndex *= Unsafe.Add(ref length, 9);
-                flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
-                flattenedIndex *= Unsafe.Add(ref length, 10);
-                flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
-                flattenedIndex *= Unsafe.Add(ref length, 11);
-                flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
-                flattenedIndex *= Unsafe.Add(ref length, 12);
-                flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
-                flattenedIndex *= Unsafe.Add(ref length, 13);
-                flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
-                flattenedIndex *= Unsafe.Add(ref length, 14);
-                flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
-                flattenedIndex *= Unsafe.Add(ref length, 15);
-                flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
-                flattenedIndex *= Unsafe.Add(ref length, 16);
-                flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
-                flattenedIndex *= Unsafe.Add(ref length, 17);
-                flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
-                flattenedIndex *= Unsafe.Add(ref length, 18);
-                flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
-                flattenedIndex *= Unsafe.Add(ref length, 19);
-                flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
-                flattenedIndex *= Unsafe.Add(ref length, 20);
-                flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
-                flattenedIndex *= Unsafe.Add(ref length, 21);
-                flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
-                flattenedIndex *= Unsafe.Add(ref length, 22);
-                flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
-                flattenedIndex *= Unsafe.Add(ref length, 23);
-                flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
-                flattenedIndex *= Unsafe.Add(ref length, 24);
-                flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
-                flattenedIndex *= Unsafe.Add(ref length, 25);
-                flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
-                flattenedIndex *= Unsafe.Add(ref length, 26);
-                flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
-                flattenedIndex *= Unsafe.Add(ref length, 27);
-                flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
-                flattenedIndex *= Unsafe.Add(ref length, 28);
-                flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
-                flattenedIndex *= Unsafe.Add(ref length, 29);
-                flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
-                flattenedIndex *= Unsafe.Add(ref length, 30);
-                flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
-                for (int i = 31; i < _rank; i++)
+                unchecked
                 {
-                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex *= Unsafe.Add(ref length, 1);
+                    flattenedIndex += index2 - Unsafe.Add(ref bound, 1);
+                    flattenedIndex *= Unsafe.Add(ref length, 2);
+                    flattenedIndex += index3 - Unsafe.Add(ref bound, 2);
+                    flattenedIndex *= Unsafe.Add(ref length, 3);
+                    flattenedIndex += index4 - Unsafe.Add(ref bound, 3);
+                    flattenedIndex *= Unsafe.Add(ref length, 4);
+                    flattenedIndex += index5 - Unsafe.Add(ref bound, 4);
+                    flattenedIndex *= Unsafe.Add(ref length, 5);
+                    flattenedIndex += index6 - Unsafe.Add(ref bound, 5);
+                    flattenedIndex *= Unsafe.Add(ref length, 6);
+                    flattenedIndex += index7 - Unsafe.Add(ref bound, 6);
+                    flattenedIndex *= Unsafe.Add(ref length, 7);
+                    flattenedIndex += index8 - Unsafe.Add(ref bound, 7);
+                    flattenedIndex *= Unsafe.Add(ref length, 8);
+                    flattenedIndex += index9 - Unsafe.Add(ref bound, 8);
+                    flattenedIndex *= Unsafe.Add(ref length, 9);
+                    flattenedIndex += index10 - Unsafe.Add(ref bound, 9);
+                    flattenedIndex *= Unsafe.Add(ref length, 10);
+                    flattenedIndex += index11 - Unsafe.Add(ref bound, 10);
+                    flattenedIndex *= Unsafe.Add(ref length, 11);
+                    flattenedIndex += index12 - Unsafe.Add(ref bound, 11);
+                    flattenedIndex *= Unsafe.Add(ref length, 12);
+                    flattenedIndex += index13 - Unsafe.Add(ref bound, 12);
+                    flattenedIndex *= Unsafe.Add(ref length, 13);
+                    flattenedIndex += index14 - Unsafe.Add(ref bound, 13);
+                    flattenedIndex *= Unsafe.Add(ref length, 14);
+                    flattenedIndex += index15 - Unsafe.Add(ref bound, 14);
+                    flattenedIndex *= Unsafe.Add(ref length, 15);
+                    flattenedIndex += index16 - Unsafe.Add(ref bound, 15);
+                    flattenedIndex *= Unsafe.Add(ref length, 16);
+                    flattenedIndex += index17 - Unsafe.Add(ref bound, 16);
+                    flattenedIndex *= Unsafe.Add(ref length, 17);
+                    flattenedIndex += index18 - Unsafe.Add(ref bound, 17);
+                    flattenedIndex *= Unsafe.Add(ref length, 18);
+                    flattenedIndex += index19 - Unsafe.Add(ref bound, 18);
+                    flattenedIndex *= Unsafe.Add(ref length, 19);
+                    flattenedIndex += index20 - Unsafe.Add(ref bound, 19);
+                    flattenedIndex *= Unsafe.Add(ref length, 20);
+                    flattenedIndex += index21 - Unsafe.Add(ref bound, 20);
+                    flattenedIndex *= Unsafe.Add(ref length, 21);
+                    flattenedIndex += index22 - Unsafe.Add(ref bound, 21);
+                    flattenedIndex *= Unsafe.Add(ref length, 22);
+                    flattenedIndex += index23 - Unsafe.Add(ref bound, 22);
+                    flattenedIndex *= Unsafe.Add(ref length, 23);
+                    flattenedIndex += index24 - Unsafe.Add(ref bound, 23);
+                    flattenedIndex *= Unsafe.Add(ref length, 24);
+                    flattenedIndex += index25 - Unsafe.Add(ref bound, 24);
+                    flattenedIndex *= Unsafe.Add(ref length, 25);
+                    flattenedIndex += index26 - Unsafe.Add(ref bound, 25);
+                    flattenedIndex *= Unsafe.Add(ref length, 26);
+                    flattenedIndex += index27 - Unsafe.Add(ref bound, 26);
+                    flattenedIndex *= Unsafe.Add(ref length, 27);
+                    flattenedIndex += index28 - Unsafe.Add(ref bound, 27);
+                    flattenedIndex *= Unsafe.Add(ref length, 28);
+                    flattenedIndex += index29 - Unsafe.Add(ref bound, 28);
+                    flattenedIndex *= Unsafe.Add(ref length, 29);
+                    flattenedIndex += index30 - Unsafe.Add(ref bound, 29);
+                    flattenedIndex *= Unsafe.Add(ref length, 30);
+                    flattenedIndex += index31 - Unsafe.Add(ref bound, 30);
+                    for (int i = 31; i < _rank; i++)
+                    {
+                        flattenedIndex *= Unsafe.Add(ref length, i);
+                    }
+                    flattenedIndex += index32 - Unsafe.Add(ref bound, 31);
                 }
-                flattenedIndex += index32 - Unsafe.Add(ref bound, 31);
                 return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
             }
         }

@@ -140,16 +140,19 @@ public static partial class Unchecked
             ref int length = ref Unsafe.As<byte, int>(ref rawData);
             ref int bound = ref Unsafe.Add(ref length, _rank);
             int flattenedIndex = index - bound;
-            for (int i = 1; i < indexLength - 1; i++)
+            unchecked
             {
-                flattenedIndex *= Unsafe.Add(ref length, i);
-                flattenedIndex += Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i);
+                for (int i = 1; i < indexLength - 1; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex += Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i);
+                }
+                for (int i = indexLength - 1; i < _rank; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                }
+                flattenedIndex += Unsafe.Add(ref index, indexLength - 1) - Unsafe.Add(ref bound, indexLength - 1);
             }
-            for (int i = indexLength - 1; i < _rank; i++)
-            {
-                flattenedIndex *= Unsafe.Add(ref length, i);
-            }
-            flattenedIndex += Unsafe.Add(ref index, indexLength - 1) - Unsafe.Add(ref bound, indexLength - 1);
             return ref Unsafe.Add(ref GetReference(), (nint)(uint)flattenedIndex);
         }
         public ref T this[params int[] indices]
@@ -164,16 +167,19 @@ public static partial class Unchecked
             ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
             ref uint bound = ref Unsafe.Add(ref length, _rank);
             uint flattenedIndex = index - bound;
-            for (int i = 1; i < indexLength - 1; i++)
+            unchecked
             {
-                flattenedIndex *= Unsafe.Add(ref length, i);
-                flattenedIndex += Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i);
+                for (int i = 1; i < indexLength - 1; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex += Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i);
+                }
+                for (int i = indexLength - 1; i < _rank; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                }
+                flattenedIndex += Unsafe.Add(ref index, indexLength - 1) - Unsafe.Add(ref bound, indexLength - 1);
             }
-            for (int i = indexLength - 1; i < _rank; i++)
-            {
-                flattenedIndex *= Unsafe.Add(ref length, i);
-            }
-            flattenedIndex += Unsafe.Add(ref index, indexLength - 1) - Unsafe.Add(ref bound, indexLength - 1);
             return ref Unsafe.Add(ref GetReference(), flattenedIndex);
         }
         public ref T this[params uint[] indices]
@@ -188,16 +194,19 @@ public static partial class Unchecked
             ref int length = ref Unsafe.As<byte, int>(ref rawData);
             ref int bound = ref Unsafe.Add(ref length, _rank);
             long flattenedIndex = index - bound;
-            for (int i = 1; i < indexLength - 1; i++)
+            unchecked
             {
-                flattenedIndex *= Unsafe.Add(ref length, i);
-                flattenedIndex += Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i);
+                for (int i = 1; i < indexLength - 1; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex += Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i);
+                }
+                for (int i = indexLength - 1; i < _rank; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                }
+                flattenedIndex += Unsafe.Add(ref index, indexLength - 1) - Unsafe.Add(ref bound, indexLength - 1);
             }
-            for (int i = indexLength - 1; i < _rank; i++)
-            {
-                flattenedIndex *= Unsafe.Add(ref length, i);
-            }
-            flattenedIndex += Unsafe.Add(ref index, indexLength - 1) - Unsafe.Add(ref bound, indexLength - 1);
             return ref Unsafe.Add(ref GetReference(), (nint)flattenedIndex);
         }
         public ref T this[params long[] indices]
@@ -212,16 +221,20 @@ public static partial class Unchecked
             ref uint length = ref Unsafe.As<byte, uint>(ref rawData);
             ref uint bound = ref Unsafe.Add(ref length, _rank);
             ulong flattenedIndex = index - bound;
-            for (int i = 1; i < indexLength - 1; i++)
+            unchecked
             {
-                flattenedIndex *= Unsafe.Add(ref length, i);
-                flattenedIndex += Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i);
+
+                for (int i = 1; i < indexLength - 1; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                    flattenedIndex += Unsafe.Add(ref index, i) - Unsafe.Add(ref bound, i);
+                }
+                for (int i = indexLength - 1; i < _rank; i++)
+                {
+                    flattenedIndex *= Unsafe.Add(ref length, i);
+                }
+                flattenedIndex += Unsafe.Add(ref index, indexLength - 1) - Unsafe.Add(ref bound, indexLength - 1);
             }
-            for (int i = indexLength - 1; i < _rank; i++)
-            {
-                flattenedIndex *= Unsafe.Add(ref length, i);
-            }
-            flattenedIndex += Unsafe.Add(ref index, indexLength - 1) - Unsafe.Add(ref bound, indexLength - 1);
             return ref Unsafe.Add(ref GetReference(), (nuint)flattenedIndex);
         }
         public ref T this[params ulong[] indices]
