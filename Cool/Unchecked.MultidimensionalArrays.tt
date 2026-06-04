@@ -140,15 +140,13 @@ public static partial class Unchecked
         public int GetLowerBound(int dimension)
         {
             if ((uint)dimension >= (uint)Rank) ThrowIndexOutOfRange();
-            return Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension + Rank);
+            return 0;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetUpperBound(int dimension)
         {
             if ((uint)dimension >= (uint)Rank) ThrowIndexOutOfRange();
-            ref int length = ref Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension);
-            ref int lowerBound = ref Unsafe.Add(ref length, Rank);
-            return lowerBound + length - 1;
+            return Unsafe.Add(ref Unsafe.As<byte, int>(ref _array.GetRawArrayData()), dimension) - 1;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetValue(int index) => this[index];
