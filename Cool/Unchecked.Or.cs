@@ -6,7 +6,7 @@ namespace Cool;
 public static partial class Unchecked
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void FastOr(ref byte left, ref byte right, nuint length)
+    private static void FastOr(ref byte left, ref byte right, nuint length)
     {
         nuint offset = 0;
         ref Vector<byte> vleft = ref Unsafe.As<byte, Vector<byte>>(ref left);
@@ -25,7 +25,7 @@ public static partial class Unchecked
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe void SlowOr(ref byte left, ref byte right, nuint length)
+    private static unsafe void SlowOr(ref byte left, ref byte right, nuint length)
     {
         nuint offset = 0;
         if (length > sizeof(ulong))
