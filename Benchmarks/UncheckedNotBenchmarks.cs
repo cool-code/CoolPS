@@ -6,16 +6,14 @@ using Cool;
 
 namespace Cool.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.Net80)]
-    [SimpleJob(RuntimeMoniker.Net481)]
     [MemoryDiagnoser]
     [DisassemblyDiagnoser(maxDepth: 5, printSource: true)]
     public class UncheckedNotByteBenchmarks
     {
-        [Params(8)]
+        [Params(8, 200, 8192)]
         public int ByteCount;
 
-        [Params(0)]
+        [Params(0, 1)]
         public int ByteOffset;
 
         private byte[]? buffer;
@@ -51,8 +49,6 @@ namespace Cool.Benchmarks
         }
     }
 
-    [SimpleJob(RuntimeMoniker.Net80)]
-    [SimpleJob(RuntimeMoniker.Net481)]
     [MemoryDiagnoser]
     [DisassemblyDiagnoser(maxDepth: 5, printSource: true)]
     public class UncheckedNotUlongBenchmarks
@@ -80,8 +76,8 @@ namespace Cool.Benchmarks
         [Benchmark(Baseline = true)]
         public void Manual_Not_Ulongs()
         {
-            for (int i = 0; i < ElementCount; i++) buffer[i] = ~buffer[i];
-            for (int i = 0; i < ElementCount; i++) buffer[i] = ~buffer[i];
+            for (int i = 0; i < ElementCount; i++) buffer![i] = ~buffer![i];
+            for (int i = 0; i < ElementCount; i++) buffer![i] = ~buffer![i];
         }
     }
 }
