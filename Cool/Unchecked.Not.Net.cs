@@ -7,49 +7,40 @@ namespace Cool;
 public static partial class Unchecked
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe void Not(ref byte source, nuint length)
+    private static nuint FastNot(ref byte source, nuint length)
     {
-        if (length == 0) return;
         nuint offset = 0;
-        nuint remainingBytes = length;
-        if (remainingBytes > sizeof(ulong))
+        if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
         {
-            if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
+            ref Vector<byte> v = ref Unsafe.As<byte, Vector<byte>>(ref source);
+            for (nuint stopLoopAtOffset = length & ~((nuint)Vector<byte>.Count * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)Vector<byte>.Count * 2)
             {
-                ref Vector<byte> v = ref Unsafe.As<byte, Vector<byte>>(ref source);
-                for (nuint stopLoopAtOffset = length & ~((nuint)Vector<byte>.Count * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)Vector<byte>.Count * 2)
-                {
-                    Unsafe.AddByteOffset(ref v, offset) = ~Unsafe.AddByteOffset(ref v, offset);
-                    Unsafe.AddByteOffset(ref v, offset + (nuint)Vector<byte>.Count) = ~Unsafe.AddByteOffset(ref v, offset + (nuint)Vector<byte>.Count);
-                }
-                if ((length & (nuint)Vector<byte>.Count) != 0)
-                {
-                    Unsafe.AddByteOffset(ref v, offset) = ~Unsafe.AddByteOffset(ref v, offset);
-                    offset += (nuint)Vector<byte>.Count;
-                }
+                Unsafe.AddByteOffset(ref v, offset) = ~Unsafe.AddByteOffset(ref v, offset);
+                Unsafe.AddByteOffset(ref v, offset + (nuint)Vector<byte>.Count) = ~Unsafe.AddByteOffset(ref v, offset + (nuint)Vector<byte>.Count);
             }
-
-            ref nuint n = ref Unsafe.As<byte, nuint>(ref source);
-            for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
+            if ((length & (nuint)Vector<byte>.Count) != 0)
             {
-                Unsafe.AddByteOffset(ref n, offset) = ~Unsafe.AddByteOffset(ref n, offset);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint));
-            }
-            remainingBytes = length - offset;
-            if ((remainingBytes & (nuint)sizeof(nuint)) != 0)
-            {
-                Unsafe.AddByteOffset(ref n, offset) = ~Unsafe.AddByteOffset(ref n, offset);
-                offset += (nuint)sizeof(nuint);
-                remainingBytes = length - offset;
+                Unsafe.AddByteOffset(ref v, offset) = ~Unsafe.AddByteOffset(ref v, offset);
+                offset += (nuint)Vector<byte>.Count;
             }
         }
-        else
+        return offset;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static unsafe void SlowNot(ref byte source, nuint length, nuint offset)
+    {
+        ref nuint n = ref Unsafe.As<byte, nuint>(ref source);
+        for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
         {
-            if ((remainingBytes & sizeof(ulong)) != 0)
-            {
-                Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref source, offset)) = ~Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref source, offset));
-                offset += sizeof(ulong);
-            }
+            Unsafe.AddByteOffset(ref n, offset) = ~Unsafe.AddByteOffset(ref n, offset);
+            Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint));
+        }
+        nuint remainingBytes = length - offset;
+        if ((remainingBytes & sizeof(ulong)) != 0)
+        {
+            Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref source, offset)) = ~Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref source, offset));
+            offset += sizeof(ulong);
         }
         if ((remainingBytes & sizeof(uint)) != 0)
         {

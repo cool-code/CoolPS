@@ -6,6 +6,14 @@ namespace Cool;
 public static partial class Unchecked
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Not(ref byte source, nuint length)
+    {
+        if (length == 0) return;
+        nuint offset = FastNot(ref source, length);
+        if (offset < length) SlowNot(ref source, length, offset);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Not<T>(ref T reference, nuint numElements) where T : unmanaged
     {
         if (numElements == 1)

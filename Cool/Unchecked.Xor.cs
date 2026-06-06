@@ -30,30 +30,18 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void SlowXor(ref byte left, ref byte right, nuint length, nuint offset)
     {
-        nuint remainingBytes = length - offset;
-        if (remainingBytes > sizeof(ulong))
+        ref nuint nleft = ref Unsafe.As<byte, nuint>(ref left);
+        ref nuint nright = ref Unsafe.As<byte, nuint>(ref right);
+        for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
         {
-            ref nuint nleft = ref Unsafe.As<byte, nuint>(ref left);
-            ref nuint nright = ref Unsafe.As<byte, nuint>(ref right);
-            for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
-            {
-                Unsafe.AddByteOffset(ref nleft, offset) ^= Unsafe.AddByteOffset(ref nright, offset);
-                Unsafe.AddByteOffset(ref nleft, offset + (nuint)sizeof(nuint)) ^= Unsafe.AddByteOffset(ref nright, offset + (nuint)sizeof(nuint));
-            }
-            if ((remainingBytes & (nuint)sizeof(nuint)) != 0)
-            {
-                Unsafe.AddByteOffset(ref nleft, offset) ^= Unsafe.AddByteOffset(ref nright, offset);
-                offset += (nuint)sizeof(nuint);
-            }
-            remainingBytes = length - offset;
+            Unsafe.AddByteOffset(ref nleft, offset) ^= Unsafe.AddByteOffset(ref nright, offset);
+            Unsafe.AddByteOffset(ref nleft, offset + (nuint)sizeof(nuint)) ^= Unsafe.AddByteOffset(ref nright, offset + (nuint)sizeof(nuint));
         }
-        else
+        nuint remainingBytes = length - offset;
+        if ((remainingBytes & sizeof(ulong)) != 0)
         {
-            if ((remainingBytes & sizeof(ulong)) != 0)
-            {
-                Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref left, offset)) ^= Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref right, offset));
-                offset += sizeof(ulong);
-            }
+            Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref left, offset)) ^= Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref right, offset));
+            offset += sizeof(ulong);
         }
         if ((remainingBytes & sizeof(uint)) != 0)
         {
