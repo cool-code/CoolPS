@@ -30,38 +30,18 @@ public static partial class Unchecked
             }
 
             ref nuint n = ref Unsafe.As<byte, nuint>(ref source);
-            for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 8 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 8)
+            for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
             {
                 Unsafe.AddByteOffset(ref n, offset) = ~Unsafe.AddByteOffset(ref n, offset);
                 Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint));
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 2) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 2);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 3) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 3);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 4) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 4);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 5) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 5);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 6) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 6);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 7) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 7);
             }
             remainingBytes = length - offset;
-            if ((remainingBytes & (nuint)sizeof(nuint) * 4) != 0)
-            {
-                Unsafe.AddByteOffset(ref n, offset) = ~Unsafe.AddByteOffset(ref n, offset);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint));
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 2) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 2);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 3) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 3);
-                offset += (nuint)sizeof(nuint) * 4;
-            }
-            if ((remainingBytes & (nuint)sizeof(nuint) * 2) != 0)
-            {
-                Unsafe.AddByteOffset(ref n, offset) = ~Unsafe.AddByteOffset(ref n, offset);
-                Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)) = ~Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint));
-                offset += (nuint)sizeof(nuint) * 2;
-            }
             if ((remainingBytes & (nuint)sizeof(nuint)) != 0)
             {
                 Unsafe.AddByteOffset(ref n, offset) = ~Unsafe.AddByteOffset(ref n, offset);
                 offset += (nuint)sizeof(nuint);
+                remainingBytes = length - offset;
             }
-            remainingBytes = length - offset;
         }
         else
         {
