@@ -26,30 +26,10 @@ public static partial class Unchecked
         if (length > sizeof(ulong))
         {
             ref nuint n = ref Unsafe.As<byte, nuint>(ref source);
-            for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 8 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 8)
+            for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
             {
                 count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset));
                 count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 2));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 3));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 4));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 5));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 6));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 7));
-            }
-            if ((length & (nuint)sizeof(nuint) * 4) != 0)
-            {
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 2));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint) * 3));
-                offset += (nuint)sizeof(nuint) * 4;
-            }
-            if ((length & (nuint)sizeof(nuint) * 2) != 0)
-            {
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)));
-                offset += (nuint)sizeof(nuint) * 2;
             }
             if ((length & (nuint)sizeof(nuint)) != 0)
             {
