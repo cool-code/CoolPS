@@ -23,29 +23,18 @@ public static partial class Unchecked
         if (length == 0) return 0;
         nuint count = 0;
         nuint offset = 0;
-        if (length > sizeof(ulong))
+        ref nuint n = ref Unsafe.As<byte, nuint>(ref source);
+        for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
         {
-            ref nuint n = ref Unsafe.As<byte, nuint>(ref source);
-            for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
-            {
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset));
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)));
-            }
-            if ((length & (nuint)sizeof(nuint)) != 0)
-            {
-                count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset));
-                offset += (nuint)sizeof(nuint);
-            }
-        }
-        else
-        {
-            if ((length & sizeof(ulong)) != 0)
-            {
-                count += (nuint)BitOperations.PopCount(Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref source, offset)));
-                offset += sizeof(ulong);
-            }
+            count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset));
+            count += (nuint)BitOperations.PopCount(Unsafe.AddByteOffset(ref n, offset + (nuint)sizeof(nuint)));
         }
         nuint remainingBytes = length - offset;
+        if ((remainingBytes & sizeof(ulong)) != 0)
+        {
+            count += (nuint)BitOperations.PopCount(Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref source, offset)));
+            offset += sizeof(ulong);
+        }
         if ((remainingBytes & sizeof(uint)) != 0)
         {
             count += (nuint)BitOperations.PopCount(Unsafe.As<byte, uint>(ref Unsafe.AddByteOffset(ref source, offset)));
