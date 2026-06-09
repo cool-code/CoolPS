@@ -72,7 +72,7 @@ public static partial class Unchecked
     {
         var t = types[i];
         string typeCastOp = (op.VectorOp != "") && (t.Name == "byte" || t.Name == "ushort") ? "(" + t.Name + ")" : "";
-        string nextType = t.Name == "uint" ? "ulong" : (t.Name == "ushort" ? "uint" : "ushort");
+        string nextType = types[i - 1].Name;
 #>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Slow<#= op.Name #>(ref <#= t.Name #> left, ref <#= t.Name #> right, nuint length<#= t.Name == "byte" ? "" : ", out nuint offset, out nuint remaining" #>)
