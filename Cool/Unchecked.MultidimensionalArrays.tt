@@ -89,7 +89,6 @@ public static partial class Unchecked
             foreach (var cfg in config)
             {
                 var paramsList = Enumerable.Range(1, d).Select(i => cfg.Type + " index" + i).ToList();
-                //paramsList.Add(cfg.Type + " index" + r);
 #>
         public ref T this[<#= string.Join(", ", paramsList) #>]
         {
