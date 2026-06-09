@@ -1,0 +1,179 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+using System.Numerics;
+using System.Runtime.CompilerServices;
+
+namespace Cool;
+
+public static partial class Unchecked
+{
+<#
+    var operations = new[]
+    {
+        new { Name = "Overlaps", RightOp = "", DefaultRet = "true", FinalRet = "false", SlowExitCond = "" },
+        new { Name = "IsSubset", RightOp = "~", DefaultRet = "false", FinalRet = "true", SlowExitCond = "!" }
+    };
+
+    var types = new[]
+    {
+        new { Name = "ulong" },
+        new { Name = "uint"  },
+        new { Name = "ushort"},
+        new { Name = "byte"  }
+    };
+
+    foreach (var op in operations)
+    {
+#>
+    //  <#= op.Name #> Operation
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool Fast<#= op.Name #>(ref byte left, ref byte right, nuint length)
+    {
+        nuint offset = 0;
+        ref Vector<byte> vleft = ref Unsafe.As<byte, Vector<byte>>(ref left);
+        ref Vector<byte> vright = ref Unsafe.As<byte, Vector<byte>>(ref right);
+        for (nuint stopLoopAtOffset = length & ~((nuint)Vector<byte>.Count * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)Vector<byte>.Count * 2)
+        {
+            if ((Unsafe.AddByteOffset(ref vleft, offset) & <#= op.RightOp #>Unsafe.AddByteOffset(ref vright, offset)) != Vector<byte>.Zero) return <#= op.DefaultRet #>;
+            if ((Unsafe.AddByteOffset(ref vleft, offset + (nuint)Vector<byte>.Count) & <#= op.RightOp #>Unsafe.AddByteOffset(ref vright, offset + (nuint)Vector<byte>.Count)) != Vector<byte>.Zero) return <#= op.DefaultRet #>;
+        }
+        if ((length & (nuint)Vector<byte>.Count) != 0)
+        {
+            if ((Unsafe.AddByteOffset(ref vleft, offset) & <#= op.RightOp #>Unsafe.AddByteOffset(ref vright, offset)) != Vector<byte>.Zero) return <#= op.DefaultRet #>;
+        }
+        if ((Unsafe.AddByteOffset(ref vleft, length - (nuint)Vector<byte>.Count) & <#= op.RightOp #>Unsafe.AddByteOffset(ref vright, length - (nuint)Vector<byte>.Count)) != Vector<byte>.Zero) return <#= op.DefaultRet #>;
+        return <#= op.FinalRet #>;
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static unsafe bool Slow<#= op.Name #>(ref ulong left, ref ulong right, nuint length, out nuint offset, out nuint remaining)
+    {
+        offset = 0;
+        remaining = length;
+        ref nuint nleft = ref Unsafe.As<ulong, nuint>(ref left);
+        ref nuint nright = ref Unsafe.As<ulong, nuint>(ref right);
+        for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
+        {
+            if ((Unsafe.AddByteOffset(ref nleft, offset) & <#= op.RightOp #>Unsafe.AddByteOffset(ref nright, offset)) != 0) return <#= op.DefaultRet #>;
+            if ((Unsafe.AddByteOffset(ref nleft, offset + (nuint)sizeof(nuint)) & <#= op.RightOp #>Unsafe.AddByteOffset(ref nright, offset + (nuint)sizeof(nuint))) != 0) return <#= op.DefaultRet #>;
+        }
+        remaining = length - offset;
+        if ((remaining & sizeof(ulong)) != 0)
+        {
+            if ((Unsafe.AddByteOffset(ref left, offset) & <#= op.RightOp #>Unsafe.AddByteOffset(ref right, offset)) != 0) return <#= op.DefaultRet #>;
+            offset += sizeof(ulong);
+        }
+        return <#= op.FinalRet #>;
+    }
+<#
+    for (int i = 1; i < types.Length; i++)
+    {
+        var t = types[i];
+        string typeCastOp = (op.RightOp != "") && (t.Name == "byte" || t.Name == "ushort") ? "(" + t.Name + ")" : "";
+        string nextType = types[i - 1].Name;
+#>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool Slow<#= op.Name #>(ref <#= t.Name #> left, ref <#= t.Name #> right, nuint length<#= t.Name == "byte" ? "" : ", out nuint offset, out nuint remaining" #>)
+    {
+        if (<#= op.SlowExitCond #>Slow<#= op.Name #>(ref Unsafe.As<<#= t.Name #>, <#= nextType #>>(ref left), ref Unsafe.As<<#= t.Name #>, <#= nextType #>>(ref right), length, out <#= t.Name == "byte" ? "nuint " : "" #>offset, out <#= t.Name == "byte" ? "nuint " : "" #>remaining)) return <#= op.DefaultRet #>;
+        if ((remaining & sizeof(<#= t.Name #>)) != 0)
+        {
+            if ((Unsafe.AddByteOffset(ref left, offset) & <#= typeCastOp #><#= op.RightOp #>Unsafe.AddByteOffset(ref right, offset)) != 0) return <#= op.DefaultRet #>;
+<# if (t.Name != "byte") { #>
+            offset += sizeof(<#= t.Name #>);
+<# } #>
+        }
+        return <#= op.FinalRet #>;
+    }
+<# } #>
+
+<#
+    for (int i = 0; i < types.Length; i++)
+    {
+        var t = types[i];
+        string typeCastOp = (op.RightOp != "") && (t.Name == "byte" || t.Name == "ushort") ? "(" + t.Name + ")" : "";
+#>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool <#= op.Name #>(ref <#= t.Name #> left, ref <#= t.Name #> right, nuint <#= t.Name == "byte" ? "length" : "numElements" #>)
+    {
+        if (<#= t.Name == "byte" ? "length" : "numElements" #> == 0) return <#= op.FinalRet #>;
+        if ((left & <#= typeCastOp #><#= op.RightOp #>right) != 0) return <#= op.DefaultRet #>;
+        if (<#= t.Name == "byte" ? "length" : "numElements" #> == 1) return <#= op.FinalRet #>;
+<# if (t.Name != "byte") { #>
+        nuint length = numElements * (nuint)Unsafe.SizeOf<<#=  t.Name #>>();
+<# } #>
+        if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
+        {
+<# if (t.Name != "byte") { #>
+            return Fast<#= op.Name #>(ref Unsafe.As<<#= t.Name #>, byte>(ref left), ref Unsafe.As<<#= t.Name #>, byte>(ref right), length);
+<# } else { #>
+            return Fast<#= op.Name #>(ref left, ref right, length);
+<# } #>
+        }
+<# if (t.Name == "byte") { #>
+        return Slow<#= op.Name #>(ref left, ref right, length);
+<# } else { #>
+        return Slow<#= op.Name #>(ref left, ref right, length, out _, out _);
+<# } #>
+    }
+<#
+    }
+#>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool <#= op.Name #><T>(ref T left, ref T right, nuint numElements) where T : unmanaged
+    {
+        if ((nuint)Unsafe.SizeOf<T>() % sizeof(ulong) == 0)
+        {
+            return <#= op.Name #>(ref Unsafe.As<T, ulong>(ref left), ref Unsafe.As<T, ulong>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ulong)));
+        }
+        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(uint) == 0)
+        {
+            return <#= op.Name #>(ref Unsafe.As<T, uint>(ref left), ref Unsafe.As<T, uint>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(uint)));
+        }
+        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(ushort) == 0)
+        {
+            return <#= op.Name #>(ref Unsafe.As<T, ushort>(ref left), ref Unsafe.As<T, ushort>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ushort)));
+        }
+        else
+        {
+            return <#= op.Name #>(ref Unsafe.As<T, byte>(ref left), ref Unsafe.As<T, byte>(ref right), numElements * (nuint)Unsafe.SizeOf<T>());
+        }
+    }
+
+<#
+    }
+#>
+    // IsProperSubsetOf Operation
+<#
+    for (int i = 0; i < types.Length; i++)
+    {
+        var t = types[i];
+#>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsProperSubsetOf(ref <#= t.Name #> left, ref <#= t.Name #> right, nuint numElements)
+    {
+        return IsSubset(ref left, ref right, numElements) && !Equals(ref left, ref right, numElements);
+    }
+<#
+    }
+#>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsProperSubsetOf<T>(ref T left, ref T right, nuint numElements) where T : unmanaged
+    {
+        if ((nuint)Unsafe.SizeOf<T>() % sizeof(ulong) == 0)
+        {
+            return IsProperSubsetOf(ref Unsafe.As<T, ulong>(ref left), ref Unsafe.As<T, ulong>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ulong)));
+        }
+        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(uint) == 0)
+        {
+            return IsProperSubsetOf(ref Unsafe.As<T, uint>(ref left), ref Unsafe.As<T, uint>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(uint)));
+        }
+        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(ushort) == 0)
+        {
+            return IsProperSubsetOf(ref Unsafe.As<T, ushort>(ref left), ref Unsafe.As<T, ushort>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ushort)));
+        }
+        else
+        {
+            return IsProperSubsetOf(ref Unsafe.As<T, byte>(ref left), ref Unsafe.As<T, byte>(ref right), numElements * (nuint)Unsafe.SizeOf<T>());
+        }
+    }
+}
