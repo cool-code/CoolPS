@@ -3,6 +3,7 @@ using BenchmarkDotNet.Attributes;
 namespace Cool.Benchmarks
 {
     [MemoryDiagnoser]
+    [DisassemblyDiagnoser]
     public class ArrayPoolBenchmarks
     {
         [Params(16, 64, 1024, 8192)]

@@ -156,16 +156,5 @@ public sealed class ArrayPool<T>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int SelectBucketIndex(uint value)
-    {
-        if (value <= 1) return 0;
-        value--;
-        int c = 0;
-        if (value >= 1 << 16) { value >>= 16; c += 16; }
-        if (value >= 1 << 8) { value >>= 8; c += 8; }
-        if (value >= 1 << 4) { value >>= 4; c += 4; }
-        if (value >= 1 << 2) { value >>= 2; c += 2; }
-        if (value >= 1 << 1) { value >>= 1; c += 1; }
-        return c + (int)value;
-    }
+    private static int SelectBucketIndex(uint value) => BitOperations.Log2Ceiling(value);
 }

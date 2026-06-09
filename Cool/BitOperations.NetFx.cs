@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Cool;
 
@@ -11,19 +12,23 @@ namespace Cool;
 
 public static class BitOperations
 {
-    private static readonly Unchecked.SZArray<byte> TrailingZeroCountDeBruijn = new byte[]{
-            00, 01, 28, 02, 29, 14, 24, 03,
-            30, 22, 20, 15, 25, 17, 04, 08,
-            31, 27, 13, 23, 21, 19, 16, 07,
-            26, 12, 18, 06, 11, 05, 10, 09
-        };
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    private unsafe struct TrailingZeroCountDeBruijnTable
+    {
+        public fixed int Table[32];
 
-    private static readonly Unchecked.SZArray<byte> Log2DeBruijn = new byte[]{
-            00, 09, 01, 10, 13, 21, 02, 29,
-            11, 14, 16, 18, 22, 25, 03, 30,
-            08, 12, 20, 28, 15, 17, 24, 07,
-            19, 27, 23, 06, 26, 05, 04, 31
-        };
+        public TrailingZeroCountDeBruijnTable()
+        {
+            fixed (int* p = Table)
+            {
+                p[0] = 00; p[1] = 01; p[2] = 28; p[3] = 02; p[4] = 29; p[5] = 14; p[6] = 24; p[7] = 03;
+                p[8] = 30; p[9] = 22; p[10] = 20; p[11] = 15; p[12] = 25; p[13] = 17; p[14] = 04; p[15] = 08;
+                p[16] = 31; p[17] = 27; p[18] = 13; p[19] = 23; p[20] = 21; p[21] = 19; p[22] = 16; p[23] = 07;
+                p[24] = 26; p[25] = 12; p[26] = 18; p[27] = 06; p[28] = 11; p[29] = 05; p[30] = 10; p[31] = 09;
+            }
+        }
+    }
+    private static readonly TrailingZeroCountDeBruijnTable TrailingZeroCountDeBruijn = new();
 
     /// <summary>
     /// Evaluate whether a given integral value is a power of 2.
@@ -142,7 +147,7 @@ public static class BitOperations
         {
             return 32;
         }
-        return 31 ^ Log2SoftwareFallback(value);
+        return 31 ^ Log2Core(value);
     }
 
     /// <summary>
@@ -194,7 +199,7 @@ public static class BitOperations
         value |= 1;
 
         // Fallback contract is 0->0
-        return Log2SoftwareFallback(value);
+        return Log2Core(value);
     }
 
     /// <summary>
@@ -237,51 +242,38 @@ public static class BitOperations
 
     /// <summary>
     /// Returns the integer (floor) log of the specified value, base 2.
-    /// Note that by convention, input value 0 returns 0 since Log(0) is undefined.
+    /// Note that by convention, input value 0 returns -1 since Log(0) is undefined.
     /// Does not directly use any hardware intrinsics, nor does it incur branching.
     /// </summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int Log2SoftwareFallback(uint value)
+    private static int Log2Core(uint value)
     {
-        // No AggressiveInlining due to large method size
-        // Has conventional contract 0->0 (Log(0) is undefined)
-
-        // Fill trailing zeros with ones, eg 00010010 becomes 00011111
-        value |= value >> 01;
-        value |= value >> 02;
-        value |= value >> 04;
-        value |= value >> 08;
-        value |= value >> 16;
-
-        // Using deBruijn sequence, k=2, n=5 (2^5=32) : 0b_0000_0111_1100_0100_1010_1100_1101_1101u
-        return Log2DeBruijn[(int)((value * 0x07C4ACDDu) >> 27)];
+        int c = -1;
+        if (value >= 1 << 16) { value >>= 16; c += 16; }
+        if (value >= 1 << 8) { value >>= 8; c += 8; }
+        if (value >= 1 << 4) { value >>= 4; c += 4; }
+        if (value >= 1 << 2) { value >>= 2; c += 2; }
+        if (value >= 1 << 1) { value >>= 1; c += 1; }
+        return c + (int)value;
     }
 
     /// <summary>Returns the integer (ceiling) log of the specified value, base 2.</summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static int Log2Ceiling(uint value)
+    public static int Log2Ceiling(uint value)
     {
-        int result = Log2(value);
-        if (PopCount(value) != 1)
-        {
-            result++;
-        }
-        return result;
+        if (value <= 1) return 0;
+        return Log2(value - 1) + 1;
     }
 
     /// <summary>Returns the integer (ceiling) log of the specified value, base 2.</summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static int Log2Ceiling(ulong value)
+    public static int Log2Ceiling(ulong value)
     {
-        int result = Log2(value);
-        if (PopCount(value) != 1)
-        {
-            result++;
-        }
-        return result;
+        if (value <= 1) return 0;
+        return Log2(value - 1) + 1;
     }
 
     /// <summary>
@@ -362,7 +354,7 @@ public static class BitOperations
     /// </summary>
     /// <param name="value">The value.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int TrailingZeroCount(uint value)
+    public static unsafe int TrailingZeroCount(uint value)
     {
         // Unguarded fallback contract is 0->0, BSF contract is 0->undefined
         if (value == 0)
@@ -371,7 +363,7 @@ public static class BitOperations
         }
 
         // uint.MaxValue >> 27 is always in range [0 - 31]
-        return TrailingZeroCountDeBruijn[(int)(((value & (uint)-(int)value) * 0x077CB531u) >> 27)];
+        return TrailingZeroCountDeBruijn.Table[(uint)((value & -value) * 0x077CB531u) >> 27];
     }
 
     /// <summary>

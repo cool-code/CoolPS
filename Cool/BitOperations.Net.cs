@@ -135,6 +135,24 @@ public static class BitOperations
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Log2(nuint value) => System.Numerics.BitOperations.Log2(value);
 
+    /// <summary>Returns the integer (ceiling) log of the specified value, base 2.</summary>
+    /// <param name="value">The value.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Log2Ceiling(uint value)
+    {
+        if (value <= 1) return 0;
+        return Log2(value - 1) + 1;
+    }
+
+    /// <summary>Returns the integer (ceiling) log of the specified value, base 2.</summary>
+    /// <param name="value">The value.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Log2Ceiling(ulong value)
+    {
+        if (value <= 1) return 0;
+        return Log2(value - 1) + 1;
+    }
+
     /// <summary>
     /// Returns the population count (number of bits set) of a mask.
     /// Similar in behavior to the x86 instruction POPCNT.
