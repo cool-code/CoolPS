@@ -130,12 +130,11 @@ public static partial class Unchecked
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Equals(ref byte left, ref byte right, nuint numElements)
+    public static bool Equals(ref byte left, ref byte right, nuint length)
     {
-        if (numElements == 0) return true;
+        if (length == 0) return true;
         if (left != right) return false;
-        if (numElements == 1) return true;
-        nuint length = numElements * (nuint)Unsafe.SizeOf<byte>();
+        if (length == 1) return true;
         if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
         {
             return FastEquals(ref left, ref right, length);
