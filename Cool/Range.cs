@@ -41,6 +41,12 @@ public static class RangeExtensions
     public static RangeIterator<ulong, ULongDriver> GetEnumerator(this in Range<ulong> r) => new(r.ToString(), r.HighLimit);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static RangeIterator<nint, NIntDriver> GetEnumerator(this in Range<nint> r) => new(r.ToString(), r.HighLimit);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static RangeIterator<nuint, NUIntDriver> GetEnumerator(this in Range<nuint> r) => new(r.ToString(), r.HighLimit);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static RangeIterator<decimal, DecimalDriver> GetEnumerator(this in Range<decimal> r) => new(r.ToString(), r.HighLimit);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
