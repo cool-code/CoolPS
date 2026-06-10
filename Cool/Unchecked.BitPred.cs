@@ -81,6 +81,7 @@ public static partial class Unchecked
     public static bool Overlaps(ref ulong left, ref ulong right, nuint numElements)
     {
         if (numElements == 0) return false;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & right) != 0) return true;
         if (numElements == 1) return false;
         nuint length = numElements * (nuint)Unsafe.SizeOf<ulong>();
@@ -94,6 +95,7 @@ public static partial class Unchecked
     public static bool Overlaps(ref uint left, ref uint right, nuint numElements)
     {
         if (numElements == 0) return false;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & right) != 0) return true;
         if (numElements == 1) return false;
         nuint length = numElements * (nuint)Unsafe.SizeOf<uint>();
@@ -107,6 +109,7 @@ public static partial class Unchecked
     public static bool Overlaps(ref ushort left, ref ushort right, nuint numElements)
     {
         if (numElements == 0) return false;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & right) != 0) return true;
         if (numElements == 1) return false;
         nuint length = numElements * (nuint)Unsafe.SizeOf<ushort>();
@@ -120,6 +123,7 @@ public static partial class Unchecked
     public static bool Overlaps(ref byte left, ref byte right, nuint length)
     {
         if (length == 0) return false;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & right) != 0) return true;
         if (length == 1) return false;
         if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
@@ -225,6 +229,7 @@ public static partial class Unchecked
     public static bool IsSubset(ref ulong left, ref ulong right, nuint numElements)
     {
         if (numElements == 0) return true;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & ~right) != 0) return false;
         if (numElements == 1) return true;
         nuint length = numElements * (nuint)Unsafe.SizeOf<ulong>();
@@ -238,6 +243,7 @@ public static partial class Unchecked
     public static bool IsSubset(ref uint left, ref uint right, nuint numElements)
     {
         if (numElements == 0) return true;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & ~right) != 0) return false;
         if (numElements == 1) return true;
         nuint length = numElements * (nuint)Unsafe.SizeOf<uint>();
@@ -251,6 +257,7 @@ public static partial class Unchecked
     public static bool IsSubset(ref ushort left, ref ushort right, nuint numElements)
     {
         if (numElements == 0) return true;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & (ushort)~right) != 0) return false;
         if (numElements == 1) return true;
         nuint length = numElements * (nuint)Unsafe.SizeOf<ushort>();
@@ -264,6 +271,7 @@ public static partial class Unchecked
     public static bool IsSubset(ref byte left, ref byte right, nuint length)
     {
         if (length == 0) return true;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & (byte)~right) != 0) return false;
         if (length == 1) return true;
         if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
@@ -293,45 +301,4 @@ public static partial class Unchecked
         }
     }
 
-    // IsProperSubsetOf Operation
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsProperSubsetOf(ref ulong left, ref ulong right, nuint numElements)
-    {
-        return IsSubset(ref left, ref right, numElements) && !Equals(ref left, ref right, numElements);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsProperSubsetOf(ref uint left, ref uint right, nuint numElements)
-    {
-        return IsSubset(ref left, ref right, numElements) && !Equals(ref left, ref right, numElements);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsProperSubsetOf(ref ushort left, ref ushort right, nuint numElements)
-    {
-        return IsSubset(ref left, ref right, numElements) && !Equals(ref left, ref right, numElements);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsProperSubsetOf(ref byte left, ref byte right, nuint numElements)
-    {
-        return IsSubset(ref left, ref right, numElements) && !Equals(ref left, ref right, numElements);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsProperSubsetOf<T>(ref T left, ref T right, nuint numElements) where T : unmanaged
-    {
-        if ((nuint)Unsafe.SizeOf<T>() % sizeof(ulong) == 0)
-        {
-            return IsProperSubsetOf(ref Unsafe.As<T, ulong>(ref left), ref Unsafe.As<T, ulong>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ulong)));
-        }
-        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(uint) == 0)
-        {
-            return IsProperSubsetOf(ref Unsafe.As<T, uint>(ref left), ref Unsafe.As<T, uint>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(uint)));
-        }
-        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(ushort) == 0)
-        {
-            return IsProperSubsetOf(ref Unsafe.As<T, ushort>(ref left), ref Unsafe.As<T, ushort>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ushort)));
-        }
-        else
-        {
-            return IsProperSubsetOf(ref Unsafe.As<T, byte>(ref left), ref Unsafe.As<T, byte>(ref right), numElements * (nuint)Unsafe.SizeOf<T>());
-        }
-    }
 }

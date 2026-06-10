@@ -28,24 +28,36 @@ public static partial class Unchecked
 #>
     // <#= op.Name #> Operation
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void Fast<#= op.Name #>(ref byte left, ref byte right, nuint length)
+    private static bool Fast<#= op.Name #>(ref byte left, ref byte right, nuint length)
     {
+<# if (op.Name == "AndNot") { #>
+        if (Unsafe.AreSame(ref left, ref right))
+        {
+            Unsafe.InitBlockUnaligned(ref left, 0, length);
+            return true;
+        }
+<# } #>
         nuint offset = 0;
-        ref Vector<byte> vleft = ref Unsafe.As<byte, Vector<byte>>(ref left);
-        ref Vector<byte> vright = ref Unsafe.As<byte, Vector<byte>>(ref right);
-        
-        for (nuint stopLoopAtOffset = length & ~((nuint)Vector<byte>.Count * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)Vector<byte>.Count * 2)
+        if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
         {
-            Unsafe.AddByteOffset(ref vleft, offset) <#= op.Op #> <#= op.VectorOp #>Unsafe.AddByteOffset(ref vright, offset);
-            Unsafe.AddByteOffset(ref vleft, offset + (nuint)Vector<byte>.Count) <#= op.Op #> <#= op.VectorOp #>Unsafe.AddByteOffset(ref vright, offset + (nuint)Vector<byte>.Count);
-        }
-        
-        if ((length & (nuint)Vector<byte>.Count) != 0)
-        {
-            Unsafe.AddByteOffset(ref vleft, offset) <#= op.Op #> <#= op.VectorOp #>Unsafe.AddByteOffset(ref vright, offset);
-        }
+            ref Vector<byte> vleft = ref Unsafe.As<byte, Vector<byte>>(ref left);
+            ref Vector<byte> vright = ref Unsafe.As<byte, Vector<byte>>(ref right);
+            
+            for (nuint stopLoopAtOffset = length & ~((nuint)Vector<byte>.Count * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)Vector<byte>.Count * 2)
+            {
+                Unsafe.AddByteOffset(ref vleft, offset) <#= op.Op #> <#= op.VectorOp #>Unsafe.AddByteOffset(ref vright, offset);
+                Unsafe.AddByteOffset(ref vleft, offset + (nuint)Vector<byte>.Count) <#= op.Op #> <#= op.VectorOp #>Unsafe.AddByteOffset(ref vright, offset + (nuint)Vector<byte>.Count);
+            }
+            
+            if ((length & (nuint)Vector<byte>.Count) != 0)
+            {
+                Unsafe.AddByteOffset(ref vleft, offset) <#= op.Op #> <#= op.VectorOp #>Unsafe.AddByteOffset(ref vright, offset);
+            }
 
-        Unsafe.AddByteOffset(ref vleft, length - (nuint)Vector<byte>.Count) <#= op.Op #> <#= op.VectorOp #>Unsafe.AddByteOffset(ref vright, length - (nuint)Vector<byte>.Count);
+            Unsafe.AddByteOffset(ref vleft, length - (nuint)Vector<byte>.Count) <#= op.Op #> <#= op.VectorOp #>Unsafe.AddByteOffset(ref vright, length - (nuint)Vector<byte>.Count);
+            return true;
+        }
+        return false;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void Slow<#= op.Name #>(ref ulong left, ref ulong right, nuint length, out nuint offset, out nuint remaining)
@@ -103,27 +115,20 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void <#= op.Name #>(ref <#= t.Name #> left, ref <#= t.Name #> right, nuint <#= t.Name == "byte" ? "length" : "numElements" #>)
     {
+<# if (op.Name == "And" || op.Name == "Or") { #>
+        if (Unsafe.AreSame(ref left, ref right)) return;
+<# } #>
         if (<#= t.Name == "byte" ? "length" : "numElements" #> == 1) { left <#= op.Op #> <#= typeCastOp #><#= op.VectorOp #>right; return; }
         if (<#= t.Name == "byte" ? "length" : "numElements" #> == 0) return;
 <# if (t.Name != "byte") { #>
         nuint length = numElements * (nuint)Unsafe.SizeOf<<#=  t.Name #>>();
 <# } #>
-        if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
-        {
-<# if (t.Name != "byte") { #>
-            Fast<#= op.Name #>(ref Unsafe.As<<#= t.Name #>, byte>(ref left), ref Unsafe.As<<#= t.Name #>, byte>(ref right), length);
-<# } else { #>
-            Fast<#= op.Name #>(ref left, ref right, length);
-<# } #>
-        }
-        else
-        {
+        if (<# if (t.Name != "byte") { #>Fast<#= op.Name #>(ref Unsafe.As<<#= t.Name #>, byte>(ref left), ref Unsafe.As<<#= t.Name #>, byte>(ref right), length)<# } else { #>Fast<#= op.Name #>(ref left, ref right, length)<# } #>) return;
 <# if (t.Name == "byte") { #>
-            Slow<#= op.Name #>(ref left, ref right, length);
+        Slow<#= op.Name #>(ref left, ref right, length);
 <# } else { #>
-            Slow<#= op.Name #>(ref left, ref right, length, out _, out _);
+        Slow<#= op.Name #>(ref left, ref right, length, out _, out _);
 <# } #>
-        }
     }
 <#
     }

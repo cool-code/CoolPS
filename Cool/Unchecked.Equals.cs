@@ -84,7 +84,7 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Equals(ref ulong left, ref ulong right, nuint numElements)
     {
-        if (numElements == 0) return true;
+        if (numElements == 0 || Unsafe.AreSame(ref left, ref right)) return true;
         if (left != right) return false;
         if (numElements == 1) return true;
         nuint length = numElements * (nuint)Unsafe.SizeOf<ulong>();
@@ -100,7 +100,7 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Equals(ref uint left, ref uint right, nuint numElements)
     {
-        if (numElements == 0) return true;
+        if (numElements == 0 || Unsafe.AreSame(ref left, ref right)) return true;
         if (left != right) return false;
         if (numElements == 1) return true;
         nuint length = numElements * (nuint)Unsafe.SizeOf<uint>();
@@ -116,7 +116,7 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Equals(ref ushort left, ref ushort right, nuint numElements)
     {
-        if (numElements == 0) return true;
+        if (numElements == 0 || Unsafe.AreSame(ref left, ref right)) return true;
         if (left != right) return false;
         if (numElements == 1) return true;
         nuint length = numElements * (nuint)Unsafe.SizeOf<ushort>();
@@ -132,7 +132,7 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Equals(ref byte left, ref byte right, nuint length)
     {
-        if (length == 0) return true;
+        if (length == 0 || Unsafe.AreSame(ref left, ref right)) return true;
         if (left != right) return false;
         if (length == 1) return true;
         if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)

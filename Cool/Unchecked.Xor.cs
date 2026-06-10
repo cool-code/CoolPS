@@ -8,6 +8,11 @@ public static partial class Unchecked
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static nuint FastXor(ref byte left, ref byte right, nuint length)
     {
+        if (Unsafe.AreSame(ref left, ref right))
+        {
+            Unsafe.InitBlockUnaligned(ref left, 0, length);
+            return length;
+        }
         nuint offset = 0;
         if (Vector.IsHardwareAccelerated && length >= (nuint)Vector<byte>.Count)
         {

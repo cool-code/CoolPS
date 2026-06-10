@@ -96,6 +96,7 @@ public static partial class Unchecked
     public static bool <#= op.Name #>(ref <#= t.Name #> left, ref <#= t.Name #> right, nuint <#= t.Name == "byte" ? "length" : "numElements" #>)
     {
         if (<#= t.Name == "byte" ? "length" : "numElements" #> == 0) return <#= op.FinalRet #>;
+        if (Unsafe.AreSame(ref left, ref right)) return true;
         if ((left & <#= typeCastOp #><#= op.RightOp #>right) != 0) return <#= op.DefaultRet #>;
         if (<#= t.Name == "byte" ? "length" : "numElements" #> == 1) return <#= op.FinalRet #>;
 <# if (t.Name != "byte") { #>
@@ -142,38 +143,4 @@ public static partial class Unchecked
 <#
     }
 #>
-    // IsProperSubsetOf Operation
-<#
-    for (int i = 0; i < types.Length; i++)
-    {
-        var t = types[i];
-#>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsProperSubsetOf(ref <#= t.Name #> left, ref <#= t.Name #> right, nuint numElements)
-    {
-        return IsSubset(ref left, ref right, numElements) && !Equals(ref left, ref right, numElements);
-    }
-<#
-    }
-#>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsProperSubsetOf<T>(ref T left, ref T right, nuint numElements) where T : unmanaged
-    {
-        if ((nuint)Unsafe.SizeOf<T>() % sizeof(ulong) == 0)
-        {
-            return IsProperSubsetOf(ref Unsafe.As<T, ulong>(ref left), ref Unsafe.As<T, ulong>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ulong)));
-        }
-        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(uint) == 0)
-        {
-            return IsProperSubsetOf(ref Unsafe.As<T, uint>(ref left), ref Unsafe.As<T, uint>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(uint)));
-        }
-        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(ushort) == 0)
-        {
-            return IsProperSubsetOf(ref Unsafe.As<T, ushort>(ref left), ref Unsafe.As<T, ushort>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ushort)));
-        }
-        else
-        {
-            return IsProperSubsetOf(ref Unsafe.As<T, byte>(ref left), ref Unsafe.As<T, byte>(ref right), numElements * (nuint)Unsafe.SizeOf<T>());
-        }
-    }
 }
