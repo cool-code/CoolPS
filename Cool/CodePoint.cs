@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Runtime.InteropServices;
+using static Cool.BitSet.Allocator;
 
 namespace Cool;
 
@@ -250,10 +251,10 @@ public readonly struct CodePoint(uint value) : IEquatable<CodePoint>, IComparabl
     ///   <field name="_emojiPtr">Bitmap for emoji characters</field>
     /// </summary>
     private const uint MaxCodePoint = 0x1FFFF;
-    private static readonly BitSet wideBitSet = new(MaxCodePoint, _wideRange);
-    private static readonly BitSet ambigBitSet = new(MaxCodePoint, _ambigRange);
-    private static readonly BitSet zeroBitSet = new(MaxCodePoint, _zeroRange);
-    private static readonly BitSet emojiBitSet = new(MaxCodePoint, _emojiRange);
+    private static readonly BitSet<Native> wideBitSet = new(MaxCodePoint, _wideRange);
+    private static readonly BitSet<Native> ambigBitSet = new(MaxCodePoint, _ambigRange);
+    private static readonly BitSet<Native> zeroBitSet = new(MaxCodePoint, _zeroRange);
+    private static readonly BitSet<Native> emojiBitSet = new(MaxCodePoint, _emojiRange);
 
     /// <summary>
     /// <para>

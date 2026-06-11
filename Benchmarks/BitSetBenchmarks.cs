@@ -3,6 +3,7 @@ using System.Collections;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Diagnosers;
 using Cool;
+using static Cool.BitSet.Allocator;
 
 namespace Cool.Benchmarks
 {
@@ -13,8 +14,8 @@ namespace Cool.Benchmarks
         private const int BitHighLimit = 65535;
         private const int N = 200_000;
         private int[] indexes = null!;
-        private BitSet? protoA;
-        private BitSet? protoB;
+        private BitSet<Native>? protoA;
+        private BitSet<Native>? protoB;
         private BitArray? protoArrayA;
         private BitArray? protoArrayB;
 
@@ -25,8 +26,8 @@ namespace Cool.Benchmarks
             indexes = new int[N];
             for (int i = 0; i < N; i++) indexes[i] = rnd.Next(BitHighLimit + 1);
 
-            protoA = new BitSet(BitHighLimit);
-            protoB = new BitSet(BitHighLimit);
+            protoA = new BitSet<Native>(BitHighLimit);
+            protoB = new BitSet<Native>(BitHighLimit);
             protoArrayA = new BitArray(BitHighLimit + 1);
             protoArrayB = new BitArray(BitHighLimit + 1);
 
@@ -46,8 +47,8 @@ namespace Cool.Benchmarks
         [GlobalCleanup]
         public void Cleanup()
         {
-            protoA = null;
-            protoB = null;
+            protoA!.Dispose();
+            protoB!.Dispose();
             protoArrayA = null;
             protoArrayB = null;
         }
@@ -55,7 +56,7 @@ namespace Cool.Benchmarks
         [Benchmark]
         public void Set_BitSet()
         {
-            var bs = new BitSet(BitHighLimit);
+            using var bs = new BitSet<Pooled>(BitHighLimit);
             for (int i = 0; i < indexes.Length; i++) bs.Set((uint)indexes[i]);
         }
 
@@ -69,7 +70,7 @@ namespace Cool.Benchmarks
         [Benchmark]
         public int Contains_BitSet()
         {
-            var bs = new BitSet(BitHighLimit);
+            using var bs = new BitSet<Pooled>(BitHighLimit);
             for (int i = 0; i < indexes.Length; i++) bs.Set((uint)indexes[i]);
             int sum = 0;
             for (int i = 0; i < indexes.Length; i++) if (bs.Contains((uint)indexes[i])) sum++;
@@ -89,9 +90,9 @@ namespace Cool.Benchmarks
         [Benchmark]
         public int Cardinality_BitSet()
         {
-            var bs = new BitSet(BitHighLimit);
+            using var bs = new BitSet<Pooled>(BitHighLimit);
             for (int i = 0; i < indexes.Length; i++) bs.Set((uint)indexes[i]);
-            return bs.Cardinality();
+            return (int)bs.Cardinality();
         }
 
         [Benchmark]
@@ -107,8 +108,8 @@ namespace Cool.Benchmarks
         [Benchmark]
         public void Union_BitSet()
         {
-            var a = protoA!.Clone();
-            var b = protoB!.Clone();
+            using var a = protoA!.Clone<Pooled>();
+            using var b = protoB!.Clone<Pooled>();
             a.Union(b);
         }
 
@@ -123,8 +124,8 @@ namespace Cool.Benchmarks
         [Benchmark]
         public void Intersect_BitSet()
         {
-            var a = protoA!.Clone();
-            var b = protoB!.Clone();
+            using var a = protoA!.Clone<Pooled>();
+            using var b = protoB!.Clone<Pooled>();
             a.Intersect(b);
         }
 
@@ -139,8 +140,8 @@ namespace Cool.Benchmarks
         [Benchmark]
         public void Symmetric_BitSet()
         {
-            var a = protoA!.Clone();
-            var b = protoB!.Clone();
+            using var a = protoA!.Clone<Pooled>();
+            using var b = protoB!.Clone<Pooled>();
             a.SymmetricDifference(b);
         }
 
@@ -155,7 +156,7 @@ namespace Cool.Benchmarks
         [Benchmark]
         public void Invert_BitSet()
         {
-            var a = protoA!.Clone();
+            using var a = protoA!.Clone<Pooled>();
             a.Invert();
         }
 

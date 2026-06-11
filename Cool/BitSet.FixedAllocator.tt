@@ -1,0 +1,55 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+
+namespace Cool;
+
+public static partial class BitSet
+{
+    public static partial class Allocator
+    {
+<#
+    string[] units = ["B", "KB", "MB"];
+    for (int i = 0; i < 27; i++)
+    {
+        var size = 8ul * (ulong)(1 << i);
+        var humansize = size;
+        var index = 0;
+        while (humansize >= 1024)
+        {
+            humansize /= 1024;
+            index++;
+        }
+        var suffix = humansize + units[index];
+#>
+        [StructLayout(LayoutKind.Sequential)]
+        public unsafe struct Fixed<#= suffix #> : IAllocator
+        {
+            private nuint _bitHighLimit;
+            private fixed uint _holder[<#= size / sizeof(uint) #>];
+            public readonly nuint BitHighLimit
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => _bitHighLimit;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Init(nuint bitHighLimit)
+            {
+                _bitHighLimit = Math.Min((UIntPtr)bitHighLimit, (UIntPtr)(<#= 8 * size - 1 #>u));
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public readonly ref nuint GetReference()
+            {
+                return ref Unsafe.AsRef<uint, nuint>(in _holder[0]);
+            }
+        }
+<#
+    }
+#>
+    }
+}

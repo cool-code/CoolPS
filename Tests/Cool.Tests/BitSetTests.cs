@@ -1,6 +1,7 @@
 using System;
 using Xunit;
 using Cool;
+using static Cool.BitSet.Allocator;
 
 namespace Cool.Tests
 {
@@ -9,7 +10,7 @@ namespace Cool.Tests
         [Fact]
         public void BasicSetClearContains()
         {
-            var bs = new BitSet(100);
+            var bs = new BitSet<Fixed32B>(100);
             Assert.True(bs.IsEmpty());
 
             bs.Set(1);
@@ -27,7 +28,7 @@ namespace Cool.Tests
         [Fact]
         public void SetRangeAndToString()
         {
-            var bs = new BitSet(255, "0~3,5,7~F");
+            using var bs = new BitSet<Native>(255, "0~3,5,7~F");
             string s = bs.ToString();
             Assert.Equal("0~3,5,7~F", s);
         }
@@ -35,11 +36,11 @@ namespace Cool.Tests
         [Fact]
         public void SetAllClearCardinalityCloneEquals()
         {
-            var bs = new BitSet(63);
+            using var bs = new BitSet<Pooled>(63);
             bs.SetAll();
-            Assert.Equal(64, bs.Cardinality());
+            Assert.Equal(64u, bs.Cardinality());
 
-            var clone = bs.Clone();
+            using var clone = bs.Clone();
             Assert.True(bs.SetEquals(clone));
 
             bs.Clear();
@@ -49,31 +50,31 @@ namespace Cool.Tests
         [Fact]
         public void SetOperations_Union_Intersect_Difference_Symmetric()
         {
-            var a = new BitSet(31);
-            var b = new BitSet(31);
+            using var a = new BitSet<Native>(31);
+            using var b = new BitSet<Native>(31);
 
             a.Set(1);
             a.Set(3);
             b.Set(3);
             b.Set(4);
 
-            var x = a.Clone();
+            var x = a.Clone<Fixed8B>();
             x.Union(b);
             Assert.True(x.Contains(1));
             Assert.True(x.Contains(3));
             Assert.True(x.Contains(4));
 
-            x = a.Clone();
+            x = a.Clone<Fixed8B>();
             x.Intersect(b);
             Assert.False(x.Contains(1));
             Assert.True(x.Contains(3));
 
-            x = a.Clone();
+            x = a.Clone<Fixed8B>();
             x.Difference(b);
             Assert.True(x.Contains(1));
             Assert.False(x.Contains(3));
 
-            x = a.Clone();
+            x = a.Clone<Fixed8B>();
             x.SymmetricDifference(b);
             Assert.True(x.Contains(1));
             Assert.False(x.Contains(3));
@@ -84,8 +85,8 @@ namespace Cool.Tests
         [Fact]
         public void Comparisons_Subset_Superset_SetEquals()
         {
-            var a = new BitSet(15);
-            var b = new BitSet(15);
+            using var a = new BitSet<Native>(15);
+            using var b = new BitSet<Pooled>(15);
 
             a.Set(1);
             a.Set(2);
@@ -104,7 +105,7 @@ namespace Cool.Tests
         [Fact]
         public void Invert_TogglesBits()
         {
-            var bs = new BitSet(7);
+            using var bs = new BitSet<Native>(7);
             bs.Set(1);
             bs.Set(3);
             bs.Invert(3);

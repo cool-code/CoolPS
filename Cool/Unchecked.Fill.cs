@@ -110,6 +110,11 @@ public static partial class Unchecked
     {
         if (numElements == 1) { reference = value; return; }
         if (numElements == 0) return;
+        if (Unsafe.SizeOf<T>() == 1)
+        {
+            Unsafe.InitBlockUnaligned(ref Unsafe.As<T, byte>(ref reference), Unsafe.AsRef<T, byte>(value), numElements);
+            return;
+        }
         if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>() &&
             Vector.IsHardwareAccelerated &&
             Unsafe.SizeOf<T>() <= Vector<byte>.Count &&
