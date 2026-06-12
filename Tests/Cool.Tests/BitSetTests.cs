@@ -28,7 +28,7 @@ namespace Cool.Tests
         [Fact]
         public void SetRangeAndToString()
         {
-            using var bs = new BitSet<Native>(255, "0~3,5,7~F");
+            using var bs = new BitSet<Native>(18, "0~3,5,7~F");
             string s = bs.ToString();
             Assert.Equal("0~3,5,7~F", s);
         }

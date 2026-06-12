@@ -416,12 +416,11 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
             for (nuint wi = 0; wi < wordCount; wi++)
             {
                 nuint w = Unsafe.Add(ref Bitmap, wi);
-                if (wi == wordCount - 1) w &= TailMask; // mask off unused bits in the last word
 
                 while (w != 0u)
                 {
                     int tz = BitOperations.TrailingZeroCount(w);
-                    uint pos = ((uint)wi << 5) + (uint)tz;
+                    uint pos = ((uint)wi << BitSet.ShiftCount) + (uint)tz;
 
                     if (!inRange)
                     {
