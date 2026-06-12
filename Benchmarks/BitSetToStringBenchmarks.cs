@@ -1,0 +1,56 @@
+using System;
+using System.Text;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Diagnosers;
+using Cool;
+using static Cool.BitSet.Allocator;
+
+namespace Cool.Benchmarks
+{
+    [MemoryDiagnoser]
+    [DisassemblyDiagnoser]
+    public class BitSetToStringBenchmarks
+    {
+        private const uint MaxCodePoint = 0x1FFFFu;
+        private const string WideRange = "1100~115F,231A~231B,2329~232A,23E9~23EC,23F0,23F3,25FD~25FE,2614~2615,2630~2637,2648~2653,267F,268A~268F,2693,26A1,26AA~26AB,26BD~26BE,26C4~26C5,26CE,26D4,26EA,26F2~26F3,26F5,26FA,26FD,2705,270A~270B,2728,274C,274E,2753~2755,2757,2795~2797,27B0,27BF,2B1B~2B1C,2B50,2B55,2E80~2E99,2E9B~2EF3,2F00~2FD5,2FF0~303E,3041~3096,3099~30FF,3105~312F,3131~318E,3190~31E5,31EF~321E,3220~3247,3250~A48C,A490~A4C6,A960~A97C,AC00~D7A3,F900~FAFF,FE10~FE19,FE30~FE52,FE54~FE66,FE68~FE6B,FF01~FF60,FFE0~FFE6,16FE0~16FE4,16FF0~16FF6,17000~18CD5,18CFF~18D1E,18D80~18DF2,1AFF0~1AFF3,1AFF5~1AFFB,1AFFD~1AFFE,1B000~1B122,1B132,1B150~1B152,1B155,1B164~1B167,1B170~1B2FB,1D300~1D356,1D360~1D376,1F004,1F0CF,1F18E,1F191~1F19A,1F200~1F202,1F210~1F23B,1F240~1F248,1F250~1F251,1F260~1F265,1F300~1F320,1F32D~1F335,1F337~1F37C,1F37E~1F393,1F3A0~1F3CA,1F3CF~1F3D3,1F3E0~1F3F0,1F3F4,1F3F8~1F43E,1F440,1F442~1F4FC,1F4FF~1F53D,1F54B~1F54E,1F550~1F567,1F57A,1F595~1F596,1F5A4,1F5FB~1F64F,1F680~1F6C5,1F6CC,1F6D0~1F6D2,1F6D5~1F6D8,1F6DC~1F6DF,1F6EB~1F6EC,1F6F4~1F6FC,1F7E0~1F7EB,1F7F0,1F90C~1F93A,1F93C~1F945,1F947~1F9FF,1FA70~1FA7C,1FA80~1FA8A,1FA8E~1FAC6,1FAC8,1FACD~1FADC,1FADF~1FAEA,1FAEF~1FAF8";
+
+        private BitSet<Native> bmpWide = null!;
+        private BitSet<Native> bmpSparse = null!;
+        private BitSet<Native> bmpDense = null!;
+
+        [GlobalSetup]
+        public void Setup()
+        {
+            bmpWide = new BitSet<Native>(MaxCodePoint, WideRange);
+
+            // sparse: every 100th bit set
+            var sb = new StringBuilder();
+            for (int i = 0; i < 0x1FFFF; i += 100)
+            {
+                if (sb.Length > 0) sb.Append(',');
+                sb.Append(i.ToString("X"));
+            }
+            bmpSparse = new BitSet<Native>(MaxCodePoint, sb.ToString());
+
+            // dense: single big range
+            bmpDense = new BitSet<Native>(MaxCodePoint, "0-1FFFF");
+        }
+
+        [GlobalCleanup]
+        public void Cleanup()
+        {
+            bmpWide.Dispose();
+            bmpSparse.Dispose();
+            bmpDense.Dispose();
+        }
+
+        [Benchmark]
+        public int ToString_Wide() => bmpWide.ToString().Length;
+
+        [Benchmark]
+        public int ToString_Sparse() => bmpSparse.ToString().Length;
+
+        [Benchmark]
+        public int ToString_Dense() => bmpDense.ToString().Length;
+    }
+}
