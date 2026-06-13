@@ -400,6 +400,7 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
         return Unchecked.GetHashCode(ref Bitmap, WordCount);
     }
 
+    private const int bufferLength = 20;
     public override unsafe string ToString()
     {
         // Build ranges in the same hex format used by the constructor: "START-END,POS,..."
@@ -409,8 +410,8 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
         {
             bool first = true;
             bool inRange = false;
-            uint rangeStart = 0, rangeEnd = 0;
-            char* buf = stackalloc char[8];
+            nuint rangeStart = 0, rangeEnd = 0;
+            char* buf = stackalloc char[bufferLength];
             nuint wordCount = WordCount;
 
             for (nuint wi = 0; wi < wordCount; wi++)
@@ -420,7 +421,7 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
                 while (w != 0u)
                 {
                     int tz = BitOperations.TrailingZeroCount(w);
-                    uint pos = ((uint)wi << BitSet.ShiftCount) + (uint)tz;
+                    nuint pos = (wi << BitSet.ShiftCount) + (nuint)tz;
 
                     if (!inRange)
                     {
@@ -462,7 +463,7 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
     #region Helper Methods for ToString
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void AppendRange(StringBuilder sb, uint rangeStart, uint rangeEnd, char* buf)
+    private static unsafe void AppendRange(StringBuilder sb, nuint rangeStart, nuint rangeEnd, char* buf)
     {
         if (rangeStart == rangeEnd)
         {
@@ -478,7 +479,7 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
 
     private static readonly Unchecked.String _hexDigits = "0123456789ABCDEF";
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void AppendHex(StringBuilder sb, uint value, char* buf)
+    private static unsafe void AppendHex(StringBuilder sb, nuint value, char* buf)
     {
         if (value == 0u)
         {
@@ -486,18 +487,17 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
             return;
         }
 
-        // max 8 hex digits for a uint
         // fill from the end backwards so digits end up in correct order
-        int i = 8;
+        int i = bufferLength;
         while (value != 0u)
         {
-            uint nibble = value & 0xFu;
+            byte nibble = (byte)(value & 0xFu);
             buf[--i] = _hexDigits[nibble];
             value >>= 4;
         }
 
         // bulk append the prepared range
-        sb.Append(buf + i, 8 - i);
+        sb.Append(buf + i, bufferLength - i);
     }
     #endregion
 
