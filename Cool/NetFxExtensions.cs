@@ -15,7 +15,7 @@ public static class NetFxExtensions
     }
     extension(UIntPtr)
     {
-        public static UIntPtr MaxValue
+        public static nuint MaxValue
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ~(nuint)0;

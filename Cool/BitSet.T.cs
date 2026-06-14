@@ -1,7 +1,6 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Cool;
@@ -154,16 +153,121 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
     private ref nuint Word(nuint pos) => ref Unsafe.Add(ref Bitmap, BitSet.WordIndex(pos));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Set(nuint pos) { if (pos <= BitHighLimit) { Word(pos) |= BitSet.BitIndex(pos); } }
+    public bool Contains(nuint pos) => (pos <= BitHighLimit) && (Word(pos) & BitSet.BitIndex(pos)) != 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Contains(nuint pos) => (pos <= BitHighLimit) && (Word(pos) & BitSet.BitIndex(pos)) != 0;
+    public void Set(nuint pos) { if (pos <= BitHighLimit) { Word(pos) |= BitSet.BitIndex(pos); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Clear(nuint pos) { if (pos <= BitHighLimit) { Word(pos) &= ~BitSet.BitIndex(pos); } }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Invert(nuint pos) { if (pos <= BitHighLimit) { Word(pos) ^= BitSet.BitIndex(pos); } }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void Set(nuint start, nuint end)
+    {
+        if (start == end)
+        {
+            Set(start);
+            return;
+        }
+        nuint startWi = BitSet.WordIndex(start);
+        nuint endWi = BitSet.WordIndex(end);
+
+        int startBit = (int)(start & ((1u << BitSet.ShiftCount) - 1u));
+        int endBit = (int)(end & ((1u << BitSet.ShiftCount) - 1u));
+
+        if (startWi == endWi)
+        {
+            nuint mask = (((nuint)1 << (endBit - startBit + 1)) - 1u) << startBit;
+            Unsafe.Add(ref Bitmap, startWi) |= mask;
+            return;
+        }
+
+        nuint headMask = nuint.MaxValue << startBit;
+        Unsafe.Add(ref Bitmap, startWi) |= headMask;
+
+        for (nuint wi = startWi + 1; wi < endWi; wi++)
+        {
+            Unsafe.Add(ref Bitmap, wi) = nuint.MaxValue;
+        }
+
+        nuint tailMask = endBit == ((1 << BitSet.ShiftCount) - 1)
+            ? nuint.MaxValue
+            : (((nuint)1 << (endBit + 1)) - 1u);
+        Unsafe.Add(ref Bitmap, endWi) |= tailMask;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void Clear(nuint start, nuint end)
+    {
+        if (start == end)
+        {
+            Clear(start);
+            return;
+        }
+        nuint startWi = BitSet.WordIndex(start);
+        nuint endWi = BitSet.WordIndex(end);
+
+        int startBit = (int)(start & ((1u << BitSet.ShiftCount) - 1u));
+        int endBit = (int)(end & ((1u << BitSet.ShiftCount) - 1u));
+
+        if (startWi == endWi)
+        {
+            nuint mask = (((nuint)1 << (endBit - startBit + 1)) - 1u) << startBit;
+            Unsafe.Add(ref Bitmap, startWi) &= ~mask;
+            return;
+        }
+
+        nuint headMask = nuint.MaxValue << startBit;
+        Unsafe.Add(ref Bitmap, startWi) &= ~headMask;
+
+        for (nuint wi = startWi + 1; wi < endWi; wi++)
+        {
+            Unsafe.Add(ref Bitmap, wi) = 0u;
+        }
+
+        nuint tailMask = endBit == ((1 << BitSet.ShiftCount) - 1)
+            ? nuint.MaxValue
+            : (((nuint)1 << (endBit + 1)) - 1u);
+        Unsafe.Add(ref Bitmap, endWi) &= ~tailMask;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void Invert(nuint start, nuint end)
+    {
+        if (start == end)
+        {
+            Invert(start);
+            return;
+        }
+        nuint startWi = BitSet.WordIndex(start);
+        nuint endWi = BitSet.WordIndex(end);
+
+        int startBit = (int)(start & ((1u << BitSet.ShiftCount) - 1u));
+        int endBit = (int)(end & ((1u << BitSet.ShiftCount) - 1u));
+
+        if (startWi == endWi)
+        {
+            nuint mask = (((nuint)1 << (endBit - startBit + 1)) - 1u) << startBit;
+            Unsafe.Add(ref Bitmap, startWi) ^= mask;
+            return;
+        }
+
+        nuint headMask = nuint.MaxValue << startBit;
+        Unsafe.Add(ref Bitmap, startWi) ^= headMask;
+
+        for (nuint wi = startWi + 1; wi < endWi; wi++)
+        {
+            Unsafe.Add(ref Bitmap, wi) = ~Unsafe.Add(ref Bitmap, wi);
+        }
+
+        nuint tailMask = endBit == ((1 << BitSet.ShiftCount) - 1)
+            ? nuint.MaxValue
+            : (((nuint)1 << (endBit + 1)) - 1u);
+        Unsafe.Add(ref Bitmap, endWi) ^= tailMask;
+    }
     #endregion
 
     #region Bit Manipulation Methods
@@ -186,24 +290,21 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BitSet<TAlloc> Set(string range)
     {
-        if (string.IsNullOrWhiteSpace(range)) return this;
-        foreach (nuint pos in new Range<nuint>(range, BitHighLimit)) Set(pos);
+        foreach ((nuint start, nuint end) in new BatchRange<nuint>(range, BitHighLimit)) Set(start, end);
         return this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BitSet<TAlloc> Clear(string range)
     {
-        if (string.IsNullOrWhiteSpace(range)) return this;
-        foreach (nuint pos in new Range<nuint>(range, BitHighLimit)) Clear(pos);
+        foreach ((nuint start, nuint end) in new BatchRange<nuint>(range, BitHighLimit)) Clear(start, end);
         return this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BitSet<TAlloc> Invert(string range)
     {
-        if (string.IsNullOrWhiteSpace(range)) return this;
-        foreach (nuint pos in new Range<nuint>(range, BitHighLimit)) Invert(pos);
+        foreach ((nuint start, nuint end) in new BatchRange<nuint>(range, BitHighLimit)) Invert(start, end);
         return this;
     }
 
