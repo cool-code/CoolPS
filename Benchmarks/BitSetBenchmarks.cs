@@ -156,7 +156,7 @@ namespace Cool.Benchmarks
         [Benchmark]
         public void Invert_BitSet()
         {
-            using var a = protoA!.Clone<Pooled>();
+            using var a = protoA!.Clone();
             a.Invert();
         }
 

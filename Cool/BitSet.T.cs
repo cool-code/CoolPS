@@ -1,6 +1,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Cool;
@@ -403,7 +404,7 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
     private const int bufferLength = 20;
     public override unsafe string ToString()
     {
-        // Build ranges in the same hex format used by the constructor: "START-END,POS,..."
+        // Build ranges in the same hex format used by the constructor: "START~END,POS,..."
 
         var sb = StringBuilderPool.Shared.Rent();
         try
@@ -417,7 +418,6 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
             for (nuint wi = 0; wi < wordCount; wi++)
             {
                 nuint w = Unsafe.Add(ref Bitmap, wi);
-
                 while (w != 0u)
                 {
                     int tz = BitOperations.TrailingZeroCount(w);
@@ -426,22 +426,45 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
                     if (!inRange)
                     {
                         inRange = true;
-                        rangeStart = rangeEnd = pos;
+                        rangeStart = pos;
                     }
-                    else if (pos == rangeEnd + 1)
-                    {
-                        rangeEnd = pos;
-                    }
-                    else
+                    else if (pos != rangeEnd + 1)
                     {
                         if (!first) { sb.Append(','); } else { first = false; }
                         AppendRange(sb, rangeStart, rangeEnd, buf);
 
-                        rangeStart = rangeEnd = pos;
+                        rangeStart = pos;
                     }
+                    if (tz == 0 && (w + 1u) == 0u)
+                    {
+                        // [Full positioning express path]: One step to achieve the goal, directly add the entire Word length to rangeEnd
+                        rangeEnd = pos + (1u << BitSet.ShiftCount) - 1u;
+                        w = 0;
+                    }
+                    else if (((w >> (tz + 1)) & 1u) == 0)
+                    {
+                        //[Sparse fast path]: isolated 1, direct single point stepping
+                        rangeEnd = pos;
+                        w &= w - 1u;
+                    }
+                    else
+                    {
+                        //[Dense fast path]: There are continuous 1s, start high-energy bit mask crossing
+                        nuint remaining = w >> tz;
+                        int continuousOnes = BitOperations.TrailingZeroCount(~remaining);
 
-                    // clear lowest set bit
-                    w &= w - 1u;
+                        rangeEnd = pos + (nuint)continuousOnes - 1;
+
+                        if (continuousOnes < (1 << BitSet.ShiftCount))
+                        {
+                            nuint mask = (((nuint)1 << continuousOnes) - 1u) << tz;
+                            w &= ~mask;
+                        }
+                        else
+                        {
+                            w = 0;
+                        }
+                    }
                 }
             }
 
@@ -477,7 +500,24 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
         }
     }
 
-    private static readonly Unchecked.String _hexDigits = "0123456789ABCDEF";
+    private static readonly NativeMemoryManager HexTableManager = InitHexTableManager();
+    private static readonly unsafe uint* HexTable = (uint*)HexTableManager.GetPointer();
+
+    private static unsafe NativeMemoryManager InitHexTableManager()
+    {
+        var table = new NativeMemoryManager(256 * sizeof(uint));
+        var ptr = (uint*)table.GetPointer();
+        string hex = "0123456789ABCDEF";
+        bool isLittleEndian = BitConverter.IsLittleEndian;
+        for (int i = 0; i < 256; i++)
+        {
+            uint c1 = hex[i >> 4];
+            uint c2 = hex[i & 0x0F];
+            ptr[i] = isLittleEndian ? (c1 | (c2 << 16)) : ((c1 << 16) | c2);
+        }
+        return table;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void AppendHex(StringBuilder sb, nuint value, char* buf)
     {
@@ -486,19 +526,18 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
             sb.Append('0');
             return;
         }
-
-        // fill from the end backwards so digits end up in correct order
         int i = bufferLength;
-        while (value != 0u)
+        while (value >= 0x10u)
         {
-            byte nibble = (byte)(value & 0xFu);
-            buf[--i] = _hexDigits[nibble];
-            value >>= 4;
+            *(uint*)(buf + (i -= 2)) = HexTable[value & 0xFFu];
+            value >>= 8;
         }
-
-        // bulk append the prepared range
+        if (value > 0)
+        {
+            Unchecked.String hexDigits = "0123456789ABCDEF";
+            buf[--i] = hexDigits[(int)value];
+        }
         sb.Append(buf + i, bufferLength - i);
     }
     #endregion
-
 }
