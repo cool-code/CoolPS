@@ -29,11 +29,6 @@ public ref partial struct ValueStringBuilder
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AppendHex(nuint value)
     {
-        if (value == 0u)
-        {
-            Append('0');
-            return;
-        }
         int n = GetHexLength(value);
         ref char sr = ref AppendRef(n);
         ref uint hexTable = ref Unsafe.As<char, uint>(ref HexTable.GetReference());
@@ -42,6 +37,83 @@ public ref partial struct ValueStringBuilder
             Unsafe.As<char, uint>(ref Unsafe.Add(ref sr, n -= 2)) = Unsafe.Add(ref hexTable, value & 0xFFu);
             value >>= 8;
         }
-        if (value > 0) sr = HexDigits[(int)value];
+        if (n > 0) sr = HexDigits[(int)value];
     }
+
+    private static readonly Unchecked.String DigitPairs =
+        "0001020304050607080910111213141516171819" +
+        "2021222324252627282930313233343536373839" +
+        "4041424344454647484950515253545556575859" +
+        "6061626364656667686970717273747576777879" +
+        "8081828384858687888990919293949596979899";
+
+    private static readonly Unchecked.String Digits = "0123456789";
+
+    private static readonly Unchecked.SZArray<ulong> TensComplementTable = new ulong[20] {
+        0UL, 9UL, 99UL, 999UL, 9999UL, 99999UL, 999999UL, 9999999UL, 99999999UL,
+        999999999UL, 9999999999UL, 99999999999UL, 999999999999UL, 9999999999999UL,
+        99999999999999UL, 999999999999999UL, 9999999999999999UL, 99999999999999999UL,
+        999999999999999999UL, 9999999999999999999UL
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int GetDecLength(ulong value)
+    {
+        int guess = ((19 * BitOperations.Log2(value)) >> 6) + 1;
+        return (int)(guess - ((long)(TensComplementTable[guess] - value) >> 63));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(ulong value)
+    {
+        int n = GetDecLength(value);
+        ref char sr = ref AppendRef(n);
+        ref uint pairTable = ref Unsafe.As<char, uint>(ref DigitPairs.GetReference());
+        while (value >= 10)
+        {
+            Unsafe.As<char, uint>(ref Unsafe.Add(ref sr, n -= 2)) = Unsafe.Add(ref pairTable, (nuint)(value % 100));
+            value /= 100;
+        }
+        if (n > 0) sr = Digits[(uint)value];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(long value)
+    {
+        if (value == long.MinValue)
+        {
+            Append("-9223372036854775808");
+            return;
+        }
+        if (value < 0)
+        {
+            Append('-');
+            value = -value;
+        }
+        Append((ulong)value);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(uint value) => Append((ulong)value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(int value) => Append((long)value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(ushort value) => Append((ulong)value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(short value) => Append((long)value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(byte value) => Append((ulong)value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(sbyte value) => Append((long)value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(nuint value) => Append((ulong)value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Append(nint value) => Append((long)value);
 }

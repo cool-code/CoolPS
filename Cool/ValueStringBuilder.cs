@@ -3,15 +3,19 @@ using System.Runtime.CompilerServices;
 
 namespace Cool;
 
+[method: MethodImpl(MethodImplOptions.AggressiveInlining)]
 public ref partial struct ValueStringBuilder(int initialCapacity)
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ValueStringBuilder() : this(128) { }
     private Unchecked.SZArray<char> _chars = ArrayPool<char>.Shared.Rent(initialCapacity);
     private int _pos = 0;
 
     public int Length
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         readonly get => _pos;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => _pos = value;
     }
 
@@ -49,6 +53,53 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         return s;
     }
 
+    public void Insert(int index, char value, int count)
+    {
+        if (_pos > _chars.Length - count)
+        {
+            Grow(count);
+        }
+
+        int remaining = _pos - index;
+        ref char start = ref _chars[index];
+        Unsafe.CopyBlockUnaligned(
+            ref Unsafe.As<char, byte>(ref Unsafe.Add(ref start, count)),
+            ref Unsafe.As<char, byte>(ref start),
+            (uint)remaining * sizeof(char)
+        );
+        Unchecked.Fill(ref start, (uint)count, value);
+        _pos += count;
+    }
+
+    public void Insert(int index, string? s)
+    {
+        if (s == null || s.Length == 0)
+        {
+            return;
+        }
+
+        int count = s.Length;
+
+        if (_pos > (_chars.Length - count))
+        {
+            Grow(count);
+        }
+
+        int remaining = _pos - index;
+        ref char start = ref _chars[index];
+        Unsafe.CopyBlockUnaligned(
+            ref Unsafe.As<char, byte>(ref Unsafe.Add(ref start, count)),
+            ref Unsafe.As<char, byte>(ref start),
+            (uint)remaining * sizeof(char)
+        );
+        Unsafe.CopyBlockUnaligned(
+            ref Unsafe.As<char, byte>(ref start),
+            ref Unsafe.As<char, byte>(ref s.GetReference()),
+            (uint)count * sizeof(char)
+        );
+        _pos += count;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(char c)
     {
@@ -67,7 +118,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(string? s)
     {
-        if (s == null)
+        if (s == null || s.Length == 0)
         {
             return;
         }
