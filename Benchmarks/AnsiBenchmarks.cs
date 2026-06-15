@@ -63,13 +63,30 @@ namespace Cool.Benchmarks
         public int SB_Foreground_RGB_ReturnLen()
         {
             int sum = 0;
-            StringBuilder sb = new(20);
+            StringBuilder sb = StringBuilderPool.Shared.Rent(20);
             for (int i = 0; i < rgbs.Length; i++)
             {
                 var (r, g, b) = rgbs[i];
                 sum += sb.AppendForeground(r, g, b).Length;
                 sb.Clear();
             }
+            StringBuilderPool.Shared.Return(sb);
+            return sum;
+        }
+
+        [Benchmark]
+        public int VSB_Foreground_RGB_ReturnLen()
+        {
+            int sum = 0;
+            ValueStringBuilder sb = new(20);
+            for (int i = 0; i < rgbs.Length; i++)
+            {
+                var (r, g, b) = rgbs[i];
+                sb.AppendForeground(r, g, b);
+                sum += sb.Length;
+                sb.Clear();
+            }
+            sb.Dispose();
             return sum;
         }
 

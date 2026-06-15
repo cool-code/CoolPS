@@ -185,35 +185,227 @@ public static class Ansi
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static StringBuilder AppendBackground(this StringBuilder sb, Xterm16 color) => sb.Append(Background(color));
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendSGR(this StringBuilder sb, string input) => sb.Append(C0_CSI).Append(input).Append('m');
+    public static StringBuilder AppendSGR(this StringBuilder sb, string input)
+    {
+        sb.EnsureCapacity(sb.Length + C0_CSI.Length + input.Length + 1);
+        return sb.Append(C0_CSI).Append(input).Append('m');
+    }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBold(this StringBuilder sb, string text) => sb.Append(Bold).Append(text).Append(NoBold);
+    public static StringBuilder AppendBold(this StringBuilder sb, string text)
+    {
+        sb.EnsureCapacity(sb.Length + Bold.Length + text.Length + NoBold.Length);
+        return sb.Append(Bold).Append(text).Append(NoBold);
+    }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendDim(this StringBuilder sb, string text) => sb.Append(Dim).Append(text).Append(NoDim);
+    public static StringBuilder AppendDim(this StringBuilder sb, string text)
+    {
+        sb.EnsureCapacity(sb.Length + Dim.Length + text.Length + NoDim.Length);
+        return sb.Append(Dim).Append(text).Append(NoDim);
+    }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendItalic(this StringBuilder sb, string text) => sb.Append(Italic).Append(text).Append(NoItalic);
+    public static StringBuilder AppendItalic(this StringBuilder sb, string text)
+    {
+        sb.EnsureCapacity(sb.Length + Italic.Length + text.Length + NoItalic.Length);
+        return sb.Append(Italic).Append(text).Append(NoItalic);
+    }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendUnderline(this StringBuilder sb, string text) => sb.Append(Underline).Append(text).Append(NoUnderline);
+    public static StringBuilder AppendUnderline(this StringBuilder sb, string text)
+    {
+        sb.EnsureCapacity(sb.Length + Underline.Length + text.Length + NoUnderline.Length);
+        return sb.Append(Underline).Append(text).Append(NoUnderline);
+    }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendInverse(this StringBuilder sb, string text) => sb.Append(Inverse).Append(text).Append(NoInverse);
+    public static StringBuilder AppendInverse(this StringBuilder sb, string text)
+    {
+        sb.EnsureCapacity(sb.Length + Inverse.Length + text.Length + NoInverse.Length);
+        return sb.Append(Inverse).Append(text).Append(NoInverse);
+    }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendHidden(this StringBuilder sb, string text) => sb.Append(Hidden).Append(text).Append(NoHidden);
+    public static StringBuilder AppendHidden(this StringBuilder sb, string text)
+    {
+        sb.EnsureCapacity(sb.Length + Hidden.Length + text.Length + NoHidden.Length);
+        return sb.Append(Hidden).Append(text).Append(NoHidden);
+    }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendStrikethrough(this StringBuilder sb, string text) => sb.Append(Strikethrough).Append(text).Append(NoStrikethrough);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendColor(this StringBuilder sb, string text, int r, int g, int b) => sb.AppendForeground(r, g, b).Append(text).Append(DefaultForeground);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendColor(this StringBuilder sb, string text, Xterm256 color) => sb.AppendForeground(color).Append(text).Append(DefaultForeground);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendColor(this StringBuilder sb, string text, Xterm16 color) => sb.AppendForeground(color).Append(text).Append(DefaultForeground);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, int r, int g, int b) => sb.AppendBackground(r, g, b).Append(text).Append(DefaultBackground);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, Xterm256 color) => sb.AppendBackground(color).Append(text).Append(DefaultBackground);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, Xterm16 color) => sb.AppendBackground(color).Append(text).Append(DefaultBackground);
-    #endregion
+    public static StringBuilder AppendStrikethrough(this StringBuilder sb, string text)
+    {
+        sb.EnsureCapacity(sb.Length + Strikethrough.Length + text.Length + NoStrikethrough.Length);
+        return sb.Append(Strikethrough).Append(text).Append(NoStrikethrough);
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringBuilder AppendColor(this StringBuilder sb, string text, int r, int g, int b)
+    {
+        sb.EnsureCapacity(sb.Length + 19 + text.Length + DefaultForeground.Length);
+        return sb.AppendForeground(r, g, b).Append(text).Append(DefaultForeground);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringBuilder AppendColor(this StringBuilder sb, string text, Xterm256 color)
+    {
+        sb.EnsureCapacity(sb.Length + 11 + text.Length + DefaultForeground.Length);
+        return sb.AppendForeground(color).Append(text).Append(DefaultForeground);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringBuilder AppendColor(this StringBuilder sb, string text, Xterm16 color)
+    {
+        sb.EnsureCapacity(sb.Length + 6 + text.Length + DefaultForeground.Length);
+        return sb.AppendForeground(color).Append(text).Append(DefaultForeground);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, int r, int g, int b)
+    {
+        sb.EnsureCapacity(sb.Length + 19 + text.Length + DefaultBackground.Length);
+        return sb.AppendBackground(r, g, b).Append(text).Append(DefaultBackground);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, Xterm256 color)
+    {
+        sb.EnsureCapacity(sb.Length + 11 + text.Length + DefaultBackground.Length);
+        return sb.AppendBackground(color).Append(text).Append(DefaultBackground);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringBuilder AppendBackgroundColor(this StringBuilder sb, string text, Xterm16 color)
+    {
+        sb.EnsureCapacity(sb.Length + 6 + text.Length + DefaultBackground.Length);
+        return sb.AppendBackground(color).Append(text).Append(DefaultBackground);
+    }
+    #endregion
+    #region ValueStringBuilder extensions
+    public static void AppendForeground(ref this ValueStringBuilder vsb, int r, int g, int b)
+    {
+        FillForegroundRGB(ref vsb.AppendRef(19), (byte)r, (byte)g, (byte)b);
+    }
+    public static void AppendBackground(ref this ValueStringBuilder vsb, int r, int g, int b)
+    {
+        FillBackgroundRGB(ref vsb.AppendRef(19), (byte)r, (byte)g, (byte)b);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendForeground(ref this ValueStringBuilder vsb, Xterm256 color) => vsb.Append(Foreground(color));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendBackground(ref this ValueStringBuilder vsb, Xterm256 color) => vsb.Append(Background(color));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendForeground(ref this ValueStringBuilder vsb, Xterm16 color) => vsb.Append(Foreground(color));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendBackground(ref this ValueStringBuilder vsb, Xterm16 color) => vsb.Append(Background(color));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendSGR(ref this ValueStringBuilder vsb, string input)
+    {
+        vsb.EnsureCapacity(vsb.Length + C0_CSI.Length + input.Length + 1);
+        vsb.Append(C0_CSI);
+        vsb.Append(input);
+        vsb.Append('m');
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendBold(ref this ValueStringBuilder vsb, string text)
+    {
+        vsb.EnsureCapacity(vsb.Length + Bold.Length + text.Length + NoBold.Length);
+        vsb.Append(Bold);
+        vsb.Append(text);
+        vsb.Append(NoBold);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendDim(ref this ValueStringBuilder vsb, string text)
+    {
+        vsb.EnsureCapacity(vsb.Length + Dim.Length + text.Length + NoDim.Length);
+        vsb.Append(Dim);
+        vsb.Append(text);
+        vsb.Append(NoDim);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendItalic(ref this ValueStringBuilder vsb, string text)
+    {
+        vsb.EnsureCapacity(vsb.Length + Italic.Length + text.Length + NoItalic.Length);
+        vsb.Append(Italic);
+        vsb.Append(text);
+        vsb.Append(NoItalic);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendUnderline(ref this ValueStringBuilder vsb, string text)
+    {
+        vsb.EnsureCapacity(vsb.Length + Underline.Length + text.Length + NoUnderline.Length);
+        vsb.Append(Underline);
+        vsb.Append(text);
+        vsb.Append(NoUnderline);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendInverse(ref this ValueStringBuilder vsb, string text)
+    {
+        vsb.EnsureCapacity(vsb.Length + Inverse.Length + text.Length + NoInverse.Length);
+        vsb.Append(Inverse);
+        vsb.Append(text);
+        vsb.Append(NoInverse);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendHidden(ref this ValueStringBuilder vsb, string text)
+    {
+        vsb.EnsureCapacity(vsb.Length + Hidden.Length + text.Length + NoHidden.Length);
+        vsb.Append(Hidden);
+        vsb.Append(text);
+        vsb.Append(NoHidden);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendStrikethrough(ref this ValueStringBuilder vsb, string text)
+    {
+        vsb.EnsureCapacity(vsb.Length + Strikethrough.Length + text.Length + NoStrikethrough.Length);
+        vsb.Append(Strikethrough);
+        vsb.Append(text);
+        vsb.Append(NoStrikethrough);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendColor(ref this ValueStringBuilder vsb, string text, int r, int g, int b)
+    {
+        vsb.EnsureCapacity(vsb.Length + 19 + text.Length + DefaultForeground.Length);
+        vsb.AppendForeground(r, g, b);
+        vsb.Append(text);
+        vsb.Append(DefaultForeground);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendColor(ref this ValueStringBuilder vsb, string text, Xterm256 color)
+    {
+        vsb.EnsureCapacity(vsb.Length + 11 + text.Length + DefaultForeground.Length);
+        vsb.AppendForeground(color);
+        vsb.Append(text);
+        vsb.Append(DefaultForeground);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendColor(ref this ValueStringBuilder vsb, string text, Xterm16 color)
+    {
+        vsb.EnsureCapacity(vsb.Length + 6 + text.Length + DefaultForeground.Length);
+        vsb.AppendForeground(color);
+        vsb.Append(text);
+        vsb.Append(DefaultForeground);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendBackgroundColor(ref this ValueStringBuilder vsb, string text, int r, int g, int b)
+    {
+        vsb.EnsureCapacity(vsb.Length + 19 + text.Length + DefaultBackground.Length);
+        vsb.AppendBackground(r, g, b);
+        vsb.Append(text);
+        vsb.Append(DefaultBackground);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendBackgroundColor(ref this ValueStringBuilder vsb, string text, Xterm256 color)
+    {
+        vsb.EnsureCapacity(vsb.Length + 11 + text.Length + DefaultBackground.Length);
+        vsb.AppendBackground(color);
+        vsb.Append(text);
+        vsb.Append(DefaultBackground);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AppendBackgroundColor(ref this ValueStringBuilder vsb, string text, Xterm16 color)
+    {
+        vsb.EnsureCapacity(vsb.Length + 6 + text.Length + DefaultBackground.Length);
+        vsb.AppendBackground(color);
+        vsb.Append(text);
+        vsb.Append(DefaultBackground);
+    }
+    #endregion
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref char WriteForeground(ref char buffer, int r, int g, int b)
     {

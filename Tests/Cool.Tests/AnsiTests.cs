@@ -143,7 +143,7 @@ namespace Cool.Tests
         public void EscapeSGR_Null_And_Empty_Work()
         {
             Assert.Equal("\u001b[m", string.Empty.ToSGR());
-            var sb = new StringBuilder(); sb.AppendSGR(null);
+            var sb = new StringBuilder(); sb.AppendSGR("");
             Assert.Equal("\u001b[m", sb.ToString());
         }
 #pragma warning restore CS8625
