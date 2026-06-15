@@ -268,4 +268,45 @@ public static class Console
         }
         return totalWidth;
     }
+    /// <summary>
+    /// Pads a string to a specific display width.
+    /// </summary>
+    /// <param name="str">string to pad</param>
+    /// <param name="width">display width</param>
+    /// <param name="align">
+    /// <0: align left (pad right)
+    ///  0: align center
+    /// >0: align right (pad left) 
+    /// </param>
+    /// <returns></returns>
+    public static string DisplayPad(this string str, int width, int align)
+    {
+        var currentWidth = DisplayWidth(str);
+        var pad = width - currentWidth;
+        if (pad <= 0) return str;
+        string result = Unchecked.FastAllocateString(str.Length + pad);
+        if (align < 0)
+        {
+            Unsafe.CopyBlockUnaligned(ref Unsafe.As<char, byte>(ref result.GetReference()), ref Unsafe.As<char, byte>(ref str.GetReference()), (uint)str.Length * sizeof(char));
+            Unchecked.Fill(ref Unsafe.Add(ref result.GetReference(), str.Length), (uint)pad, ' ');
+        }
+        else if (align > 0)
+        {
+            Unchecked.Fill(ref result.GetReference(), (uint)pad, ' ');
+            Unsafe.CopyBlockUnaligned(ref Unsafe.As<char, byte>(ref Unsafe.Add(ref result.GetReference(), pad)), ref Unsafe.As<char, byte>(ref str.GetReference()), (uint)str.Length * sizeof(char));
+        }
+        else
+        {
+            var leftPad = pad / 2;
+            var rightPad = pad - leftPad;
+            Unchecked.Fill(ref result.GetReference(), (uint)leftPad, ' ');
+            Unsafe.CopyBlockUnaligned(ref Unsafe.As<char, byte>(ref Unsafe.Add(ref result.GetReference(), leftPad)), ref Unsafe.As<char, byte>(ref str.GetReference()), (uint)str.Length * sizeof(char));
+            Unchecked.Fill(ref Unsafe.Add(ref result.GetReference(), str.Length + leftPad), (uint)rightPad, ' ');
+        }
+        return result;
+    }
+
+    public static string DisplayPadLeft(this string str, int width) => DisplayPad(str, width, 1);
+    public static string DisplayPadRight(this string str, int width) => DisplayPad(str, width, -1);
+    public static string DisplayPadCenter(this string str, int width) => DisplayPad(str, width, 0);
 }
