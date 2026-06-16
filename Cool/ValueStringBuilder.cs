@@ -51,11 +51,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
 
     public void Insert(int index, char value, int count)
     {
-        if (_pos > _chars.Length - count)
-        {
-            Grow(count);
-        }
-
+        if (_pos > _chars.Length - count) Grow(count);
         int remaining = _pos - index;
         ref char start = ref _chars[index];
         Unchecked.Copy(ref Unsafe.Add(ref start, count), ref start, (nuint)remaining);
@@ -65,18 +61,9 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
 
     public void Insert(int index, string? s)
     {
-        if (s == null || s.Length == 0)
-        {
-            return;
-        }
-
+        if (s == null || s.Length == 0) return;
         int count = s.Length;
-
-        if (_pos > (_chars.Length - count))
-        {
-            Grow(count);
-        }
-
+        if (_pos > (_chars.Length - count)) Grow(count);
         int remaining = _pos - index;
         ref char start = ref _chars[index];
         Unchecked.Copy(ref Unsafe.Add(ref start, count), ref start, (nuint)remaining);
@@ -95,18 +82,15 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         }
         else
         {
-            GrowAndAppend(c);
+            Grow(1);
+            _chars[_pos++] = c;
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(string? s)
     {
-        if (s == null || s.Length == 0)
-        {
-            return;
-        }
-
+        if (s == null || s.Length == 0) return;
         int pos = _pos;
         if (s.Length == 1 && (uint)pos < (uint)_chars.Length)
         {
@@ -123,14 +107,12 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
     private void AppendSlow(string s)
     {
         int pos = _pos;
-        if (pos > _chars.Length - s.Length)
-        {
-            Grow(s.Length);
-        }
+        if (pos > _chars.Length - s.Length) Grow(s.Length);
         Unchecked.Copy(ref _chars[pos], ref s.GetReference(), (nuint)s.Length);
         _pos += s.Length;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(char c, int count)
     {
         if (_pos > _chars.Length - count) Grow(count);
@@ -138,13 +120,11 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         _pos += count;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(ref char start, int length)
     {
         int pos = _pos;
-        if (pos > _chars.Length - length)
-        {
-            Grow(length);
-        }
+        if (pos > _chars.Length - length) Grow(length);
         Unchecked.Copy(ref _chars[pos], ref start, (nuint)length);
         _pos += length;
     }
@@ -159,13 +139,6 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         if (pos > _chars.Length - length) Grow(length);
         _pos = pos + length;
         return ref _chars[pos];
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private void GrowAndAppend(char c)
-    {
-        Grow(1);
-        Append(c);
     }
 
     /// <summary>
