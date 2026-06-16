@@ -487,12 +487,12 @@ public static unsafe class Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IntPtr ByteOffset<T>(ref T origin, ref T target)
+    public static nint ByteOffset<T>(ref T origin, ref T target)
     {
         Ldarg(nameof(target));
         Ldarg(nameof(origin));
         Sub();
-        return IL.Return<IntPtr>();
+        return IL.Return<nint>();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

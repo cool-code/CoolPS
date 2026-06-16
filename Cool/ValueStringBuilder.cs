@@ -44,11 +44,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
             return string.Empty;
         }
         string s = Unchecked.FastAllocateString(_pos);
-        Unsafe.CopyBlockUnaligned(
-            ref Unsafe.As<char, byte>(ref s.GetReference()),
-            ref Unsafe.As<char, byte>(ref _chars.GetReference()),
-            (uint)_pos * sizeof(char)
-        );
+        Unchecked.Copy(ref s.GetReference(), ref _chars.GetReference(), (nuint)_pos);
         Dispose();
         return s;
     }
@@ -62,11 +58,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
 
         int remaining = _pos - index;
         ref char start = ref _chars[index];
-        Unsafe.CopyBlockUnaligned(
-            ref Unsafe.As<char, byte>(ref Unsafe.Add(ref start, count)),
-            ref Unsafe.As<char, byte>(ref start),
-            (uint)remaining * sizeof(char)
-        );
+        Unchecked.Copy(ref Unsafe.Add(ref start, count), ref start, (nuint)remaining);
         Unchecked.Fill(ref start, (uint)count, value);
         _pos += count;
     }
@@ -87,16 +79,8 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
 
         int remaining = _pos - index;
         ref char start = ref _chars[index];
-        Unsafe.CopyBlockUnaligned(
-            ref Unsafe.As<char, byte>(ref Unsafe.Add(ref start, count)),
-            ref Unsafe.As<char, byte>(ref start),
-            (uint)remaining * sizeof(char)
-        );
-        Unsafe.CopyBlockUnaligned(
-            ref Unsafe.As<char, byte>(ref start),
-            ref Unsafe.As<char, byte>(ref s.GetReference()),
-            (uint)count * sizeof(char)
-        );
+        Unchecked.Copy(ref Unsafe.Add(ref start, count), ref start, (nuint)remaining);
+        Unchecked.Copy(ref start, ref s.GetReference(), (nuint)count);
         _pos += count;
     }
 
@@ -135,6 +119,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AppendSlow(string s)
     {
         int pos = _pos;
@@ -142,11 +127,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         {
             Grow(s.Length);
         }
-        Unsafe.CopyBlockUnaligned(
-            ref Unsafe.As<char, byte>(ref _chars[pos]),
-            ref Unsafe.As<char, byte>(ref s.GetReference()),
-            (uint)s.Length * sizeof(char)
-        );
+        Unchecked.Copy(ref _chars[pos], ref s.GetReference(), (nuint)s.Length);
         _pos += s.Length;
     }
 
@@ -164,11 +145,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         {
             Grow(length);
         }
-        Unsafe.CopyBlockUnaligned(
-            ref Unsafe.As<char, byte>(ref _chars[pos]),
-            ref Unsafe.As<char, byte>(ref start),
-            (uint)length * sizeof(char)
-        );
+        Unchecked.Copy(ref _chars[pos], ref start, (nuint)length);
         _pos += length;
     }
 
@@ -213,11 +190,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         // Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative.
         // This could also go negative if the actual required length wraps around.
         char[] poolArray = ArrayPool<char>.Shared.Rent(newCapacity);
-        Unsafe.CopyBlockUnaligned(
-            ref Unsafe.As<char, byte>(ref poolArray.GetReference()),
-            ref Unsafe.As<char, byte>(ref _chars.GetReference()),
-            (uint)_pos * sizeof(char)
-        );
+        Unchecked.Copy(ref poolArray.GetReference(), ref _chars.GetReference(), (nuint)_pos);
         char[] toReturn = _chars;
         _chars = poolArray;
         ArrayPool<char>.Shared.Return(toReturn);

@@ -122,5 +122,36 @@ namespace Cool.Benchmarks
             sb.Dispose();
             return sum;
         }
+
+        [Benchmark]
+        public int SB_Append_Sbyte()
+        {
+            int sum = 0;
+            StringBuilder sb = StringBuilderPool.Shared.Rent(16);
+            for (int i = sbyte.MinValue; i <= sbyte.MaxValue; i++)
+            {
+                sb.Append((sbyte)i);
+                sum += sb.Length;
+                sb.Clear();
+            }
+            StringBuilderPool.Shared.Return(sb);
+            return sum;
+        }
+
+        [Benchmark]
+        public int VSB_Append_Sbyte()
+        {
+            int sum = 0;
+            ValueStringBuilder sb = new(16);
+            for (int i = sbyte.MinValue; i <= sbyte.MaxValue; i++)
+            {
+                sb.Append((sbyte)i);
+                sum += sb.Length;
+                sb.Clear();
+            }
+            sb.Dispose();
+            return sum;
+        }
+
     }
 }
