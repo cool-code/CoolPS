@@ -510,11 +510,12 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
         bool inRange = false;
         nuint rangeStart = 0, rangeEnd = 0;
         nuint wordCount = WordCount;
+        ref nuint bitmap = ref Bitmap;
         var sb = new ValueStringBuilder();
 
         for (nuint wi = 0; wi < wordCount; wi++)
         {
-            nuint w = Unsafe.Add(ref Bitmap, wi);
+            nuint w = Unsafe.Add(ref bitmap, wi);
             while (w != 0u)
             {
                 int tz = BitOperations.TrailingZeroCount(w);
@@ -536,6 +537,18 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
                 {
                     // [Full positioning express path]: One step to achieve the goal, directly add the entire Word length to rangeEnd
                     rangeEnd = pos + (1u << BitSet.ShiftCount) - 1u;
+
+                    nuint fullWords = 0;
+                    while (wi + 1u < wordCount && Unsafe.Add(ref bitmap, wi + 1u) == nuint.MaxValue)
+                    {
+                        fullWords++;
+                        wi++;
+                    }
+
+                    if (fullWords > 0)
+                    {
+                        rangeEnd += fullWords << BitSet.ShiftCount;
+                    }
                     w = 0;
                 }
                 else if (((w >> (tz + 1)) & 1u) == 0)
