@@ -178,25 +178,24 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
         int startBit = (int)(start & ((1u << BitSet.ShiftCount) - 1u));
         int endBit = (int)(end & ((1u << BitSet.ShiftCount) - 1u));
 
+        ref nuint bitmap = ref Bitmap;
+
         if (startWi == endWi)
         {
             nuint mask = (((nuint)1 << (endBit - startBit + 1)) - 1u) << startBit;
-            Unsafe.Add(ref Bitmap, startWi) |= mask;
+            Unsafe.Add(ref bitmap, startWi) |= mask;
             return;
         }
 
         nuint headMask = nuint.MaxValue << startBit;
-        Unsafe.Add(ref Bitmap, startWi) |= headMask;
+        Unsafe.Add(ref bitmap, startWi) |= headMask;
 
-        for (nuint wi = startWi + 1; wi < endWi; wi++)
-        {
-            Unsafe.Add(ref Bitmap, wi) = nuint.MaxValue;
-        }
+        Unchecked.Fill(ref Unsafe.Add(ref bitmap, startWi + 1), endWi - startWi - 1, nuint.MaxValue);
 
         nuint tailMask = endBit == ((1 << BitSet.ShiftCount) - 1)
             ? nuint.MaxValue
             : (((nuint)1 << (endBit + 1)) - 1u);
-        Unsafe.Add(ref Bitmap, endWi) |= tailMask;
+        Unsafe.Add(ref bitmap, endWi) |= tailMask;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -213,25 +212,24 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
         int startBit = (int)(start & ((1u << BitSet.ShiftCount) - 1u));
         int endBit = (int)(end & ((1u << BitSet.ShiftCount) - 1u));
 
+        ref nuint bitmap = ref Bitmap;
+
         if (startWi == endWi)
         {
             nuint mask = (((nuint)1 << (endBit - startBit + 1)) - 1u) << startBit;
-            Unsafe.Add(ref Bitmap, startWi) &= ~mask;
+            Unsafe.Add(ref bitmap, startWi) &= ~mask;
             return;
         }
 
         nuint headMask = nuint.MaxValue << startBit;
-        Unsafe.Add(ref Bitmap, startWi) &= ~headMask;
+        Unsafe.Add(ref bitmap, startWi) &= ~headMask;
 
-        for (nuint wi = startWi + 1; wi < endWi; wi++)
-        {
-            Unsafe.Add(ref Bitmap, wi) = 0u;
-        }
+        Unchecked.Fill(ref Unsafe.Add(ref bitmap, startWi + 1), endWi - startWi - 1, (nuint)0);
 
         nuint tailMask = endBit == ((1 << BitSet.ShiftCount) - 1)
             ? nuint.MaxValue
             : (((nuint)1 << (endBit + 1)) - 1u);
-        Unsafe.Add(ref Bitmap, endWi) &= ~tailMask;
+        Unsafe.Add(ref bitmap, endWi) &= ~tailMask;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -248,25 +246,24 @@ public class BitSet<TAlloc> : IBitSet, IDisposable where TAlloc : struct, BitSet
         int startBit = (int)(start & ((1u << BitSet.ShiftCount) - 1u));
         int endBit = (int)(end & ((1u << BitSet.ShiftCount) - 1u));
 
+        ref nuint bitmap = ref Bitmap;
+
         if (startWi == endWi)
         {
             nuint mask = (((nuint)1 << (endBit - startBit + 1)) - 1u) << startBit;
-            Unsafe.Add(ref Bitmap, startWi) ^= mask;
+            Unsafe.Add(ref bitmap, startWi) ^= mask;
             return;
         }
 
         nuint headMask = nuint.MaxValue << startBit;
-        Unsafe.Add(ref Bitmap, startWi) ^= headMask;
+        Unsafe.Add(ref bitmap, startWi) ^= headMask;
 
-        for (nuint wi = startWi + 1; wi < endWi; wi++)
-        {
-            Unsafe.Add(ref Bitmap, wi) = ~Unsafe.Add(ref Bitmap, wi);
-        }
+        Unchecked.Not(ref Unsafe.Add(ref bitmap, startWi + 1), endWi - startWi - 1);
 
         nuint tailMask = endBit == ((1 << BitSet.ShiftCount) - 1)
             ? nuint.MaxValue
             : (((nuint)1 << (endBit + 1)) - 1u);
-        Unsafe.Add(ref Bitmap, endWi) ^= tailMask;
+        Unsafe.Add(ref bitmap, endWi) ^= tailMask;
     }
     #endregion
 
