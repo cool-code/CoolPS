@@ -1,4 +1,4 @@
-#if NETFRAMEWORK || !NET9_0_OR_GREATER
+#if NETFRAMEWORK
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,163 +8,150 @@ public static partial class Unchecked
 {
     [StructLayout(LayoutKind.Sequential, Size = 16)]
     private struct Block16 { }
+    [StructLayout(LayoutKind.Sequential, Size = 32)]
+    private struct Block32 { }
     [StructLayout(LayoutKind.Sequential, Size = 64)]
     private struct Block64 { }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe bool FastCopy(ref byte left, ref byte right, nuint length)
+    private static void Copy(ref Block64 dst, ref Block64 src, nuint length, nuint offset)
     {
-        if ((nuint)Unsafe.ByteOffset(ref right, ref left) < length || length > 2048)
-        {
-            Unsafe.CopyBlockUnaligned(ref left, ref right, length);
-            return true;
-        }
-        if (length < 16) return false;
-        nuint offset = 0;
-        if (length <= 64)
-        {
-            ref Block16 left16 = ref Unsafe.As<byte, Block16>(ref left);
-            ref Block16 right16 = ref Unsafe.As<byte, Block16>(ref right);
-            if ((length & 32) != 0)
-            {
-                Unsafe.AddByteOffset(ref left16, offset) = Unsafe.AddByteOffset(ref right16, offset);
-                Unsafe.AddByteOffset(ref left16, offset + 16) = Unsafe.AddByteOffset(ref right16, offset + 16);
-                offset += 32;
-            }
-            if ((length & 16) != 0)
-            {
-                Unsafe.AddByteOffset(ref left16, offset) = Unsafe.AddByteOffset(ref right16, offset);
-            }
-            Unsafe.AddByteOffset(ref left16, length - 16) = Unsafe.AddByteOffset(ref right16, length - 16);
-            return true;
-        }
-        ref Block64 left64 = ref Unsafe.As<byte, Block64>(ref left);
-        ref Block64 right64 = ref Unsafe.As<byte, Block64>(ref right);
-        if (length >= 256)
-        {
-            nuint misalignedElements = 64 - ((nuint)Unsafe.AsPointer(ref left) & (64 - 1));
-            left64 = right64;
-            right64 = ref Unsafe.AddByteOffset(ref right64, misalignedElements);
-            left64 = ref Unsafe.AddByteOffset(ref left64, misalignedElements);
-            length -= misalignedElements;
-        }
-        for (nuint stopLoopAtOffset = length & ~(nuint)127; offset < stopLoopAtOffset; offset += 128)
-        {
-            Unsafe.AddByteOffset(ref left64, offset) = Unsafe.AddByteOffset(ref right64, offset);
-            Unsafe.AddByteOffset(ref left64, offset + 64) = Unsafe.AddByteOffset(ref right64, offset + 64);
-        }
+        if (length < 64) return;
         if ((length & 64) != 0)
         {
-            Unsafe.AddByteOffset(ref left64, offset) = Unsafe.AddByteOffset(ref right64, offset);
+            Unsafe.AddByteOffset(ref dst, offset) = Unsafe.AddByteOffset(ref src, offset);
+            offset += 64;
         }
-        Unsafe.AddByteOffset(ref left64, length - 64) = Unsafe.AddByteOffset(ref right64, length - 64);
-        return true;
+        for (nuint stopLoopAtOffset = length; offset < stopLoopAtOffset; offset += 128)
+        {
+            Unsafe.AddByteOffset(ref dst, offset) = Unsafe.AddByteOffset(ref src, offset);
+            Unsafe.AddByteOffset(ref dst, offset + 64) = Unsafe.AddByteOffset(ref src, offset + 64);
+        }
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void SlowCopy(ref ulong left, ref ulong right, nuint length, out nuint offset, out nuint remaining)
-    {
-        offset = 0;
-        ref nuint nleft = ref Unsafe.As<ulong, nuint>(ref left);
-        ref nuint nright = ref Unsafe.As<ulong, nuint>(ref right);
 
-        for (nuint stopLoopAtOffset = length & ~((nuint)sizeof(nuint) * 2 - 1); offset < stopLoopAtOffset; offset += (nuint)sizeof(nuint) * 2)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void Copy(ref Block16 dst, ref Block16 src, nuint length, nuint offset)
+    {
+        if (length < 16) return;
+        if ((length & 16) != 0)
         {
-            Unsafe.AddByteOffset(ref nleft, offset) = Unsafe.AddByteOffset(ref nright, offset);
-            Unsafe.AddByteOffset(ref nleft, offset + (nuint)sizeof(nuint)) = Unsafe.AddByteOffset(ref nright, offset + (nuint)sizeof(nuint));
+            Unsafe.AddByteOffset(ref dst, offset) = Unsafe.AddByteOffset(ref src, offset);
+            offset += 16;
         }
+        if ((length & 32) != 0)
+        {
+            Unsafe.AddByteOffset(ref Unsafe.As<Block16, Block32>(ref dst), offset) = Unsafe.AddByteOffset(ref Unsafe.As<Block16, Block32>(ref src), offset);
+            offset += 32;
+        }
+        Copy(ref Unsafe.As<Block16, Block64>(ref dst), ref Unsafe.As<Block16, Block64>(ref src), length, offset);
+    }
 
-        remaining = length - offset;
-        if ((remaining & sizeof(ulong)) != 0)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void Copy(ref ulong dst, ref ulong src, nuint length, nuint offset)
+    {
+        if (length < 8) return;
+        if ((length & 8) != 0)
         {
-            Unsafe.AddByteOffset(ref left, offset) = Unsafe.AddByteOffset(ref right, offset);
-            offset += sizeof(ulong);
+            Unsafe.AddByteOffset(ref dst, offset) = Unsafe.AddByteOffset(ref src, offset);
+            offset += 8;
         }
+        Copy(ref Unsafe.As<ulong, Block16>(ref dst), ref Unsafe.As<ulong, Block16>(ref src), length, offset);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void SlowCopy(ref uint left, ref uint right, nuint length, out nuint offset, out nuint remaining)
+    private static void Copy(ref uint dst, ref uint src, nuint length, nuint offset)
     {
-        SlowCopy(ref Unsafe.As<uint, ulong>(ref left), ref Unsafe.As<uint, ulong>(ref right), length, out offset, out remaining);
-        if ((remaining & sizeof(uint)) != 0)
+        if (length < 4) return;
+        if ((length & 4) != 0)
         {
-            Unsafe.AddByteOffset(ref left, offset) = Unsafe.AddByteOffset(ref right, offset);
-            offset += sizeof(uint);
+            Unsafe.AddByteOffset(ref dst, offset) = Unsafe.AddByteOffset(ref src, offset);
+            offset += 4;
         }
+        Copy(ref Unsafe.As<uint, ulong>(ref dst), ref Unsafe.As<uint, ulong>(ref src), length, offset);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void SlowCopy(ref ushort left, ref ushort right, nuint length, out nuint offset, out nuint remaining)
+    private static void Copy(ref ushort dst, ref ushort src, nuint length, nuint offset)
     {
-        SlowCopy(ref Unsafe.As<ushort, uint>(ref left), ref Unsafe.As<ushort, uint>(ref right), length, out offset, out remaining);
-        if ((remaining & sizeof(ushort)) != 0)
+        if (length < 2) return;
+        if ((length & 2) != 0)
         {
-            Unsafe.AddByteOffset(ref left, offset) = Unsafe.AddByteOffset(ref right, offset);
-            offset += sizeof(ushort);
+            Unsafe.AddByteOffset(ref dst, offset) = Unsafe.AddByteOffset(ref src, offset);
+            offset += 2;
         }
+        Copy(ref Unsafe.As<ushort, uint>(ref dst), ref Unsafe.As<ushort, uint>(ref src), length, offset);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void SlowCopy(ref byte left, ref byte right, nuint length)
+    private static void Copy(ref byte dst, ref byte src, nuint length)
     {
-        SlowCopy(ref Unsafe.As<byte, ushort>(ref left), ref Unsafe.As<byte, ushort>(ref right), length, out nuint offset, out nuint remaining);
-        if ((remaining & sizeof(byte)) != 0)
+        nuint offset = 0;
+        if ((length & 1) != 0)
         {
-            Unsafe.AddByteOffset(ref left, offset) = Unsafe.AddByteOffset(ref right, offset);
+            Unsafe.AddByteOffset(ref dst, offset) = Unsafe.AddByteOffset(ref src, offset);
+            offset += 1;
         }
+        Copy(ref Unsafe.As<byte, ushort>(ref dst), ref Unsafe.As<byte, ushort>(ref src), length, offset);
     }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Copy(ref ulong left, ref ulong right, nuint numElements)
+    public static void Copy<T>(ref T dst, ref T src, int numElements)
     {
-        if (Unsafe.AreSame(ref left, ref right)) return;
-        if (numElements == 1) { left = right; return; }
         if (numElements == 0) return;
-        nuint length = numElements * (nuint)Unsafe.SizeOf<ulong>();
-        if (FastCopy(ref Unsafe.As<ulong, byte>(ref left), ref Unsafe.As<ulong, byte>(ref right), length)) return;
-        SlowCopy(ref left, ref right, length, out _, out _);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Copy(ref uint left, ref uint right, nuint numElements)
-    {
-        if (Unsafe.AreSame(ref left, ref right)) return;
-        if (numElements == 1) { left = right; return; }
-        if (numElements == 0) return;
-        nuint length = numElements * (nuint)Unsafe.SizeOf<uint>();
-        if (FastCopy(ref Unsafe.As<uint, byte>(ref left), ref Unsafe.As<uint, byte>(ref right), length)) return;
-        SlowCopy(ref left, ref right, length, out _, out _);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Copy(ref ushort left, ref ushort right, nuint numElements)
-    {
-        if (Unsafe.AreSame(ref left, ref right)) return;
-        if (numElements == 1) { left = right; return; }
-        if (numElements == 0) return;
-        nuint length = numElements * (nuint)Unsafe.SizeOf<ushort>();
-        if (FastCopy(ref Unsafe.As<ushort, byte>(ref left), ref Unsafe.As<ushort, byte>(ref right), length)) return;
-        SlowCopy(ref left, ref right, length, out _, out _);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Copy(ref byte left, ref byte right, nuint length)
-    {
-        if (Unsafe.AreSame(ref left, ref right)) return;
-        if (length == 1) { left = right; return; }
-        if (length == 0) return;
-        if (FastCopy(ref left, ref right, length)) return;
-        SlowCopy(ref left, ref right, length);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Copy<T>(ref T left, ref T right, nuint numElements) where T : unmanaged
-    {
-        if ((nuint)Unsafe.SizeOf<T>() % sizeof(ulong) == 0)
+        if (Unsafe.AreSame(ref dst, ref src)) return;
+        if (numElements == 1) { dst = src; return; }
+
+        nuint byteCount = (nuint)Unsafe.ByteOffset(ref src, ref Unsafe.Add(ref src, numElements));
+        nuint diff = (nuint)Unsafe.ByteOffset(ref src, ref dst);
+        bool isOverlapped = diff < byteCount;
+
+        if (!isOverlapped && !RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            Copy(ref Unsafe.As<T, ulong>(ref left), ref Unsafe.As<T, ulong>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ulong)));
-        }
-        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(uint) == 0)
-        {
-            Copy(ref Unsafe.As<T, uint>(ref left), ref Unsafe.As<T, uint>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(uint)));
-        }
-        else if ((nuint)Unsafe.SizeOf<T>() % sizeof(ushort) == 0)
-        {
-            Copy(ref Unsafe.As<T, ushort>(ref left), ref Unsafe.As<T, ushort>(ref right), numElements * ((nuint)Unsafe.SizeOf<T>() / sizeof(ushort)));
+            ref byte dstBytes = ref Unsafe.As<T, byte>(ref dst);
+            ref byte srcBytes = ref Unsafe.As<T, byte>(ref src);
+            if (Unsafe.SizeOf<T>() % 64 == 0)
+            {
+                Copy(ref Unsafe.As<byte, Block64>(ref dstBytes), ref Unsafe.As<byte, Block64>(ref srcBytes), byteCount, 0);
+            }
+            else if (Unsafe.SizeOf<T>() % 16 == 0)
+            {
+                Copy(ref Unsafe.As<byte, Block16>(ref dstBytes), ref Unsafe.As<byte, Block16>(ref srcBytes), byteCount, 0);
+            }
+            else if (Unsafe.SizeOf<T>() % 8 == 0)
+            {
+                Copy(ref Unsafe.As<byte, ulong>(ref dstBytes), ref Unsafe.As<byte, ulong>(ref srcBytes), byteCount, 0);
+            }
+            else if (Unsafe.SizeOf<T>() % 4 == 0)
+            {
+                Copy(ref Unsafe.As<byte, uint>(ref dstBytes), ref Unsafe.As<byte, uint>(ref srcBytes), byteCount, 0);
+            }
+            else if (Unsafe.SizeOf<T>() % 2 == 0)
+            {
+                Copy(ref Unsafe.As<byte, ushort>(ref dstBytes), ref Unsafe.As<byte, ushort>(ref srcBytes), byteCount, 0);
+            }
+            else
+            {
+                Copy(ref dstBytes, ref srcBytes, byteCount);
+            }
         }
         else
         {
-            Copy(ref Unsafe.As<T, byte>(ref left), ref Unsafe.As<T, byte>(ref right), numElements * (nuint)Unsafe.SizeOf<T>());
+            SlowCopy(ref dst, ref src, numElements);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void SlowCopy<T>(ref T dst, ref T src, int numElements)
+    {
+        bool srcGreaterThanDst = Unsafe.IsAddressGreaterThan(ref src, ref dst);
+        int direction = srcGreaterThanDst ? 1 : -1;
+        int runCount = srcGreaterThanDst ? 0 : numElements - 1;
+        int loopCount = 0;
+        for (; loopCount < (numElements & ~1); loopCount += 2)
+        {
+            Unsafe.Add(ref dst, runCount) = Unsafe.Add(ref src, runCount);
+            Unsafe.Add(ref dst, runCount + direction * 1) = Unsafe.Add(ref src, runCount + direction * 1);
+            runCount += direction * 2;
+        }
+        if (loopCount < numElements)
+        {
+            Unsafe.Add(ref dst, runCount) = Unsafe.Add(ref src, runCount);
         }
     }
 }
