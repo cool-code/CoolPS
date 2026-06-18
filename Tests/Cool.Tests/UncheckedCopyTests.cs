@@ -131,7 +131,7 @@ namespace Cool.Tests
             int[] lengths = new int[] { 17, 18, 31, 32, 63, 64, 127, 128, 255, 256, 1023, 1024, 2048 };
             foreach (int count in lengths)
             {
-                int src = 0, dest = 1;
+                int src = 0, dest = 32;
                 byte[] arr = new byte[count + dest + 2];
                 for (int i = 0; i < arr.Length; i++) arr[i] = (byte)((i * 31 + 17) & 0xFF);
                 var original = (byte[])arr.Clone();
