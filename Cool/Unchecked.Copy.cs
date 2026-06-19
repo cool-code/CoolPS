@@ -38,10 +38,10 @@ public static partial class Unchecked
         if ((length & 32) != 0)
         {
             dst = src;
-            dst = ref Unsafe.Add(ref dst, 1);
-            src = ref Unsafe.Add(ref src, 1);
             length &= ~32;
             if (length == 0) return;
+            dst = ref Unsafe.Add(ref dst, 1);
+            src = ref Unsafe.Add(ref src, 1);
         }
         FastCopyForward(ref dst, ref src, length);
     }
@@ -51,10 +51,10 @@ public static partial class Unchecked
         if ((length & 16) != 0)
         {
             dst = src;
-            dst = ref Unsafe.Add(ref dst, 1);
-            src = ref Unsafe.Add(ref src, 1);
             length &= ~16;
             if (length == 0) return;
+            dst = ref Unsafe.Add(ref dst, 1);
+            src = ref Unsafe.Add(ref src, 1);
         }
         CopyForward(ref Unsafe.As<Block16, Block32>(ref dst), ref Unsafe.As<Block16, Block32>(ref src), length);
     }
@@ -64,10 +64,10 @@ public static partial class Unchecked
         if ((length & 8) != 0)
         {
             dst = src;
-            dst = ref Unsafe.Add(ref dst, 1);
-            src = ref Unsafe.Add(ref src, 1);
             length &= ~8;
             if (length == 0) return;
+            dst = ref Unsafe.Add(ref dst, 1);
+            src = ref Unsafe.Add(ref src, 1);
         }
         CopyForward(ref Unsafe.As<ulong, Block16>(ref dst), ref Unsafe.As<ulong, Block16>(ref src), length);
     }
@@ -77,10 +77,10 @@ public static partial class Unchecked
         if ((length & 4) != 0)
         {
             dst = src;
-            dst = ref Unsafe.Add(ref dst, 1);
-            src = ref Unsafe.Add(ref src, 1);
             length &= ~4;
             if (length == 0) return;
+            dst = ref Unsafe.Add(ref dst, 1);
+            src = ref Unsafe.Add(ref src, 1);
         }
         CopyForward(ref Unsafe.As<uint, ulong>(ref dst), ref Unsafe.As<uint, ulong>(ref src), length);
     }
@@ -90,10 +90,10 @@ public static partial class Unchecked
         if ((length & 2) != 0)
         {
             dst = src;
-            dst = ref Unsafe.Add(ref dst, 1);
-            src = ref Unsafe.Add(ref src, 1);
             length &= ~2;
             if (length == 0) return;
+            dst = ref Unsafe.Add(ref dst, 1);
+            src = ref Unsafe.Add(ref src, 1);
         }
         CopyForward(ref Unsafe.As<ushort, uint>(ref dst), ref Unsafe.As<ushort, uint>(ref src), length);
     }
@@ -103,10 +103,10 @@ public static partial class Unchecked
         if ((length & 1) != 0)
         {
             dst = src;
-            dst = ref Unsafe.Add(ref dst, 1);
-            src = ref Unsafe.Add(ref src, 1);
             length &= ~1;
             if (length == 0) return;
+            dst = ref Unsafe.Add(ref dst, 1);
+            src = ref Unsafe.Add(ref src, 1);
         }
         CopyForward(ref Unsafe.As<byte, ushort>(ref dst), ref Unsafe.As<byte, ushort>(ref src), length);
     }
@@ -174,7 +174,7 @@ public static partial class Unchecked
             dst = ref Unsafe.Subtract(ref dst, 1);
             src = ref Unsafe.Subtract(ref src, 1);
             dst = src;
-            length -= 32;
+            length &= ~32;
             if (length == 0) return;
         }
         FastCopyBackward(ref dst, ref src, length);
@@ -187,7 +187,7 @@ public static partial class Unchecked
             dst = ref Unsafe.Subtract(ref dst, 1);
             src = ref Unsafe.Subtract(ref src, 1);
             dst = src;
-            length -= 16;
+            length &= ~16;
             if (length == 0) return;
         }
         if ((nuint)Unsafe.ByteOffset(ref src, ref dst) < 32)
@@ -214,7 +214,7 @@ public static partial class Unchecked
             dst = ref Unsafe.Subtract(ref dst, 1);
             src = ref Unsafe.Subtract(ref src, 1);
             dst = src;
-            length -= 8;
+            length &= ~8;
             if (length == 0) return;
         }
         if (!Vector.IsHardwareAccelerated)
@@ -241,7 +241,7 @@ public static partial class Unchecked
             dst = ref Unsafe.Subtract(ref dst, 1);
             src = ref Unsafe.Subtract(ref src, 1);
             dst = src;
-            length -= 4;
+            length &= ~4;
             if (length == 0) return;
         }
         CopyBackward(ref Unsafe.As<uint, ulong>(ref dst), ref Unsafe.As<uint, ulong>(ref src), length);
@@ -254,7 +254,7 @@ public static partial class Unchecked
             dst = ref Unsafe.Subtract(ref dst, 1);
             src = ref Unsafe.Subtract(ref src, 1);
             dst = src;
-            length -= 2;
+            length &= ~2;
             if (length == 0) return;
         }
         CopyBackward(ref Unsafe.As<ushort, uint>(ref dst), ref Unsafe.As<ushort, uint>(ref src), length);
@@ -267,7 +267,7 @@ public static partial class Unchecked
             dst = ref Unsafe.Subtract(ref dst, 1);
             src = ref Unsafe.Subtract(ref src, 1);
             dst = src;
-            length -= 1;
+            length &= ~1;
             if (length == 0) return;
         }
         CopyBackward(ref Unsafe.As<byte, ushort>(ref dst), ref Unsafe.As<byte, ushort>(ref src), length);
