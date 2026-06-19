@@ -7,26 +7,30 @@ namespace Cool;
 public static partial class Unchecked
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe bool FastCopyForward(ref Block32 dst, ref Block32 src, nint length)
+    private static unsafe void FastCopyForward(ref Block32 dst, ref Block32 src, nint length)
     {
-        nint misaligned = (nint)Unsafe.AsPointer(ref src) & (32 - 1);
-        if (misaligned == 0 || length < 256 || (nuint)Unsafe.ByteOffset(ref dst, ref src) < 32) return false;
-        nint alignmentOffset = 32 - misaligned;
-        dst = src;
-        dst = ref Unsafe.AddByteOffset(ref dst, alignmentOffset);
-        src = ref Unsafe.AddByteOffset(ref src, alignmentOffset);
-        length -= alignmentOffset;
-        do
+        if (length > 1024 && ((nuint)Unsafe.ByteOffset(ref dst, ref src) >= 32))
+        {
+            nint misaligned = (nint)Unsafe.AsPointer(ref src) & (32 - 1);
+            if (misaligned > 0)
+            {
+                nint alignmentOffset = 32 - misaligned;
+                dst = src;
+                dst = ref Unsafe.AddByteOffset(ref dst, alignmentOffset);
+                src = ref Unsafe.AddByteOffset(ref src, alignmentOffset);
+                length -= alignmentOffset;
+            }
+        }
+        while (length > 64)
         {
             dst = src;
             Unsafe.Add(ref dst, 1) = Unsafe.Add(ref src, 1);
             dst = ref Unsafe.Add(ref dst, 2);
             src = ref Unsafe.Add(ref src, 2);
             length -= 64;
-        } while (length > 64);
+        }
         dst = src;
         Unsafe.AddByteOffset(ref dst, length - 32) = Unsafe.AddByteOffset(ref src, length - 32);
-        return true;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyForward(ref Block32 dst, ref Block32 src, nint length)
@@ -36,18 +40,10 @@ public static partial class Unchecked
             dst = src;
             dst = ref Unsafe.Add(ref dst, 1);
             src = ref Unsafe.Add(ref src, 1);
-            length -= 32;
+            length &= ~32;
             if (length == 0) return;
         }
-        if (FastCopyForward(ref dst, ref src, length)) return;
-        do
-        {
-            dst = src;
-            Unsafe.Add(ref dst, 1) = Unsafe.Add(ref src, 1);
-            dst = ref Unsafe.Add(ref dst, 2);
-            src = ref Unsafe.Add(ref src, 2);
-            length -= 64;
-        } while (length > 0);
+        FastCopyForward(ref dst, ref src, length);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyForward(ref Block16 dst, ref Block16 src, nint length)
@@ -57,7 +53,7 @@ public static partial class Unchecked
             dst = src;
             dst = ref Unsafe.Add(ref dst, 1);
             src = ref Unsafe.Add(ref src, 1);
-            length -= 16;
+            length &= ~16;
             if (length == 0) return;
         }
         CopyForward(ref Unsafe.As<Block16, Block32>(ref dst), ref Unsafe.As<Block16, Block32>(ref src), length);
@@ -70,7 +66,7 @@ public static partial class Unchecked
             dst = src;
             dst = ref Unsafe.Add(ref dst, 1);
             src = ref Unsafe.Add(ref src, 1);
-            length -= 8;
+            length &= ~8;
             if (length == 0) return;
         }
         CopyForward(ref Unsafe.As<ulong, Block16>(ref dst), ref Unsafe.As<ulong, Block16>(ref src), length);
@@ -83,7 +79,7 @@ public static partial class Unchecked
             dst = src;
             dst = ref Unsafe.Add(ref dst, 1);
             src = ref Unsafe.Add(ref src, 1);
-            length -= 4;
+            length &= ~4;
             if (length == 0) return;
         }
         CopyForward(ref Unsafe.As<uint, ulong>(ref dst), ref Unsafe.As<uint, ulong>(ref src), length);
@@ -96,7 +92,7 @@ public static partial class Unchecked
             dst = src;
             dst = ref Unsafe.Add(ref dst, 1);
             src = ref Unsafe.Add(ref src, 1);
-            length -= 2;
+            length &= ~2;
             if (length == 0) return;
         }
         CopyForward(ref Unsafe.As<ushort, uint>(ref dst), ref Unsafe.As<ushort, uint>(ref src), length);
@@ -109,7 +105,7 @@ public static partial class Unchecked
             dst = src;
             dst = ref Unsafe.Add(ref dst, 1);
             src = ref Unsafe.Add(ref src, 1);
-            length -= 1;
+            length &= ~1;
             if (length == 0) return;
         }
         CopyForward(ref Unsafe.As<byte, ushort>(ref dst), ref Unsafe.As<byte, ushort>(ref src), length);
@@ -143,31 +139,32 @@ public static partial class Unchecked
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe bool FastCopyBackward(ref Block32 dst, ref Block32 src, nint length)
+    private static unsafe void FastCopyBackward(ref Block32 dst, ref Block32 src, nint length)
     {
-        nint misaligned = (nint)Unsafe.AsPointer(ref src) & (32 - 1);
-        if (misaligned == 0 || length < 256) return false;
-        Unsafe.Subtract(ref dst, 1) = Unsafe.Subtract(ref src, 1);
-        dst = ref Unsafe.SubtractByteOffset(ref dst, misaligned);
-        src = ref Unsafe.SubtractByteOffset(ref src, misaligned);
-        length -= misaligned;
-        do
+        if (length > 1024)
+        {
+            nint misaligned = (nint)Unsafe.AsPointer(ref src) & (32 - 1);
+            if (misaligned > 0)
+            {
+                Unsafe.Subtract(ref dst, 1) = Unsafe.Subtract(ref src, 1);
+                dst = ref Unsafe.SubtractByteOffset(ref dst, misaligned);
+                src = ref Unsafe.SubtractByteOffset(ref src, misaligned);
+                length -= misaligned;
+            }
+        }
+        while (length > 64)
         {
             dst = ref Unsafe.Subtract(ref dst, 2);
             src = ref Unsafe.Subtract(ref src, 2);
             Unsafe.Add(ref dst, 1) = Unsafe.Add(ref src, 1);
             dst = src;
             length -= 64;
-        } while (length > 64);
-        if ((length & 32) != 0)
-        {
-            dst = ref Unsafe.Subtract(ref dst, 1);
-            src = ref Unsafe.Subtract(ref src, 1);
-            dst = src;
-            length -= 32;
         }
+        dst = ref Unsafe.Subtract(ref dst, 1);
+        src = ref Unsafe.Subtract(ref src, 1);
+        dst = src;
+        length -= 32;
         Unsafe.SubtractByteOffset(ref dst, length) = Unsafe.SubtractByteOffset(ref src, length);
-        return true;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyBackward(ref Block32 dst, ref Block32 src, nint length)
@@ -180,15 +177,7 @@ public static partial class Unchecked
             length -= 32;
             if (length == 0) return;
         }
-        if (FastCopyBackward(ref dst, ref src, length)) return;
-        do
-        {
-            dst = ref Unsafe.Subtract(ref dst, 2);
-            src = ref Unsafe.Subtract(ref src, 2);
-            Unsafe.Add(ref dst, 1) = Unsafe.Add(ref src, 1);
-            dst = src;
-            length -= 64;
-        } while (length > 0);
+        FastCopyBackward(ref dst, ref src, length);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyBackward(ref Block16 dst, ref Block16 src, nint length)
