@@ -1,6 +1,7 @@
 #if NETFRAMEWORK
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 namespace Cool;
 
 public static class RuntimeHelpersExtensions
@@ -33,6 +34,7 @@ public static class RuntimeHelpersExtensions
 
     extension(System.Runtime.CompilerServices.RuntimeHelpers)
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsReferenceOrContainsReferences<T>() => PerTypeValues<T>.IsReferenceOrContainsReferences;
     }
 }

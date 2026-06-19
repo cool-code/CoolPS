@@ -12,8 +12,7 @@ namespace Cool.Benchmarks
     public class CopyBenchmarks
     {
         private byte[] src = null!;
-        private byte[] dst1 = null!;
-        private byte[] dst2 = null!;
+        private byte[] dst = null!;
 
         [Params(1, 64, 256, 1024, 2048, 65536, 1048576, 4194304)]
         public int N;
@@ -22,8 +21,7 @@ namespace Cool.Benchmarks
         public void Setup()
         {
             src = new byte[N];
-            dst1 = new byte[N];
-            dst2 = new byte[N];
+            dst = new byte[N];
             for (int i = 0; i < N; i++) src[i] = (byte)(i & 0xFF);
         }
 
@@ -31,31 +29,91 @@ namespace Cool.Benchmarks
         [Benchmark(Baseline = true)]
         public void Unchecked_Copy()
         {
-            Unchecked.Copy(ref dst1[0], ref src[0], N);
+            Unchecked.Copy(ref dst[0], ref src[0], N);
         }
 
         [Benchmark]
         public void Unchecked_CopyBackword()
         {
             if (N < 32) return;
-            Unchecked.Copy(ref dst1[32], ref dst1[0], N - 32);
+            Unchecked.Copy(ref dst[32], ref dst[0], N - 32);
         }
 
         [Benchmark]
-        public void Unsafe_CopyBlockUnaligned()
+        public void System_Copy()
         {
-            Unsafe.CopyBlockUnaligned(ref dst2[0], ref src[0], (nuint)N);
+#if NETFRAMEWORK
+            Array.Copy(src, 0, dst, 0, N);
+#else
+            MemoryMarshal.CreateSpan(ref src[0], N).CopyTo(MemoryMarshal.CreateSpan(ref dst[0], N));
+#endif
         }
 
         [Benchmark]
-        public void Unsafe_CopyBackword()
+        public void System_CopyBackword()
         {
             if (N < 32) return;
 #if NETFRAMEWORK
-            Unsafe.CopyBlockUnaligned(ref dst2[32], ref dst2[0], (nuint)N - 32);
+            Array.Copy(dst, 0, dst, 32, N - 32);
 #else
-            MemoryMarshal.CreateSpan(ref dst2[0], N - 32).CopyTo(MemoryMarshal.CreateSpan(ref dst2[32], N - 32));
+            MemoryMarshal.CreateSpan(ref dst[0], N - 32).CopyTo(MemoryMarshal.CreateSpan(ref dst[32], N - 32));
 #endif
         }
     }
+
+
+    [MemoryDiagnoser]
+    [DisassemblyDiagnoser]
+    public class CopyObjectBenchmarks
+    {
+        private object[] src = null!;
+        private object[] dst = null!;
+
+        [Params(1, 64, 256, 1024, 2048, 65536, 1048576, 4194304)]
+        public int N;
+
+        [GlobalSetup]
+        public void Setup()
+        {
+            src = new object[N];
+            dst = new object[N];
+            for (int i = 0; i < N; i++) src[i] = new object();
+        }
+
+
+        [Benchmark(Baseline = true)]
+        public void Unchecked_Copy()
+        {
+            Unchecked.Copy(ref dst[0], ref src[0], N);
+        }
+
+        [Benchmark]
+        public void Unchecked_CopyBackword()
+        {
+            if (N < 32) return;
+            Unchecked.Copy(ref dst[32], ref dst[0], N - 32);
+        }
+
+        [Benchmark]
+        public void System_Copy()
+        {
+#if NETFRAMEWORK
+            Array.Copy(src, 0, dst, 0, N);
+#else
+            MemoryMarshal.CreateSpan(ref src[0], N).CopyTo(MemoryMarshal.CreateSpan(ref dst[0], N));
+#endif
+        }
+
+        [Benchmark]
+        public void System_CopyBackword()
+        {
+            if (N < 32) return;
+#if NETFRAMEWORK
+            Array.Copy(dst, 0, dst, 32, N - 32);
+#else
+            MemoryMarshal.CreateSpan(ref dst[0], N - 32).CopyTo(MemoryMarshal.CreateSpan(ref dst[32], N - 32));
+#endif
+        }
+    }
+
 }
