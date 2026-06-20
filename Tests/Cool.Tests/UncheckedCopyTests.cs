@@ -12,13 +12,13 @@ namespace Cool.Tests
         public void Copy_Bytes_NonOverlapping_CopiesAll()
         {
             int len = 32;
-            byte[] left = new byte[len];
-            byte[] right = new byte[len];
-            for (int i = 0; i < len; i++) right[i] = (byte)(i * 7 + 3);
+            byte[] to = new byte[len];
+            byte[] from = new byte[len];
+            for (int i = 0; i < len; i++) from[i] = (byte)(i * 7 + 3);
 
-            Unchecked.Copy(ref left.GetReference(), ref right.GetReference(), len);
+            Unchecked.Copy(from, to, len);
 
-            Assert.Equal(right, left);
+            Assert.Equal(from, to);
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace Cool.Tests
             var expected = (byte[])original.Clone();
             for (int i = 0; i < count; i++) expected[dest + i] = original[src + i];
 
-            Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), dest), ref Unsafe.Add(ref arr.GetReference(), src), count);
+            Unchecked.Copy(arr, src, arr, dest, count);
 
             Assert.Equal(expected, arr);
         }
@@ -49,7 +49,7 @@ namespace Cool.Tests
             var expected = (byte[])original.Clone();
             for (int i = 0; i < count; i++) expected[dest + i] = original[src + i];
 
-            Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), dest), ref Unsafe.Add(ref arr.GetReference(), src), count);
+            Unchecked.Copy(arr, src, arr, dest, count);
 
             Assert.Equal(expected, arr);
         }
@@ -61,7 +61,7 @@ namespace Cool.Tests
             var original = (ulong[])arr.Clone();
 
             // copy 2 elements from index 0 -> index 2 (dest after source)
-            Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), 2), ref Unsafe.Add(ref arr.GetReference(), 0), 2);
+            Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), 0), ref Unsafe.Add(ref arr.GetReference(), 2), 2);
 
             var expected = (ulong[])original.Clone();
             expected[2] = original[0];
@@ -72,7 +72,7 @@ namespace Cool.Tests
             // now copy 3 elements from index 2 -> index 0 (dest before source)
             arr = new ulong[] { 0UL, 1UL, 2UL, 3UL, 4UL, 5UL };
             original = (ulong[])arr.Clone();
-            Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), 0), ref Unsafe.Add(ref arr.GetReference(), 2), 3);
+            Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), 2), ref Unsafe.Add(ref arr.GetReference(), 0), 3);
             expected = (ulong[])original.Clone();
             for (int i = 0; i < 3; i++) expected[0 + i] = original[2 + i];
 
@@ -91,7 +91,7 @@ namespace Cool.Tests
             var original = (Sized3[])arr.Clone();
 
             // copy 2 elements from index 0 -> index 2 (overlap dest after source)
-            Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), 2), ref Unsafe.Add(ref arr.GetReference(), 0), 2);
+            Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), 0), ref Unsafe.Add(ref arr.GetReference(), 2), 2);
 
             var expected = (Sized3[])original.Clone();
             expected[2] = original[0];
@@ -119,7 +119,7 @@ namespace Cool.Tests
                 var expected = (byte[])original.Clone();
                 for (int i = 0; i < count; i++) expected[dest + i] = original[src + i];
 
-                Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), dest), ref Unsafe.Add(ref arr.GetReference(), src), count);
+                Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), src), ref Unsafe.Add(ref arr.GetReference(), dest), count);
 
                 Assert.Equal(expected, arr);
             }
@@ -139,7 +139,7 @@ namespace Cool.Tests
                 var expected = (byte[])original.Clone();
                 for (int i = 0; i < count; i++) expected[dest + i] = original[src + i];
 
-                Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), dest), ref Unsafe.Add(ref arr.GetReference(), src), count);
+                Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), src), ref Unsafe.Add(ref arr.GetReference(), dest), count);
 
                 Assert.Equal(expected, arr);
             }

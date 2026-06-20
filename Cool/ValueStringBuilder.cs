@@ -44,7 +44,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
             return string.Empty;
         }
         string s = Unchecked.FastAllocateString(_pos);
-        Unchecked.Copy(ref s.GetReference(), ref _chars.GetReference(), _pos);
+        Unchecked.Copy(ref _chars.GetReference(), ref s.GetReference(), _pos);
         Dispose();
         return s;
     }
@@ -54,7 +54,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         if (_pos > _chars.Length - count) Grow(count);
         int remaining = _pos - index;
         ref char start = ref _chars[index];
-        Unchecked.Copy(ref Unsafe.Add(ref start, count), ref start, remaining);
+        Unchecked.Copy(ref start, ref Unsafe.Add(ref start, count), remaining);
         Unchecked.Fill(ref start, (uint)count, value);
         _pos += count;
     }
@@ -66,8 +66,8 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         if (_pos > (_chars.Length - count)) Grow(count);
         int remaining = _pos - index;
         ref char start = ref _chars[index];
-        Unchecked.Copy(ref Unsafe.Add(ref start, count), ref start, remaining);
-        Unchecked.Copy(ref start, ref s.GetReference(), count);
+        Unchecked.Copy(ref start, ref Unsafe.Add(ref start, count), remaining);
+        Unchecked.Copy(ref s.GetReference(), ref start, count);
         _pos += count;
     }
 
@@ -108,7 +108,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
     {
         int pos = _pos;
         if (pos > _chars.Length - s.Length) Grow(s.Length);
-        Unchecked.Copy(ref _chars[pos], ref s.GetReference(), s.Length);
+        Unchecked.Copy(ref s.GetReference(), ref _chars[pos], s.Length);
         _pos += s.Length;
     }
 
@@ -125,7 +125,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
     {
         int pos = _pos;
         if (pos > _chars.Length - length) Grow(length);
-        Unchecked.Copy(ref _chars[pos], ref start, length);
+        Unchecked.Copy(ref start, ref _chars[pos], length);
         _pos += length;
     }
 
@@ -163,7 +163,7 @@ public ref partial struct ValueStringBuilder(int initialCapacity)
         // Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative.
         // This could also go negative if the actual required length wraps around.
         char[] poolArray = ArrayPool<char>.Shared.Rent(newCapacity);
-        Unchecked.Copy(ref poolArray.GetReference(), ref _chars.GetReference(), _pos);
+        Unchecked.Copy(ref _chars.GetReference(), ref poolArray.GetReference(), _pos);
         char[] toReturn = _chars;
         _chars = poolArray;
         ArrayPool<char>.Shared.Return(toReturn);

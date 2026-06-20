@@ -14,7 +14,7 @@ namespace Cool.Benchmarks
         private byte[] src = null!;
         private byte[] dst = null!;
 
-        [Params(1, 64, 256, 1024, 2048, 65536, 1048576, 4194304)]
+        [Params(1, 16, 64, 256, 1024, 2048, 65536, 1048576, 4194304)]
         public int N;
 
         [GlobalSetup]
@@ -29,14 +29,14 @@ namespace Cool.Benchmarks
         [Benchmark(Baseline = true)]
         public void Unchecked_Copy()
         {
-            Unchecked.Copy(ref dst[0], ref src[0], N);
+            Unchecked.Copy(src, dst, N);
         }
 
         [Benchmark]
         public void Unchecked_CopyBackword()
         {
             if (N < 32) return;
-            Unchecked.Copy(ref dst[32], ref dst[0], N - 32);
+            Unchecked.Copy(dst, 0, dst, 32, N - 32);
         }
 
         [Benchmark]
@@ -69,7 +69,7 @@ namespace Cool.Benchmarks
         private object[] src = null!;
         private object[] dst = null!;
 
-        [Params(1, 64, 256, 1024, 2048, 65536, 1048576, 4194304)]
+        [Params(1, 16, 64, 256, 1024, 2048, 65536, 1048576, 4194304)]
         public int N;
 
         [GlobalSetup]
@@ -84,14 +84,14 @@ namespace Cool.Benchmarks
         [Benchmark(Baseline = true)]
         public void Unchecked_Copy()
         {
-            Unchecked.Copy(ref dst[0], ref src[0], N);
+            Unchecked.Copy(src, dst, N);
         }
 
         [Benchmark]
         public void Unchecked_CopyBackword()
         {
             if (N < 32) return;
-            Unchecked.Copy(ref dst[32], ref dst[0], N - 32);
+            Unchecked.Copy(dst, 0, dst, 32, N - 32);
         }
 
         [Benchmark]
