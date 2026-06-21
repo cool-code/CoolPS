@@ -14,7 +14,7 @@ namespace Cool.Benchmarks
         private byte[] src = null!;
         private byte[] dst = null!;
 
-        [Params(1, 16, 64, 256, 1024, 2048, 65536, 1048576, 4194304)]
+        [Params(1, 16, 64, 256, 512, 800, 1024, 1600, 2048, 65536, 1048576, 4194304)]
         public int N;
 
         [GlobalSetup]

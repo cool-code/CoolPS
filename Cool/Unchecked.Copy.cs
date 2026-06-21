@@ -20,9 +20,9 @@ public static partial class Unchecked
     }
     private static unsafe void FastCopyForward(ref Block32 from, ref Block32 to, nint length)
     {
-        if (length > 1024 && ((nuint)Unsafe.ByteOffset(ref to, ref from) >= 32))
+        if (length > 256 && ((nuint)Unsafe.ByteOffset(ref to, ref from) >= 32))
         {
-            nint misaligned = (nint)Unsafe.AsPointer(ref from) & (32 - 1);
+            nint misaligned = (nint)Unsafe.AsPointer(ref (length > 2048 ? ref from : ref to)) & (32 - 1);
             if (misaligned > 0)
             {
                 nint alignmentOffset = 32 - misaligned;
@@ -133,9 +133,9 @@ public static partial class Unchecked
     }
     private static unsafe void FastCopyBackward(ref Block32 from, ref Block32 to, nint length)
     {
-        if (length > 1024)
+        if (length > 256)
         {
-            nint misaligned = (nint)Unsafe.AsPointer(ref from) & (32 - 1);
+            nint misaligned = (nint)Unsafe.AsPointer(ref (length > 2048 ? ref from : ref to)) & (32 - 1);
             if (misaligned > 0)
             {
                 Unsafe.Subtract(ref to, 1) = Unsafe.Subtract(ref from, 1);
