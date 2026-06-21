@@ -20,38 +20,35 @@ public static partial class Unchecked
     }
     private static unsafe void FastCopyForward(ref Block32 from, ref Block32 to, nint length)
     {
-        if (length > 256 && ((nuint)Unsafe.ByteOffset(ref to, ref from) >= 32))
+        nint misaligned = (nint)Unsafe.AsPointer(ref ((length > 32768) ? ref from : ref to)) & (32 - 1);
+        if (misaligned > 0)
         {
-            nint misaligned = (nint)Unsafe.AsPointer(ref (length > 2048 ? ref from : ref to)) & (32 - 1);
-            if (misaligned > 0)
-            {
-                nint alignmentOffset = 32 - misaligned;
-                to = from;
-                from = ref Unsafe.AddByteOffset(ref from, alignmentOffset);
-                to = ref Unsafe.AddByteOffset(ref to, alignmentOffset);
-                length -= alignmentOffset;
-            }
+            nint alignmentOffset = 32 - misaligned;
+            to = from;
+            from = ref Unsafe.AddByteOffset(ref from, alignmentOffset);
+            to = ref Unsafe.AddByteOffset(ref to, alignmentOffset);
+            length -= alignmentOffset;
         }
-        while (length > 64)
+        TailsCopyForward(ref from, ref to, length, 32);
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void TailsCopyForward(ref Block32 from, ref Block32 to, nint length, nint stopOffset = 0)
+    {
+        do
         {
             to = from;
-            Unsafe.Add(ref to, 1) = Unsafe.Add(ref from, 1);
-            from = ref Unsafe.Add(ref from, 2);
-            to = ref Unsafe.Add(ref to, 2);
-            length -= 64;
-        }
-        to = from;
+            from = ref Unsafe.Add(ref from, 1);
+            to = ref Unsafe.Add(ref to, 1);
+            length -= 32;
+        } while (length > stopOffset);
+        if (stopOffset == 0) return;
         Unsafe.AddByteOffset(ref to, length - 32) = Unsafe.AddByteOffset(ref from, length - 32);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyForward(ref Block32 from, ref Block32 to, ref nint length, ref nint offset)
     {
         if (CheckAndCopyForward(ref from, ref to, ref length, ref offset)) return;
-        FastCopyForward(
-            ref Unsafe.AddByteOffset(ref from, offset),
-            ref Unsafe.AddByteOffset(ref to, offset),
-            length
-        );
+        TailsCopyForward(ref Unsafe.AddByteOffset(ref from, offset), ref Unsafe.AddByteOffset(ref to, offset), length);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyForward(ref Block16 from, ref Block16 to, ref nint length, ref nint offset)
@@ -83,7 +80,7 @@ public static partial class Unchecked
         if (CheckAndCopyForward(ref from, ref to, ref length, ref offset)) return;
         CopyForward(ref Unsafe.As<byte, ushort>(ref from), ref Unsafe.As<byte, ushort>(ref to), ref length, ref offset);
     }
-    private static void CopyForward<T>(ref T from, ref T to, nint length, nint offset = 0)
+    private static void CopyForward<T>(ref T from, ref T to, nint length, nint offset)
     {
         if (Unsafe.SizeOf<T>() % 32 == 0)
         {
@@ -112,6 +109,19 @@ public static partial class Unchecked
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void CopyForward<T>(ref T from, ref T to, nint length)
+    {
+        if (length > 256 && ((nuint)Unsafe.ByteOffset(ref to, ref from) >= 32))
+        {
+            FastCopyForward(ref Unsafe.As<T, Block32>(ref from), ref Unsafe.As<T, Block32>(ref to), length);
+        }
+        else
+        {
+            CopyForward(ref from, ref to, length, 0);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CheckAndCopyBackward<T>(ref T from, ref T to, ref nint length)
     {
         if ((length & Unsafe.SizeOf<T>()) != 0)
@@ -126,8 +136,7 @@ public static partial class Unchecked
     {
         do
         {
-            length -= Unsafe.SizeOf<T>() * 2;
-            Unsafe.AddByteOffset(ref to, length + Unsafe.SizeOf<T>()) = Unsafe.AddByteOffset(ref from, length + Unsafe.SizeOf<T>());
+            length -= Unsafe.SizeOf<T>();
             Unsafe.AddByteOffset(ref to, length) = Unsafe.AddByteOffset(ref from, length);
         } while (length > 0);
     }
@@ -135,7 +144,7 @@ public static partial class Unchecked
     {
         if (length > 256)
         {
-            nint misaligned = (nint)Unsafe.AsPointer(ref (length > 2048 ? ref from : ref to)) & (32 - 1);
+            nint misaligned = (nint)Unsafe.AsPointer(ref (length > 32768 ? ref from : ref to)) & (32 - 1);
             if (misaligned > 0)
             {
                 Unsafe.Subtract(ref to, 1) = Unsafe.Subtract(ref from, 1);
@@ -144,18 +153,13 @@ public static partial class Unchecked
                 length -= misaligned;
             }
         }
-        while (length > 64)
+        while (length > 32)
         {
-            from = ref Unsafe.Subtract(ref from, 2);
-            to = ref Unsafe.Subtract(ref to, 2);
-            Unsafe.Add(ref to, 1) = Unsafe.Add(ref from, 1);
+            from = ref Unsafe.Subtract(ref from, 1);
+            to = ref Unsafe.Subtract(ref to, 1);
             to = from;
-            length -= 64;
+            length -= 32;
         }
-        from = ref Unsafe.Subtract(ref from, 1);
-        to = ref Unsafe.Subtract(ref to, 1);
-        to = from;
-        length -= 32;
         Unsafe.SubtractByteOffset(ref to, length) = Unsafe.SubtractByteOffset(ref from, length);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
