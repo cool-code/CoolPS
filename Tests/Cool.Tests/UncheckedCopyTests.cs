@@ -108,40 +108,46 @@ namespace Cool.Tests
         [Fact]
         public void Copy_Bytes_Overlap_ProblematicLengths_DestBeforeSource()
         {
-            int[] lengths = new int[] { 17, 18, 31, 32, 63, 64, 127, 128, 255, 256, 512, 1023, 1024, 1600, 2048 };
+            int[] lengths = new int[] { 17, 18, 31, 32, 63, 64, 127, 128, 255, 256, 512, 1023, 1024, 1600, 2048, 8 * 1024 * 1024 };
             foreach (int count in lengths)
             {
-                int src = 1, dest = 0;
-                byte[] arr = new byte[count + src + 2];
-                for (int i = 0; i < arr.Length; i++) arr[i] = (byte)((i * 31 + 17) & 0xFF);
-                var original = (byte[])arr.Clone();
+                for (var diff = 1; diff < 64; diff *= 2)
+                {
+                    int src = diff, dest = 0;
+                    byte[] arr = new byte[count + src + 2];
+                    for (int i = 0; i < arr.Length; i++) arr[i] = (byte)((i * 31 + 17) & 0xFF);
+                    var original = (byte[])arr.Clone();
 
-                var expected = (byte[])original.Clone();
-                for (int i = 0; i < count; i++) expected[dest + i] = original[src + i];
+                    var expected = (byte[])original.Clone();
+                    for (int i = 0; i < count; i++) expected[dest + i] = original[src + i];
 
-                Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), src), ref Unsafe.Add(ref arr.GetReference(), dest), count);
+                    Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), src), ref Unsafe.Add(ref arr.GetReference(), dest), count);
 
-                Assert.Equal(expected, arr);
+                    Assert.Equal(expected, arr);
+                }
             }
         }
 
         [Fact]
         public void Copy_Bytes_Overlap_ProblematicLengths_DestAfterSource()
         {
-            int[] lengths = new int[] { 17, 18, 31, 32, 63, 64, 127, 128, 255, 256, 512, 1023, 1024, 1600, 2048 };
+            int[] lengths = new int[] { 17, 18, 31, 32, 63, 64, 127, 128, 255, 256, 512, 1023, 1024, 1600, 2048, 8 * 1024 * 1024 };
             foreach (int count in lengths)
             {
-                int src = 0, dest = 32;
-                byte[] arr = new byte[count + dest + 2];
-                for (int i = 0; i < arr.Length; i++) arr[i] = (byte)((i * 31 + 17) & 0xFF);
-                var original = (byte[])arr.Clone();
+                for (var diff = 1; diff < 64; diff *= 2)
+                {
+                    int src = 0, dest = diff;
+                    byte[] arr = new byte[count + dest + 2];
+                    for (int i = 0; i < arr.Length; i++) arr[i] = (byte)((i * 31 + 17) & 0xFF);
+                    var original = (byte[])arr.Clone();
 
-                var expected = (byte[])original.Clone();
-                for (int i = 0; i < count; i++) expected[dest + i] = original[src + i];
+                    var expected = (byte[])original.Clone();
+                    for (int i = 0; i < count; i++) expected[dest + i] = original[src + i];
 
-                Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), src), ref Unsafe.Add(ref arr.GetReference(), dest), count);
+                    Unchecked.Copy(ref Unsafe.Add(ref arr.GetReference(), src), ref Unsafe.Add(ref arr.GetReference(), dest), count);
 
-                Assert.Equal(expected, arr);
+                    Assert.Equal(expected, arr);
+                }
             }
         }
     }

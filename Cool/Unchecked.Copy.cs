@@ -1,11 +1,122 @@
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.X86;
 
 namespace Cool;
 
 public static partial class Unchecked
 {
+#if NETFRAMEWORK
+    private const nint MemmoveNativeThreshold = 64 * 1024 * 1024;
+#else
+    private const nint MemmoveNativeThreshold = 32 * 1024 * 1024;
+#endif
+    private delegate void MemmoveDelegate(ref byte dest, ref byte src, nuint len);
+    private static readonly MemmoveDelegate? memmove = CreateMemmove();
+    private static MemmoveDelegate? CreateMemmove()
+    {
+        BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+        System.Type[] types = [typeof(byte).MakeByRefType(), typeof(byte).MakeByRefType(), typeof(nuint)];
+        try
+        {
+            // .NET 11.0
+            var memmove = typeof(object).Assembly?.GetType("System.SpanHelpers")?.GetMethod("MemmoveNative", flags, null, types, null);
+            if (memmove != null)
+            {
+                return (MemmoveDelegate)memmove.CreateDelegate(typeof(MemmoveDelegate));
+            }
+        }
+        catch { }
+        try
+        {
+            // .NET 10.0
+            var method = typeof(System.Buffer).GetMethod("MemmoveInternal", flags, null, types, null);
+            if (method != null)
+            {
+                return (MemmoveDelegate)method.CreateDelegate(typeof(MemmoveDelegate));
+            }
+        }
+        catch (System.Exception e)
+        {
+            System.Console.WriteLine(e.ToString());
+        }
+        try
+        {
+            // .NET 7.0 ~ .NET 9.0
+            var method = typeof(System.Buffer).GetMethod("_Memmove", flags, null, types, null);
+            if (method != null)
+            {
+                return (MemmoveDelegate)method.CreateDelegate(typeof(MemmoveDelegate));
+            }
+        }
+        catch { }
+        return null;
+    }
+    private unsafe delegate void MemmoveX64Delegate(byte* dest, byte* src, ulong len);
+    private static readonly MemmoveX64Delegate? memmoveX64 = CreateMemmoveX64();
+    private static MemmoveX64Delegate? CreateMemmoveX64()
+    {
+        BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+        System.Type[] types = [typeof(byte).MakePointerType(), typeof(byte).MakePointerType(), typeof(ulong)];
+        try
+        {
+            // .NET 4.x on X64 Platform
+            var method = typeof(System.Buffer).GetMethod("_Memmove", flags, null, types, null);
+            if (method != null)
+            {
+                return (MemmoveX64Delegate)method.CreateDelegate(typeof(MemmoveX64Delegate));
+            }
+        }
+        catch { }
+        return null;
+    }
+    private unsafe delegate void MemmoveX86Delegate(byte* dest, byte* src, uint len);
+    private static readonly MemmoveX86Delegate? memmoveX86 = CreateMemmoveX86();
+    private static MemmoveX86Delegate? CreateMemmoveX86()
+    {
+        BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+        System.Type[] types = [typeof(byte).MakePointerType(), typeof(byte).MakePointerType(), typeof(uint)];
+        try
+        {
+            // .NET 4.x on X86 Platform
+            var method = typeof(System.Buffer).GetMethod("_Memmove", flags, null, types, null);
+            if (method != null)
+            {
+                return (MemmoveX86Delegate)method.CreateDelegate(typeof(MemmoveX86Delegate));
+            }
+        }
+        catch { }
+        return null;
+    }
+
+    private static unsafe void MemmoveNative(ref byte dest, ref byte src, nuint len)
+    {
+        if (memmove != null)
+        {
+            memmove(ref dest, ref src, len);
+        }
+        else fixed (byte* s = &src) fixed (byte* d = &dest)
+        {
+            if (memmoveX64 != null)
+            {
+                memmoveX64(d, s, len);
+            }
+            else if (memmoveX86 != null)
+            {
+                memmoveX86(d, s, checked((uint)len));
+            }
+            else
+            {
+                // for Native AOT or unknown platforms
+                System.Buffer.MemoryCopy(s, d, len, len);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static unsafe nint MisAligned(ref Block32 from, ref Block32 to, nint length) => (nint)Unsafe.AsPointer(ref (length > 32768) ? ref from : ref to) & (32 - 1);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CheckAndCopyForward<T>(ref T from, ref T to, ref nint length, ref nint offset)
     {
@@ -18,9 +129,24 @@ public static partial class Unchecked
         }
         return false;
     }
-    private static unsafe void FastCopyForward(ref Block32 from, ref Block32 to, nint length)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void TailsCopyForward(ref Block32 from, ref Block32 to, nint length, nint stopOffset = 0)
     {
-        nint misaligned = (nint)Unsafe.AsPointer(ref ((length > 32768) ? ref from : ref to)) & (32 - 1);
+        do
+        {
+            to = from;
+            Unsafe.Add(ref to, 1) = Unsafe.Add(ref from, 1);
+            from = ref Unsafe.Add(ref from, 2);
+            to = ref Unsafe.Add(ref to, 2);
+            length -= 64;
+        } while (length > stopOffset);
+        if (stopOffset == 0) return;
+        if (length > 32) to = from;
+        Unsafe.AddByteOffset(ref to, length - 32) = Unsafe.AddByteOffset(ref from, length - 32);
+    }
+    private static void FastCopyForward(ref Block32 from, ref Block32 to, nint length)
+    {
+        nint misaligned = MisAligned(ref from, ref to, length);
         if (misaligned > 0)
         {
             nint alignmentOffset = 32 - misaligned;
@@ -29,20 +155,7 @@ public static partial class Unchecked
             to = ref Unsafe.AddByteOffset(ref to, alignmentOffset);
             length -= alignmentOffset;
         }
-        TailsCopyForward(ref from, ref to, length, 32);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void TailsCopyForward(ref Block32 from, ref Block32 to, nint length, nint stopOffset = 0)
-    {
-        do
-        {
-            to = from;
-            from = ref Unsafe.Add(ref from, 1);
-            to = ref Unsafe.Add(ref to, 1);
-            length -= 32;
-        } while (length > stopOffset);
-        if (stopOffset == 0) return;
-        Unsafe.AddByteOffset(ref to, length - 32) = Unsafe.AddByteOffset(ref from, length - 32);
+        TailsCopyForward(ref from, ref to, length, 64);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyForward(ref Block32 from, ref Block32 to, ref nint length, ref nint offset)
@@ -107,11 +220,13 @@ public static partial class Unchecked
             CopyForward(ref Unsafe.As<T, byte>(ref from), ref Unsafe.As<T, byte>(ref to), ref length, ref offset);
         }
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyForward<T>(ref T from, ref T to, nint length)
     {
-        if (length > 256 && ((nuint)Unsafe.ByteOffset(ref to, ref from) >= 32))
+        if (X86Base.IsSupported && length >= MemmoveNativeThreshold)
+        {
+            MemmoveNative(ref Unsafe.As<T, byte>(ref to), ref Unsafe.As<T, byte>(ref from), (nuint)length);
+        }
+        else if (length > 256 && ((nuint)Unsafe.ByteOffset(ref to, ref from) >= 32))
         {
             FastCopyForward(ref Unsafe.As<T, Block32>(ref from), ref Unsafe.As<T, Block32>(ref to), length);
         }
@@ -132,6 +247,7 @@ public static partial class Unchecked
         }
         return false;
     }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void TailsCopyBackward<T>(ref T from, ref T to, nint length)
     {
         do
@@ -140,63 +256,39 @@ public static partial class Unchecked
             Unsafe.AddByteOffset(ref to, length) = Unsafe.AddByteOffset(ref from, length);
         } while (length > 0);
     }
-    private static unsafe void FastCopyBackward(ref Block32 from, ref Block32 to, nint length)
+    private static void FastCopyBackward(ref Block32 from, ref Block32 to, nint length)
     {
-        if (length > 256)
+        length -= 32;
+        nint misaligned = MisAligned(ref from, ref to, length);
+        if (misaligned > 0)
         {
-            nint misaligned = (nint)Unsafe.AsPointer(ref (length > 32768 ? ref from : ref to)) & (32 - 1);
-            if (misaligned > 0)
-            {
-                Unsafe.Subtract(ref to, 1) = Unsafe.Subtract(ref from, 1);
-                from = ref Unsafe.SubtractByteOffset(ref from, misaligned);
-                to = ref Unsafe.SubtractByteOffset(ref to, misaligned);
-                length -= misaligned;
-            }
+            Unsafe.AddByteOffset(ref to, length) = Unsafe.AddByteOffset(ref from, length);
+            length -= misaligned;
         }
-        while (length > 32)
+        while (length > 0)
         {
-            from = ref Unsafe.Subtract(ref from, 1);
-            to = ref Unsafe.Subtract(ref to, 1);
-            to = from;
+            Unsafe.AddByteOffset(ref to, length) = Unsafe.AddByteOffset(ref from, length);
             length -= 32;
         }
-        Unsafe.SubtractByteOffset(ref to, length) = Unsafe.SubtractByteOffset(ref from, length);
+        to = from;
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyBackward(ref Block32 from, ref Block32 to, ref nint length)
     {
         if (CheckAndCopyBackward(ref from, ref to, ref length)) return;
-        FastCopyBackward(
-            ref Unsafe.AddByteOffset(ref from, length),
-            ref Unsafe.AddByteOffset(ref to, length),
-            length
-        );
+        TailsCopyBackward(ref from, ref to, length);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyBackward(ref Block16 from, ref Block16 to, ref nint length)
     {
         if (CheckAndCopyBackward(ref from, ref to, ref length)) return;
-        if ((nuint)Unsafe.ByteOffset(ref from, ref to) >= 32)
-        {
-            CopyBackward(ref Unsafe.As<Block16, Block32>(ref from), ref Unsafe.As<Block16, Block32>(ref to), ref length);
-        }
-        else
-        {
-            TailsCopyBackward(ref from, ref to, length);
-        }
+        CopyBackward(ref Unsafe.As<Block16, Block32>(ref from), ref Unsafe.As<Block16, Block32>(ref to), ref length);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyBackward(ref ulong from, ref ulong to, ref nint length)
     {
         if (CheckAndCopyBackward(ref from, ref to, ref length)) return;
-        if (Vector.IsHardwareAccelerated)
-        {
-            CopyBackward(ref Unsafe.As<ulong, Block16>(ref from), ref Unsafe.As<ulong, Block16>(ref to), ref length);
-        }
-        else
-        {
-            TailsCopyBackward(ref from, ref to, length);
-        }
+        CopyBackward(ref Unsafe.As<ulong, Block16>(ref from), ref Unsafe.As<ulong, Block16>(ref to), ref length);
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyBackward(ref uint from, ref uint to, ref nint length)
@@ -218,7 +310,7 @@ public static partial class Unchecked
     }
     private static void CopyBackward<T>(ref T from, ref T to, nint length)
     {
-        if (Unsafe.SizeOf<T>() % 16 == 0 && Vector.IsHardwareAccelerated)
+        if (Unsafe.SizeOf<T>() % 16 == 0)
         {
             CopyBackward(ref Unsafe.As<T, Block16>(ref from), ref Unsafe.As<T, Block16>(ref to), length);
         }
@@ -239,7 +331,21 @@ public static partial class Unchecked
             CopyBackward(ref Unsafe.As<T, byte>(ref from), ref Unsafe.As<T, byte>(ref to), ref length);
         }
     }
-
+    private static void CopyBackward<T>(ref T from, ref T to, nint length, nuint diff)
+    {
+        if (X86Base.IsSupported && length >= 16 && (!Vector.IsHardwareAccelerated || diff < 32))
+        {
+            MemmoveNative(ref Unsafe.As<T, byte>(ref to), ref Unsafe.As<T, byte>(ref from), (nuint)length);
+        }
+        else if (length > 256)
+        {
+            FastCopyBackward(ref Unsafe.As<T, Block32>(ref from), ref Unsafe.As<T, Block32>(ref to), length);
+        }
+        else
+        {
+            CopyBackward(ref from, ref to, length);
+        }
+    }
     private delegate void BulkMoveWriteBarrierDelegate(ref byte dst, ref byte src, nuint byteCount);
     private static readonly BulkMoveWriteBarrierDelegate? BulkMoveWithWriteBarrier = CreateBulkMoveWithWriteBarrier();
     private static BulkMoveWriteBarrierDelegate? CreateBulkMoveWithWriteBarrier()
@@ -281,6 +387,7 @@ public static partial class Unchecked
             numElements -= 2;
         } while (numElements > 0);
     }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyWithReference<T>(ref T from, ref T to, nint numElements)
     {
         nint length = numElements * Unsafe.SizeOf<T>();
@@ -291,6 +398,21 @@ public static partial class Unchecked
         else
         {
             SlowCopy(ref from, ref to, numElements, (nuint)Unsafe.ByteOffset(ref from, ref to) < (nuint)length);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void CopyWithoutReference<T>(ref T from, ref T to, nint numElements)
+    {
+        nint length = numElements * Unsafe.SizeOf<T>();
+        nuint diff = (nuint)Unsafe.ByteOffset(ref from, ref to);
+        if (diff >= (nuint)length)
+        {
+            CopyForward(ref from, ref to, length);
+        }
+        else
+        {
+            CopyBackward(ref from, ref to, length, diff);
         }
     }
 
@@ -306,17 +428,10 @@ public static partial class Unchecked
         }
         else
         {
-            nint length = numElements * Unsafe.SizeOf<T>();
-            if ((nuint)Unsafe.ByteOffset(ref from, ref to) >= (nuint)length)
-            {
-                CopyForward(ref from, ref to, length);
-            }
-            else
-            {
-                CopyBackward(ref from, ref to, length);
-            }
+            CopyWithoutReference(ref from, ref to, numElements);
         }
     }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Copy<T>(T[] from, nint fromIndex, T[] to, nint toIndex, nint numElements)
     {
@@ -331,15 +446,7 @@ public static partial class Unchecked
         }
         else
         {
-            nint length = numElements * Unsafe.SizeOf<T>();
-            if ((nuint)Unsafe.ByteOffset(ref src, ref dst) >= (nuint)length)
-            {
-                CopyForward(ref src, ref dst, length);
-            }
-            else
-            {
-                CopyBackward(ref src, ref dst, length);
-            }
+            CopyWithoutReference(ref src, ref dst, numElements);
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
