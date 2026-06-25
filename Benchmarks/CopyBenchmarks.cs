@@ -14,7 +14,7 @@ namespace Cool.Benchmarks
         private byte[] src = null!;
         private byte[] dst = null!;
 
-        [Params(1, 16, 64, 128, 256, 512, 800, 1024, 1600, 2048, 4096, 8192, 16384, 32768, 65536, 1048576, 4194304, 16777216, 33554432, 50331648, 67108864, 134217728, 536870912)]
+        [Params(1, 16, 64, 128, 256, 512, 800, 1024, 1600, 2048, 4096, 8192, 16384, 32768, 65536, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 50331648, 67108864, 134217728, 268435456, 536870912)]
         public int N;
 
         [GlobalSetup]
@@ -33,6 +33,13 @@ namespace Cool.Benchmarks
         }
 
         [Benchmark]
+        public void Unchecked_CopyForward()
+        {
+            if (N < 32) return;
+            Unchecked.Copy(dst, 32, dst, 0, N - 32);
+        }
+
+        [Benchmark]
         public void Unchecked_CopyBackword()
         {
             if (N < 32) return;
@@ -46,6 +53,17 @@ namespace Cool.Benchmarks
             Array.Copy(src, 0, dst, 0, N);
 #else
             MemoryMarshal.CreateSpan(ref src[0], N).CopyTo(MemoryMarshal.CreateSpan(ref dst[0], N));
+#endif
+        }
+
+        [Benchmark]
+        public void System_CopyForward()
+        {
+            if (N < 32) return;
+#if NETFRAMEWORK
+            Array.Copy(dst, 32, dst, 0, N - 32);
+#else
+            MemoryMarshal.CreateSpan(ref dst[32], N - 32).CopyTo(MemoryMarshal.CreateSpan(ref dst[0], N - 32));
 #endif
         }
 
@@ -97,22 +115,14 @@ namespace Cool.Benchmarks
         [Benchmark]
         public void System_Copy()
         {
-#if NETFRAMEWORK
             Array.Copy(src, 0, dst, 0, N);
-#else
-            MemoryMarshal.CreateSpan(ref src[0], N).CopyTo(MemoryMarshal.CreateSpan(ref dst[0], N));
-#endif
         }
 
         [Benchmark]
         public void System_CopyBackword()
         {
             if (N < 32) return;
-#if NETFRAMEWORK
             Array.Copy(dst, 0, dst, 32, N - 32);
-#else
-            MemoryMarshal.CreateSpan(ref dst[0], N - 32).CopyTo(MemoryMarshal.CreateSpan(ref dst[32], N - 32));
-#endif
         }
     }
 
