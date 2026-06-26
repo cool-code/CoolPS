@@ -271,10 +271,9 @@ public static partial class Unchecked
             TailsCopyForward(ref Unsafe.As<byte, Block32>(ref from), ref Unsafe.As<byte, Block32>(ref to), length);
         }
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void CopyForward<T>(ref T from, ref T to, nint length)
+    private static void CopyForward<T>(ref T from, ref T to, nint length, nuint diff)
     {
-        if ((length < 256) || (nuint)Unsafe.ByteOffset(ref to, ref from) < 32)
+        if ((length < 256) || diff < 32)
         {
             CopyForward<T>(ref Unsafe.As<T, byte>(ref from), ref Unsafe.As<T, byte>(ref to), length);
         }
@@ -290,7 +289,7 @@ public static partial class Unchecked
 #else
         // When the copy length is not greater than 2048, AVX-512 instructions are faster than AVX2/Sse2 instructions.
         // After exceeding, it will become slower, so the length is limited here.
-        else if (length <= 2048 && ((nuint)Unsafe.ByteOffset(ref to, ref from) >= 64))
+        else if (length <= 2048 && diff >= 64)
         {
             FastCopyForward(ref Unsafe.As<T, Block64>(ref from), ref Unsafe.As<T, Block64>(ref to), length);
         }
@@ -401,7 +400,6 @@ public static partial class Unchecked
             TailsCopyBackward(ref Unsafe.As<byte, Block32>(ref from), ref Unsafe.As<byte, Block32>(ref to), length);
         }
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void CopyBackward<T>(ref T from, ref T to, nint length, nuint diff)
     {
         if (X86Base.IsSupported && length >= 16 && (!Vector.IsHardwareAccelerated || diff < 32))
@@ -480,14 +478,14 @@ public static partial class Unchecked
     private static void CopyWithoutReference<T>(ref T from, ref T to, nint numElements)
     {
         nint length = numElements * Unsafe.SizeOf<T>();
-        nuint diff = (nuint)Unsafe.ByteOffset(ref from, ref to);
-        if (diff >= (nuint)length)
+        nint diff = Unsafe.ByteOffset(ref from, ref to);
+        if ((nuint)diff >= (nuint)length)
         {
-            CopyForward(ref from, ref to, length);
+            CopyForward(ref from, ref to, length, (nuint)(-diff));
         }
         else
         {
-            CopyBackward(ref from, ref to, length, diff);
+            CopyBackward(ref from, ref to, length, (nuint)diff);
         }
     }
 
