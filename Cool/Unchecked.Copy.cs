@@ -402,7 +402,7 @@ public static partial class Unchecked
     }
     private static void CopyBackward<T>(ref T from, ref T to, nint length, nuint diff)
     {
-        if (X86Base.IsSupported && length >= 16 && (!Vector.IsHardwareAccelerated || diff < 32))
+        if (length >= 16 && (!Vector.IsHardwareAccelerated || diff < 32))
         {
             MemmoveNative(ref Unsafe.As<T, byte>(ref to), ref Unsafe.As<T, byte>(ref from), (nuint)length);
         }
